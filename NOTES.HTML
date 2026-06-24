@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notas do Livro - Com Sub-notas</title>
+    <title>Notas do Livro - Com Fixador</title>
     <style>
         :root {
             --bg-sidebar: #202123;
@@ -15,6 +15,7 @@
             --accent-green: #10a37f;
             --accent-blue: #3498db;
             --accent-red: #ef4444;
+            --accent-yellow: #f1c40f;
         }
 
         * {
@@ -113,9 +114,17 @@
         }
 
         .lista-pastas {
-            flex: 1;
             overflow-y: auto;
             margin-bottom: 15px;
+        }
+        
+        #lista-fixados {
+            flex: none;
+            max-height: 220px;
+        }
+
+        #lista-comuns {
+            flex: 1;
         }
 
         /* --- ESTRUTURA DE PASTAS E SUB-NOTAS --- */
@@ -153,6 +162,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            width: 60%;
         }
 
         .contador-sub {
@@ -198,6 +208,7 @@
         .btn-action:hover { color: var(--text-main); }
         .btn-delete:hover { color: var(--accent-red); }
         .btn-add-sub:hover { color: var(--accent-green); }
+        .btn-pin:hover, .btn-pin.fixado { color: var(--accent-yellow); }
 
         /* --- BOTÃO FLUTUANTE SIDEBAR --- */
         .btn-toggle-sidebar {
@@ -314,11 +325,14 @@
             </label>
         </div>
 
+        <div class="section-title" id="titulo-fixados">Fixados (0/3)</div>
+        <div class="lista-pastas" id="lista-fixados"></div>
+
         <div class="section-title">Minhas Coleções / Pastas</div>
-        <div class="lista-pastas" id="lista-pastas"></div>
+        <div class="lista-pastas" id="lista-comuns"></div>
 
         <div class="section-title">Lixeira (Sub-notas)</div>
-        <div class="lista-notas" id="lista-lixeira" style="max-height: 120px; overflow-y: auto;"></div>
+        <div class="lista-notas" id="lista-lixeira" style="max-height: 100px; overflow-y: auto;"></div>
     </div>
 
     <div class="main-content">
@@ -340,7 +354,7 @@
     </div>
 
     <script>
-        // Estrutura do dado: pastas = [{ id, titulo, subnotas: [{ id, titulo, conteudo, naLixeira }] }]
+        // Estrutura do dado: pastas = [{ id, titulo, fixada: false, subnotas: [...] }]
         let pastas = JSON.parse(localStorage.getItem('livro_pastas_sistema')) || [];
         let idPastaAtiva = null;
         let idSubNotaAtiva = null;
@@ -356,6 +370,7 @@
             const novaPasta = {
                 id: Date.now().toString(),
                 titulo: nomePasta,
+                fixada: false,
                 subnotas: []
             };
             pastas.unshift(novaPasta);
@@ -381,14 +396,41 @@
             carregarSubNota(idPasta, novaSubNota.id);
         }
 
+        function toggleFixarPasta(event, idPasta) {
+            event.stopPropagation();
+            const pasta = pastas.find(p => p.id === idPasta);
+            if (!pasta) return;
+
+            if (!pasta.fixada) {
+                // Conta quantas já estão fixadas
+                const totalFixadas = pastas.filter(p => p.fixada).length;
+                if (totalFixadas >= 3) {
+                    alert("Você só pode fixar no máximo 3 coleções!");
+                    return;
+                }
+                pasta.fixada = true;
+            } else {
+                pasta.fixada = false;
+            }
+
+            salvarNoLocalStorage();
+            renderizarInterface();
+        }
+
         function renderizarInterface() {
-            const containerPastas = document.getElementById('lista-pastas');
+            const containerFixados = document.getElementById('lista-fixados');
+            const containerComuns = document.getElementById('lista-comuns');
             const containerLixeira = document.getElementById('lista-lixeira');
             
-            containerPastas.innerHTML = '';
+            containerFixados.innerHTML = '';
+            containerComuns.innerHTML = '';
             containerLixeira.innerHTML = '';
 
+            let qtdFixados = 0;
+
             pastas.forEach(pasta => {
+                if (pasta.fixada) qtdFixados++;
+
                 const divPastaContainer = document.createElement('div');
                 divPastaContainer.className = 'container-pasta';
 
@@ -404,6 +446,7 @@
                         <span class="contador-sub">${subNotasAtivas.length}</span>
                     </div>
                     <div>
+                        <button class="btn-action btn-pin ${pasta.fixada ? 'fixado' : ''}" title="${pasta.fixada ? 'Desafixar' : 'Fixar no topo (Máx 3)'}" onclick="toggleFixarPasta(event, '${pasta.id}')">📌</button>
                         <button class="btn-action btn-add-sub" title="Adicionar Sub-nota" onclick="criarSubNota(event, '${pasta.id}')">➕</button>
                         <button class="btn-action btn-delete" title="Excluir Pasta Inteira" onclick="excluirPasta(event, '${pasta.id}')">🗑️</button>
                     </div>
@@ -428,7 +471,12 @@
                     divPastaContainer.appendChild(divListaSub);
                 }
 
-                containerPastas.appendChild(divPastaContainer);
+                // Distribui para o container correto baseado se está fixada ou não
+                if (pasta.fixada) {
+                    containerFixados.appendChild(divPastaContainer);
+                } else {
+                    containerComuns.appendChild(divPastaContainer);
+                }
 
                 // Renderiza itens na lixeira global
                 pasta.subnotas.forEach(sub => {
@@ -447,6 +495,9 @@
                     }
                 });
             });
+
+            // Atualiza o texto do contador de fixados
+            document.getElementById('titulo-fixados').innerText = `Fixados (${qtdFixados}/3)`;
         }
 
         function carregarSubNota(idPasta, idSub) {
@@ -481,7 +532,6 @@
                     sub.conteudo = document.getElementById('nota-conteudo').value;
                     salvarNoLocalStorage();
                     
-                    // Atualiza visualmente de forma sutil sem perder o foco do input
                     const elementoSub = document.querySelector(`.item-subnota.ativa span`);
                     if (elementoSub) elementoSub.innerText = '📄 ' + (sub.titulo || 'Sem título');
                 }
