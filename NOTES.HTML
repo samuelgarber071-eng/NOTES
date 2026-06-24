@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notas do Livro - Com Fixador</title>
+    <title>Notas do Livro - Sistema Fixador Corrigido</title>
     <style>
         :root {
             --bg-sidebar: #202123;
@@ -143,7 +143,6 @@
             align-items: center;
             font-weight: bold;
             font-size: 14px;
-            cursor: pointer;
             border-radius: 4px;
         }
 
@@ -354,8 +353,29 @@
     </div>
 
     <script>
-        // Estrutura do dado: pastas = [{ id, titulo, fixada: false, subnotas: [...] }]
-        let pastas = JSON.parse(localStorage.getItem('livro_pastas_sistema')) || [];
+        // Carrega dados da nova estrutura ou tenta converter dados muito antigos se existirem
+        let pastas = JSON.parse(localStorage.getItem('livro_pastas_sistema'));
+        
+        if (!pastas) {
+            // Tenta verificar se havia notas no formato antigo da primeira versão para não perder dados
+            let notasAntigas = JSON.parse(localStorage.getItem('livro_notas'));
+            if (notasAntigas && notasAntigas.length > 0) {
+                pastas = [{
+                    id: "padrao",
+                    titulo: "Minhas Notas",
+                    fixada: false,
+                    subnotas: notasAntigas.map(n => ({
+                        id: n.id,
+                        titulo: n.titulo,
+                        conteudo: n.conteudo,
+                        naLixeira: n.naLixeira || false
+                    }))
+                }];
+            } else {
+                pastas = [];
+            }
+        }
+
         let idPastaAtiva = null;
         let idSubNotaAtiva = null;
         let tamanhoFonteSalvo = localStorage.getItem('preferencia_fonte') || '18';
@@ -402,7 +422,6 @@
             if (!pasta) return;
 
             if (!pasta.fixada) {
-                // Conta quantas já estão fixadas
                 const totalFixadas = pastas.filter(p => p.fixada).length;
                 if (totalFixadas >= 3) {
                     alert("Você só pode fixar no máximo 3 coleções!");
@@ -436,7 +455,6 @@
 
                 const subNotasAtivas = pasta.subnotas.filter(sn => !sn.naLixeira);
 
-                // Elemento da Pasta Pai
                 const divPasta = document.createElement('div');
                 divPasta.className = `item-pasta ${pasta.id === idPastaAtiva ? 'ativa' : ''}`;
                 divPasta.innerHTML = `
@@ -453,7 +471,6 @@
                 `;
                 divPastaContainer.appendChild(divPasta);
 
-                // Container de Sub-notas filhas
                 if (subNotasAtivas.length > 0) {
                     const divListaSub = document.createElement('div');
                     divListaSub.className = 'lista-subnotas';
@@ -471,14 +488,12 @@
                     divPastaContainer.appendChild(divListaSub);
                 }
 
-                // Distribui para o container correto baseado se está fixada ou não
                 if (pasta.fixada) {
                     containerFixados.appendChild(divPastaContainer);
                 } else {
                     containerComuns.appendChild(divPastaContainer);
                 }
 
-                // Renderiza itens na lixeira global
                 pasta.subnotas.forEach(sub => {
                     if (sub.naLixeira) {
                         const itemLixo = document.createElement('div');
@@ -496,7 +511,6 @@
                 });
             });
 
-            // Atualiza o texto do contador de fixados
             document.getElementById('titulo-fixados').innerText = `Fixados (${qtdFixados}/3)`;
         }
 
@@ -638,6 +652,7 @@
                         pastas = dados;
                         salvarNoLocalStorage();
                         fecharEditor();
+                        renderizarInterface();
                         alert("Backup de coleções importado com sucesso!");
                     } else {
                         alert("Formato inválido.");
