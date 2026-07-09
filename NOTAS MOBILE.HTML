@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Notas do Livro - Versão Mobile</title>
+    <style>
+        :root {
+            --bg-sidebar: #1e1f22;
+            --bg-main: #2b2d31;
+            --bg-input: #383a40;
+            --text-main: #f2f3f5;
+            --text-muted: #949ba4;
+            --border-color: #3f4147;
+            --accent-green: #23a55a;
+            --accent-blue: #5865f2;
+            --accent-red: #da373c;
+            --accent-yellow: #f0b232;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* --- BOTÃO HAMBÚRGUER FIXO (TOPO MOBILE) --- */
+        .header-mobile {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: var(--bg-sidebar);
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            border-bottom: 1px solid var(--border-color);
+            z-index: 90;
+        }
+
+        .btn-toggle-sidebar {
+            background-color: var(--bg-input);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* --- SIDEBAR MOBILE (SLIDE OUT DE TELA CHEIA) --- */
+        .sidebar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-sidebar);
+            display: flex;
+            flex-direction: column;
+            padding: 20px 15px;
+            z-index: 100;
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar.aberta {
+            transform: translateX(0);
+        }
+
+        .btn-fechar-sidebar {
+            align-self: flex-end;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 28px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .botoes-topo {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn-nova-pasta {
+            flex: 1;
+            background-color: var(--accent-blue);
+            color: #fff;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 15px;
+            text-align: center;
+        }
+
+        /* --- BACKUP CONTAINER --- */
+        .backup-container {
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px dashed var(--border-color);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-backup {
+            background-color: var(--bg-input);
+            color: var(--text-main);
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            text-align: center;
+            width: 100%;
+        }
+
+        .file-input-label { display: block; text-align: center; }
+        input[type="file"] { display: none; }
+
+        .section-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--text-muted);
+            margin: 15px 0 8px 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .lista-pastas {
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+
+        #lista-fixados { flex: none; max-height: 180px; }
+        #lista-comuns { flex: 1; }
+
+        /* --- PASTAS E SUB-NOTAS --- */
+        .container-pasta {
+            margin-bottom: 10px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            padding: 6px;
+        }
+
+        .item-pasta {
+            padding: 10px 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .info-pasta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 55%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .contador-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+            background: var(--bg-input);
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .lista-subnotas {
+            margin-left: 12px;
+            border-left: 2px solid var(--border-color);
+            padding-left: 8px;
+            margin-top: 6px;
+        }
+
+        .item-subnota {
+            padding: 12px 8px;
+            margin: 4px 0;
+            border-radius: 6px;
+            background: rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .item-subnota.ativa {
+            background-color: rgba(88, 101, 242, 0.2);
+            border: 1px solid var(--accent-blue);
+        }
+
+        .item-subnota span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 70%; }
+
+        .btn-actions-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-action {
+            background: var(--bg-input);
+            border: none;
+            color: var(--text-main);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-pin.fixado { color: var(--accent-yellow); background: rgba(240, 178, 50, 0.1); }
+
+        /* --- ÁREA PRINCIPAL DO EDITOR --- */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            padding-top: 75px;
+            background-color: var(--bg-main);
+            height: 100%;
+        }
+
+        .editor-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+        }
+
+        .fonte-control {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: var(--bg-sidebar);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        .fonte-control input[type="range"] {
+            accent-color: var(--accent-blue);
+            width: 50%;
+        }
+
+        .input-titulo {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            outline: none;
+            width: 100%;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .textarea-conteudo {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 16px;
+            line-height: 1.5;
+            outline: none;
+            resize: none;
+            flex: 1;
+            width: 100%;
+        }
+
+        .aviso-vazio {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            color: var(--text-muted);
+            font-size: 15px;
+            text-align: center;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .aviso-vazio span {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-mobile">
+        <button class="btn-toggle-sidebar" onclick="abrirSidebar()">☰ Menu Coleções</button>
+    </div>
+
+    <div class="sidebar" id="sidebar">
+        <button class="btn-fechar-sidebar" onclick="fecharSidebar()">✕</button>
+        
+        <div class="botoes-topo">
+            <button class="btn-nova-pasta" onclick="criarNovaPasta()">📁 + Nova Coleção</button>
+        </div>
+
+        <div class="backup-container">
+            <button class="btn-backup" onclick="exportarBackup()">💾 Exportar Backup (.json)</button>
+            <label class="btn-backup file-input-label">
+                📂 Importar Backup
+                <input type="file" id="input-backup" accept=".json" onchange="importarBackup(event)">
+            </label>
+        </div>
+
+        <div class="section-title" id="titulo-fixados">Fixados (0/3)</div>
+        <div class="lista-pastas" id="lista-fixados"></div>
+
+        <div class="section-title">Minhas Coleções / Pastas</div>
+        <div class="lista-pastas" id="lista-comuns"></div>
+
+        <div class="section-title">Lixeira (Sub-notas)</div>
+        <div class="lista-notas" id="lista-lixeira" style="max-height: 110px; overflow-y: auto;"></div>
+    </div>
+
+    <div class="main-content">
+        <div class="editor-container" id="editor" style="display: none;">
+            <div class="fonte-control">
+                <span>A-</span>
+                <input type="range" id="alterar-fonte" min="14" max="28" value="16" oninput="mudarTamanhoFonte(this.value)">
+                <span>A+</span>
+                <span id="valor-fonte">16px</span>
+            </div>
+
+            <input type="text" id="nota-titulo" class="input-titulo" placeholder="Título da sub-nota..." oninput="salvarSubNotaAtual()">
+            <textarea id="nota-conteudo" class="textarea-conteudo" placeholder="Escreva o conteúdo da sub-nota aqui..." oninput="salvarSubNotaAtual()"></textarea>
+        </div>
+        
+        <div class="aviso-vazio" id="aviso-vazio">
+            <span>📝</span>
+            Toque no botão <b>"☰ Menu Coleções"</b> acima para criar pastas ou selecionar suas sub-notas.
+        </div>
+    </div>
+
+    <script>
+        let pastas = JSON.parse(localStorage.getItem('livro_pastas_sistema'));
+        
+        if (!pastas) {
+            let notasAntigas = JSON.parse(localStorage.getItem('livro_notas'));
+            if (notasAntigas && notasAntigas.length > 0) {
+                pastas = [{
+                    id: "padrao",
+                    titulo: "Minhas Notas",
+                    fixada: false,
+                    subnotas: notasAntigas.map(n => ({
+                        id: n.id,
+                        titulo: n.titulo,
+                        conteudo: n.conteudo,
+                        naLixeira: n.naLixeira || false
+                    }))
+                }];
+            } else {
+                pastas = [];
+            }
+        }
+
+        let idPastaAtiva = null;
+        let idSubNotaAtiva = null;
+        let tamanhoFonteSalvo = localStorage.getItem('preferencia_fonte') || '16';
+
+        renderizarInterface();
+        mudarTamanhoFonte(tamanhoFonteSalvo);
+
+        function abrirSidebar() { document.getElementById('sidebar').classList.add('aberta'); }
+        function fecharSidebar() { document.getElementById('sidebar').classList.remove('aberta'); }
+
+        function criarNovaPasta() {
+            const nomePasta = prompt("Nome da nova coleção/pasta:", "Nova Coleção");
+            if (!nomePasta) return;
+
+            const novaPasta = {
+                id: Date.now().toString(),
+                titulo: nomePasta,
+                fixada: false,
+                subnotas: []
+            };
+            pastas.unshift(novaPasta);
+            salvarNoLocalStorage();
+            renderizarInterface();
+        }
+
+        function criarSubNota(event, idPasta) {
+            event.stopPropagation();
+            const pasta = pastas.find(p => p.id === idPasta);
+            if (!pasta) return;
+
+            const novaSubNota = {
+                id: Date.now().toString(),
+                titulo: 'Nova Sub-nota',
+                conteudo: '',
+                naLixeira: false
+            };
+
+            pasta.subnotas.unshift(novaSubNota);
+            salvarNoLocalStorage();
+            idPastaAtiva = idPasta;
+            carregarSubNota(idPasta, novaSubNota.id);
+            fecharSidebar();
+        }
+
+        function toggleFixarPasta(event, idPasta) {
+            event.stopPropagation();
+            const pasta = pastas.find(p => p.id === idPasta);
+            if (!pasta) return;
+
+            if (!pasta.fixada) {
+                const totalFixadas = pastas.filter(p => p.fixada).length;
+                if (totalFixadas >= 3) {
+                    alert("Você só pode fixar no máximo 3 coleções!");
+                    return;
+                }
+                pasta.fixada = true;
+            } else {
+                pasta.fixada = false;
+            }
+
+            salvarNoLocalStorage();
+            renderizarInterface();
+        }
+
+        function renderizarInterface() {
+            const containerFixados = document.getElementById('lista-fixados');
+            const containerComuns = document.getElementById('lista-comuns');
+            const containerLixeira = document.getElementById('lista-lixeira');
+            
+            containerFixados.innerHTML = '';
+            containerComuns.innerHTML = '';
+            containerLixeira.innerHTML = '';
+
+            let qtdFixados = 0;
+
+            pastas.forEach(pasta => {
+                if (pasta.fixada) qtdFixados++;
+
+                const divPastaContainer = document.createElement('div');
+                divPastaContainer.className = 'container-pasta';
+
+                const subNotasAtivas = pasta.subnotas.filter(sn => !sn.naLixeira);
+
+                const divPasta = document.createElement('div');
+                divPasta.className = `item-pasta`;
+                divPasta.innerHTML = `
+                    <div class="info-pasta">
+                        <span>📁</span>
+                        <span title="${pasta.titulo}">${pasta.titulo}</span>
+                        <span class="contador-sub">${subNotasAtivas.length}</span>
+                    </div>
+                    <div class="btn-actions-group">
+                        <button class="btn-action btn-pin ${pasta.fixada ? 'fixado' : ''}" onclick="toggleFixarPasta(event, '${pasta.id}')">📌</button>
+                        <button class="btn-action" onclick="criarSubNota(event, '${pasta.id}')">➕</button>
+                        <button class="btn-action" onclick="excluirPasta(event, '${pasta.id}')">🗑️</button>
+                    </div>
+                `;
+                divPastaContainer.appendChild(divPasta);
+
+                if (subNotasAtivas.length > 0) {
+                    const divListaSub = document.createElement('div');
+                    divListaSub.className = 'lista-subnotas';
+
+                    subNotasAtivas.forEach(sub => {
+                        const divSub = document.createElement('div');
+                        divSub.className = `item-subnota ${sub.id === idSubNotaAtiva ? 'ativa' : ''}`;
+                        divSub.onclick = () => {
+                            carregarSubNota(pasta.id, sub.id);
+                            fecharSidebar();
+                        };
+                        divSub.innerHTML = `
+                            <span>📄 ${sub.titulo || 'Sem título'}</span>
+                            <button class="btn-action" style="background:transparent" onclick="moverSubParaLixeira(event, '${pasta.id}', '${sub.id}')">🗑️</button>
+                        `;
+                        divListaSub.appendChild(divSub);
+                    });
+                    divPastaContainer.appendChild(divListaSub);
+                }
+
+                if (pasta.fixada) {
+                    containerFixados.appendChild(divPastaContainer);
+                } else {
+                    containerComuns.appendChild(divPastaContainer);
+                }
+
+                pasta.subnotas.forEach(sub => {
+                    if (sub.naLixeira) {
+                        const itemLixo = document.createElement('div');
+                        itemLixo.className = 'item-subnota';
+                        itemLixo.style.justifyContent = 'space-between';
+                        itemLixo.innerHTML = `
+                            <span style="color: var(--text-muted); text-decoration: line-through; font-size:12px;">${sub.titulo}</span>
+                            <div class="btn-actions-group">
+                                <button class="btn-action" onclick="restaurarSubNota('${pasta.id}', '${sub.id}')">↩️</button>
+                                <button class="btn-action" onclick="excluirSubPermanente('${pasta.id}', '${sub.id}')">❌</button>
+                            </div>
+                        `;
+                        containerLixeira.appendChild(itemLixo);
+                    }
+                });
+            });
+
+            document.getElementById('titulo-fixados').innerText = `Fixados (${qtdFixados}/3)`;
+        }
+
+        function carregarSubNota(idPasta, idSub) {
+            const pasta = pastas.find(p => p.id === idPasta);
+            if (!pasta) return;
+            const sub = pasta.subnotas.find(sn => sn.id === idSub);
+            if (!sub || sub.naLixeira) {
+                fecharEditor();
+                return;
+            }
+
+            idPastaAtiva = idPasta;
+            idSubNotaAtiva = idSub;
+
+            document.getElementById('aviso-vazio').style.display = 'none';
+            document.getElementById('editor').style.display = 'flex';
+
+            document.getElementById('nota-titulo').value = sub.titulo;
+            document.getElementById('nota-conteudo').value = sub.conteudo;
+
+            renderizarInterface();
+        }
+
+        function salvarSubNotaAtual() {
+            if (!idPastaAtiva || !idSubNotaAtiva) return;
+
+            const pasta = pastas.find(p => p.id === idPastaAtiva);
+            if (pasta) {
+                const sub = pasta.subnotas.find(sn => sn.id === idSubNotaAtiva);
+                if (sub) {
+                    sub.titulo = document.getElementById('nota-titulo').value;
+                    sub.conteudo = document.getElementById('nota-conteudo').value;
+                    salvarNoLocalStorage();
+                    
+                    const elementoSub = document.querySelector(`.item-subnota.ativa span`);
+                    if (elementoSub) elementoSub.innerText = '📄 ' + (sub.titulo || 'Sem título');
+                }
+            }
+        }
+
+        function moverSubParaLixeira(event, idPasta, idSub) {
+            event.stopPropagation();
+            const pasta = pastas.find(p => p.id === idPasta);
+            if (pasta) {
+                const sub = pasta.subnotas.find(sn => sn.id === idSub);
+                if (sub) {
+                    sub.naLixeira = true;
+                    if (idSubNotaAtiva === idSub) fecharEditor();
+                    salvarNoLocalStorage();
+                    renderizarInterface();
+                }
+            }
+        }
+
+        function restaurarSubNota(idPasta, idSub) {
+            const pasta = pastas.find(p => p.id === idPasta);
+            if (pasta) {
+                const sub = pasta.subnotas.find(sn => sn.id === idSub);
+                if (sub) {
+                    sub.naLixeira = false;
+                    salvarNoLocalStorage();
+                    carregarSubNota(idPasta, idSub);
+                }
+            }
+        }
+
+        function excluirSubPermanente(idPasta, idSub) {
+            if (confirm("Excluir permanentemente esta sub-nota?")) {
+                const pasta = pastas.find(p => p.id === idPasta);
+                if (pasta) {
+                    pasta.subnotas = pasta.subnotas.filter(sn => sn.id !== idSub);
+                    salvarNoLocalStorage();
+                    renderizarInterface();
+                }
+            }
+        }
+
+        function excluirPasta(event, idPasta) {
+            event.stopPropagation();
+            if (confirm("Deseja apagar esta pasta e todas as suas sub-notas?")) {
+                pastas = pastas.filter(p => p.id !== idPasta);
+                if (idPastaAtiva === idPasta) fecharEditor();
+                salvarNoLocalStorage();
+                renderizarInterface();
+            }
+        }
+
+        function fecharEditor() {
+            idSubNotaAtiva = null;
+            document.getElementById('editor').style.display = 'none';
+            document.getElementById('aviso-vazio').style.display = 'flex';
+            renderizarInterface();
+        }
+
+        function salvarNoLocalStorage() {
+            localStorage.setItem('livro_pastas_sistema', JSON.stringify(pastas));
+        }
+
+        function mudarTamanhoFonte(valor) {
+            const caixaTexto = document.getElementById('nota-conteudo');
+            if (caixaTexto) caixaTexto.style.fontSize = valor + 'px';
+            document.getElementById('valor-fonte').innerText = valor + 'px';
+            document.getElementById('alterar-fonte').value = valor;
+            localStorage.setItem('preferencia_fonte', valor);
+        }
+
+        function exportarBackup() {
+            if (pastas.length === 0) {
+                alert("Nenhum dado para exportar.");
+                return;
+            }
+            const dadosStr = JSON.stringify(pastas, null, 2);
+            const blob = new Blob([dadosStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `backup_mobile_${new Date().toISOString().slice(0, 10)}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importarBackup(event) {
+            const arquivo = event.target.files[0];
+            if (!arquivo) return;
+
+            const leitor = new FileReader();
+            leitor.onload = function(e) {
+                try {
+                    const dados = JSON.parse(e.target.result);
+                    if (Array.isArray(dados)) {
+                        pastas = dados;
+                        salvarNoLocalStorage();
+                        fecharEditor();
+                        renderizarInterface();
+                        alert("Backup importado!");
+                    } else {
+                        alert("Formato inválido.");
+                    }
+                } catch (err) {
+                    alert("Erro ao ler arquivo.");
+                }
+                event.target.value = '';
+            };
+            leitor.readAsText(arquivo);
+        }
+    </script>
+</body>
+</html>
