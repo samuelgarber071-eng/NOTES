@@ -2,351 +2,681 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minhas Notas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Notas do Livro - Mobile 6.26"</title>
     <style>
         :root {
-            --bg-color: #f4f6f9;
-            --card-bg: #ffffff;
-            --primary-color: #4a6fa5;
-            --pin-color: #ff9f43;
-            --delete-color: #ff6b6b;
-            --text-color: #333333;
+            --bg-sidebar: #1e1f22;
+            --bg-main: #2b2d31;
+            --bg-input: #383a40;
+            --text-main: #f2f3f5;
+            --text-muted: #949ba4;
+            --border-color: #3f4147;
+            --accent-green: #23a55a;
+            --accent-blue: #5865f2;
+            --accent-red: #da373c;
+            --accent-yellow: #f0b232;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
         }
 
-        header {
+        /* --- CABEÇALHO MOBILE --- */
+        .header-mobile {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 54px; /* Altura ideal para telas de 6.26" */
+            background-color: var(--bg-sidebar);
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            border-bottom: 1px solid var(--border-color);
+            z-index: 90;
+        }
+
+        .btn-toggle-sidebar {
+            background-color: var(--bg-input);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* --- BARRA LATERAL (MENU SLIDE-IN TELA CHEIA) --- */
+        .sidebar {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            max-width: 500px;
-            margin-bottom: 20px;
+            height: 100%;
+            background-color: var(--bg-sidebar);
+            display: flex;
+            flex-direction: column;
+            padding: 15px 12px;
+            z-index: 100;
+            transform: translateX(-100%);
+            transition: transform 0.25s ease-out;
+        }
+
+        .sidebar.aberta {
+            transform: translateX(0);
+        }
+
+        .btn-fechar-sidebar {
+            align-self: flex-end;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 24px;
+            padding: 4px 8px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .botoes-topo {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .btn-nova-pasta {
+            flex: 1;
+            background-color: var(--accent-blue);
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
             text-align: center;
         }
 
-        /* Form do App */
-        .note-form {
-            width: 100%;
-            max-width: 500px;
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            margin-bottom: 25px;
-        }
-
-        .note-form input, .note-form textarea {
-            width: 100%;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
+        /* --- CONTAINER DE BACKUP --- */
+        .backup-container {
+            background-color: rgba(255, 255, 255, 0.02);
+            border: 1px dashed var(--border-color);
             padding: 10px;
-            margin-bottom: 10px;
-            font-size: 16px;
-            outline: none;
-        }
-
-        .note-form button {
-            width: 100%;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        /* Lista de Notas */
-        .notes-container {
-            width: 100%;
-            max-width: 500px;
+            border-radius: 6px;
+            margin-bottom: 15px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
-        }
-
-        .section-title {
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #777;
-            margin-bottom: 5px;
-        }
-
-        .note-card {
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
-            position: relative;
-            border-left: 5px solid #ccc;
-            transition: transform 0.2s;
-        }
-
-        .note-card.pinned {
-            border-left-color: var(--pin-color);
-        }
-
-        .note-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 8px;
-            padding-right: 60px;
-        }
-
-        .note-title {
-            font-weight: bold;
-            font-size: 18px;
-            word-break: break-word;
-        }
-
-        .note-text {
-            font-size: 15px;
-            color: #555;
-            margin-bottom: 12px;
-            white-space: pre-wrap;
-            word-break: break-word;
-        }
-
-        /* Botões de Ação */
-        .actions {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            display: flex;
             gap: 8px;
         }
 
-        .btn-action {
-            background: none;
+        .btn-backup {
+            background-color: var(--bg-input);
+            color: var(--text-main);
             border: none;
-            font-size: 18px;
-            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            width: 100%;
+        }
+
+        .file-input-label { display: block; text-align: center; }
+        input[type="file"] { display: none; }
+
+        .section-title {
+            font-size: 11px;
+            font-weight: bold;
+            color: var(--text-muted);
+            margin: 10px 0 6px 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        .lista-pastas {
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        #lista-fixados { flex: none; max-height: 150px; }
+        #lista-comuns { flex: 1; }
+
+        /* --- DESIGN DAS PASTAS E SUB-NOTAS --- */
+        .container-pasta {
+            margin-bottom: 8px;
+            background: rgba(255,255,255,0.01);
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
             padding: 4px;
         }
 
-        /* Subnotas (Lista de Itens) */
-        .subnotes-section {
-            border-top: 1px solid #eee;
-            padding-top: 10px;
-            margin-top: 10px;
+        .item-pasta {
+            padding: 8px 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 14px;
         }
 
-        .subnotes-list {
-            list-style: none;
-            margin-bottom: 8px;
+        .info-pasta {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            width: 50%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
-        .subnote-item {
+        .contador-sub {
+            font-size: 11px;
+            color: var(--text-muted);
+            background: var(--bg-input);
+            padding: 1px 6px;
+            border-radius: 10px;
+        }
+
+        .lista-subnotas {
+            margin-left: 10px;
+            border-left: 2px solid var(--border-color);
+            padding-left: 6px;
+            margin-top: 4px;
+        }
+
+        .item-subnota {
+            padding: 10px 8px;
+            margin: 4px 0;
+            border-radius: 5px;
+            background: rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .item-subnota.ativa {
+            background-color: rgba(88, 101, 242, 0.15);
+            border: 1px solid var(--accent-blue);
+        }
+
+        .item-subnota span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 65%; }
+
+        .btn-actions-group {
+            display: flex;
+            gap: 6px; /* Espaço seguro entre ações para evitar toques errados */
+        }
+
+        .btn-action {
+            background: var(--bg-input);
+            border: none;
+            color: var(--text-main);
+            cursor: pointer;
+            font-size: 13px;
+            padding: 6px 9px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-pin.fixado { color: var(--accent-yellow); background: rgba(240, 178, 50, 0.1); }
+
+        /* --- ÁREA PRINCIPAL DO EDITOR --- */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 12px;
+            padding-top: 66px; /* Ajustado à altura do header fixo */
+            background-color: var(--bg-main);
+            height: 100%;
+        }
+
+        .editor-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+        }
+
+        .fonte-control {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 14px;
-            padding: 4px 0;
-            color: #666;
-        }
-
-        .subnote-item button {
-            background: none;
-            border: none;
-            color: var(--delete-color);
-            cursor: pointer;
+            background-color: var(--bg-sidebar);
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 12px;
             font-size: 12px;
         }
 
-        .subnote-form {
-            display: flex;
-            gap: 5px;
+        .fonte-control input[type="range"] {
+            accent-color: var(--accent-blue);
+            width: 55%;
         }
 
-        .subnote-form input {
-            flex: 1;
-            padding: 6px;
-            font-size: 13px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-
-        .subnote-form button {
-            padding: 6px 10px;
-            background: #e0e0e0;
+        .input-titulo {
+            background: transparent;
             border: none;
-            border-radius: 4px;
-            font-size: 13px;
-            cursor: pointer;
+            color: var(--text-main);
+            font-size: 20px; /* Tamanho proporcional para 6.26" */
+            font-weight: bold;
+            margin-bottom: 12px;
+            outline: none;
+            width: 100%;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 6px;
+        }
+
+        .textarea-conteudo {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 15px; /* Tamanho confortável para leitura vertical */
+            line-height: 1.5;
+            outline: none;
+            resize: none;
+            flex: 1;
+            width: 100%;
+        }
+
+        .aviso-vazio {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            color: var(--text-muted);
+            font-size: 14px;
+            text-align: center;
+            padding: 15px;
+            line-height: 1.5;
+        }
+
+        .aviso-vazio span {
+            font-size: 36px;
+            margin-bottom: 8px;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h2>Bloco de Notas</h2>
-    </header>
-
-    <div class="note-form">
-        <input type="text" id="noteTitle" placeholder="Título da nota">
-        <textarea id="noteText" rows="3" placeholder="Escreva sua nota aqui..."></textarea>
-        <button onclick="addNote()">Criar Nota</button>
+    <div class="header-mobile">
+        <button class="btn-toggle-sidebar" onclick="abrirSidebar()">☰ Menu Coleções</button>
     </div>
 
-    <div class="notes-container" id="notesContainer"></div>
+    <div class="sidebar" id="sidebar">
+        <button class="btn-fechar-sidebar" onclick="fecharSidebar()">✕</button>
+        
+        <div class="botoes-topo">
+            <button class="btn-nova-pasta" onclick="criarNovaPasta()">📁 + Nova Coleção</button>
+        </div>
+
+        <div class="backup-container">
+            <button class="btn-backup" onclick="exportarBackup()">💾 Exportar Backup (.json)</button>
+            <label class="btn-backup file-input-label">
+                📂 Importar Backup
+                <input type="file" id="input-backup" accept=".json" onchange="importarBackup(event)">
+            </label>
+        </div>
+
+        <div class="section-title" id="titulo-fixados">Fixados (0/3)</div>
+        <div class="lista-pastas" id="lista-fixados"></div>
+
+        <div class="section-title">Minhas Coleções / Pastas</div>
+        <div class="lista-pastas" id="lista-comuns"></div>
+
+        <div class="section-title">Lixeira (Sub-notas)</div>
+        <div class="lista-notas" id="lista-lixeira" style="max-height: 95px; overflow-y: auto;"></div>
+    </div>
+
+    <div class="main-content">
+        <div class="editor-container" id="editor" style="display: none;">
+            <div class="fonte-control">
+                <span>A-</span>
+                <input type="range" id="alterar-fonte" min="13" max="24" value="15" oninput="mudarTamanhoFonte(this.value)">
+                <span>A+</span>
+                <span id="valor-fonte">15px</span>
+            </div>
+
+            <input type="text" id="nota-titulo" class="input-titulo" placeholder="Título da sub-nota..." oninput="salvarSubNotaAtual()">
+            <textarea id="nota-conteudo" class="textarea-conteudo" placeholder="Escreva o conteúdo da sub-nota aqui..." oninput="salvarSubNotaAtual()"></textarea>
+        </div>
+        
+        <div class="aviso-vazio" id="aviso-vazio">
+            <span>静态📝</span>
+            Toque no botão <b>"☰ Menu Coleções"</b> acima para criar coleções ou selecionar suas sub-notas.
+        </div>
+    </div>
 
     <script>
-        // Array global que vai guardar as notas
-        let notes = JSON.parse(localStorage.getItem('mobile_notes')) || [];
-
-        // Função para salvar no LocalStorage do navegador
-        function saveNotes() {
-            localStorage.setItem('mobile_notes', JSON.stringify(notes));
-            renderNotes();
+        let pastas = JSON.parse(localStorage.getItem('livro_pastas_sistema'));
+        
+        if (!pastas) {
+            let notasAntigas = JSON.parse(localStorage.getItem('livro_notas'));
+            if (notasAntigas && notasAntigas.length > 0) {
+                pastas = [{
+                    id: "padrao",
+                    titulo: "Minhas Notas",
+                    fixada: false,
+                    subnotas: notasAntigas.map(n => ({
+                        id: n.id,
+                        titulo: n.titulo,
+                        conteudo: n.conteudo,
+                        naLixeira: n.naLixeira || false
+                    }))
+                }];
+            } else {
+                pastas = [];
+            }
         }
 
-        // Adicionar uma nova nota
-        function addNote() {
-            const titleInput = document.getElementById('noteTitle');
-            const textInput = document.getElementById('noteText');
+        let idPastaAtiva = null;
+        let idSubNotaAtiva = null;
+        let tamanhoFonteSalvo = localStorage.getItem('preferencia_fonte') || '15';
 
-            if (!titleInput.value.trim() && !textInput.value.trim()) {
-                alert('Escreva algo antes de salvar!');
-                return;
-            }
+        renderizarInterface();
+        mudarTamanhoFonte(tamanhoFonteSalvo);
 
-            const newNote = {
-                id: Date.now(),
-                title: titleInput.value || 'Sem título',
-                text: textInput.value || '',
-                pinned: false,
-                subnotes: []
+        function abrirSidebar() { document.getElementById('sidebar').classList.add('aberta'); }
+        function fecharSidebar() { document.getElementById('sidebar').classList.remove('aberta'); }
+
+        function criarNovaPasta() {
+            const nomePasta = prompt("Nome da nova coleção/pasta:", "Nova Coleção");
+            if (!nomePasta) return;
+
+            const novaPasta = {
+                id: Date.now().toString(),
+                titulo: nomePasta,
+                fixada: false,
+                subnotas: []
+            };
+            pastas.unshift(novaPasta);
+            salvarNoLocalStorage();
+            renderizarInterface();
+        }
+
+        function criarSubNota(event, idPasta) {
+            event.stopPropagation();
+            const pasta = pastas.find(p => p.id === idPasta);
+            if (!pasta) return;
+
+            const novaSubNota = {
+                id: Date.now().toString(),
+                titulo: 'Nova Sub-nota',
+                conteudo: '',
+                naLixeira: false
             };
 
-            notes.unshift(newNote); // Adiciona no início da lista
-            titleInput.value = '';
-            textInput.value = '';
-            saveNotes();
+            pasta.subnotas.unshift(novaSubNota);
+            salvarNoLocalStorage();
+            idPastaAtiva = idPasta;
+            carregarSubNota(idPasta, novaSubNota.id);
+            fecharSidebar();
         }
 
-        // Excluir uma nota
-        function deleteNote(id) {
-            notes = notes.filter(note => note.id !== id);
-            saveNotes();
-        }
+        function toggleFixarPasta(event, idPasta) {
+            event.stopPropagation();
+            const pasta = pastas.find(p => p.id === idPasta);
+            if (!pasta) return;
 
-        // Alternar estado de Fixado (Pin)
-        function togglePin(id) {
-            notes = notes.map(note => {
-                if (note.id === id) {
-                    return { ...note, pinned: !note.pinned };
+            if (!pasta.fixada) {
+                const totalFixadas = pastas.filter(p => p.fixada).length;
+                if (totalFixadas >= 3) {
+                    alert("Você só pode fixar no máximo 3 coleções!");
+                    return;
                 }
-                return note;
-            });
-            saveNotes();
+                pasta.fixada = true;
+            } else {
+                pasta.fixada = false;
+            }
+
+            salvarNoLocalStorage();
+            renderizarInterface();
         }
 
-        // Adicionar uma subnota
-        function addSubnote(e, noteId) {
-            e.preventDefault();
-            const input = document.getElementById(`subinput-${noteId}`);
-            if (!input.value.trim()) return;
+        function renderizarInterface() {
+            const containerFixados = document.getElementById('lista-fixados');
+            const containerComuns = document.getElementById('lista-comuns');
+            const containerLixeira = document.getElementById('lista-lixeira');
+            
+            containerFixados.innerHTML = '';
+            containerComuns.innerHTML = '';
+            containerLixeira.innerHTML = '';
 
-            notes = notes.map(note => {
-                if (note.id === noteId) {
-                    note.subnotes.push({
-                        id: Date.now(),
-                        text: input.value
+            let qtdFixados = 0;
+
+            pastas.forEach(pasta => {
+                if (pasta.fixada) qtdFixados++;
+
+                const divPastaContainer = document.createElement('div');
+                divPastaContainer.className = 'container-pasta';
+
+                const subNotasAtivas = pasta.subnotas.filter(sn => !sn.naLixeira);
+
+                const divPasta = document.createElement('div');
+                divPasta.className = `item-pasta`;
+                divPasta.innerHTML = `
+                    <div class="info-pasta">
+                        <span>📁</span>
+                        <span title="${pasta.titulo}">${pasta.titulo}</span>
+                        <span class="contador-sub">${subNotasAtivas.length}</span>
+                    </div>
+                    <div class="btn-actions-group">
+                        <button class="btn-action btn-pin ${pasta.fixada ? 'fixado' : ''}" onclick="toggleFixarPasta(event, '${pasta.id}')">📌</button>
+                        <button class="btn-action" onclick="criarSubNota(event, '${pasta.id}')">➕</button>
+                        <button class="btn-action" onclick="excluirPasta(event, '${pasta.id}')">🗑️</button>
+                    </div>
+                `;
+                divPastaContainer.appendChild(divPasta);
+
+                if (subNotasAtivas.length > 0) {
+                    const divListaSub = document.createElement('div');
+                    divListaSub.className = 'lista-subnotas';
+
+                    subNotasAtivas.forEach(sub => {
+                        const divSub = document.createElement('div');
+                        divSub.className = `item-subnota ${sub.id === idSubNotaAtiva ? 'ativa' : ''}`;
+                        divSub.onclick = () => {
+                            carregarSubNota(pasta.id, sub.id);
+                            fecharSidebar();
+                        };
+                        divSub.innerHTML = `
+                            <span>📄 ${sub.titulo || 'Sem título'}</span>
+                            <button class="btn-action" style="background:transparent; padding:4px;" onclick="moverSubParaLixeira(event, '${pasta.id}', '${sub.id}')">🗑️</button>
+                        `;
+                        divListaSub.appendChild(divSub);
                     });
+                    divPastaContainer.appendChild(divListaSub);
                 }
-                return note;
+
+                if (pasta.fixada) {
+                    containerFixados.appendChild(divPastaContainer);
+                } else {
+                    containerComuns.appendChild(divPastaContainer);
+                }
+
+                pasta.subnotas.forEach(sub => {
+                    if (sub.naLixeira) {
+                        const itemLixo = document.createElement('div');
+                        itemLixo.className = 'item-subnota';
+                        itemLixo.style.justifyContent = 'space-between';
+                        itemLixo.innerHTML = `
+                            <span style="color: var(--text-muted); text-decoration: line-through; font-size:12px;">${sub.titulo}</span>
+                            <div class="btn-actions-group">
+                                <button class="btn-action" onclick="restaurarSubNota('${pasta.id}', '${sub.id}')">↩️</button>
+                                <button class="btn-action" onclick="excluirSubPermanente('${pasta.id}', '${sub.id}')">❌</button>
+                            </div>
+                        `;
+                        containerLixeira.appendChild(itemLixo);
+                    }
+                });
             });
 
-            input.value = '';
-            saveNotes();
+            document.getElementById('titulo-fixados').innerText = `Fixados (${qtdFixados}/3)`;
         }
 
-        // Excluir uma subnota
-        function deleteSubnote(noteId, subnoteId) {
-            notes = notes.map(note => {
-                if (note.id === noteId) {
-                    note.subnotes = note.subnotes.filter(sn => sn.id !== subnoteId);
-                }
-                return note;
-            });
-            saveNotes();
-        }
-
-        // Renderizar/Desenhar a tela com as notas ordenadas
-        function renderNotes() {
-            const container = document.getElementById('notesContainer');
-            container.innerHTML = '';
-
-            // Ordena colocando as fixadas (pinned) primeiro
-            const sortedNotes = [...notes].sort((a, b) => b.pinned - a.pinned);
-
-            if (sortedNotes.length === 0) {
-                container.innerHTML = '<p style="text-align:center; color:#888;">Nenhuma nota criada ainda.</p>';
+        function carregarSubNota(idPasta, idSub) {
+            const pasta = pastas.find(p => p.id === idPasta);
+            if (!pasta) return;
+            const sub = pasta.subnotas.find(sn => sn.id === idSub);
+            if (!sub || sub.naLixeira) {
+                fecharEditor();
                 return;
             }
 
-            sortedNotes.forEach(note => {
-                const card = document.createElement('div');
-                card.className = `note-card ${note.pinned ? 'pinned' : ''}`;
+            idPastaAtiva = idPasta;
+            idSubNotaAtiva = idSub;
 
-                // Gera os itens das subnotas
-                let subnotesHTML = '';
-                note.subnotes.forEach(sub => {
-                    subnotesHTML += `
-                        <li class="subnote-item">
-                            <span>• ${sub.text}</span>
-                            <button onclick="deleteSubnote(${note.id}, ${sub.id})">✕</button>
-                        </li>
-                    `;
-                });
+            document.getElementById('aviso-vazio').style.display = 'none';
+            document.getElementById('editor').style.display = 'flex';
 
-                card.innerHTML = `
-                    <div class="actions">
-                        <button class="btn-action" onclick="togglePin(${note.id})" title="Fixar">
-                            ${note.pinned ? '📌' : '📍'}
-                        </button>
-                        <button class="btn-action" onclick="deleteNote(${note.id})" title="Excluir">
-                            🗑️
-                        </button>
-                    </div>
-                    <div class="note-header">
-                        <div class="note-title">${note.title}</div>
-                    </div>
-                    <div class="note-text">${note.text}</div>
-                    
-                    <div class="subnotes-section">
-                        <ul class="subnotes-list">
-                            ${subnotesHTML}
-                        </ul>
-                        <form class="subnote-form" onsubmit="addSubnote(event, ${note.id})">
-                            <input type="text" id="subinput-${note.id}" placeholder="Adicionar subnota...">
-                            <button type="submit">+</button>
-                        </form>
-                    </div>
-                `;
+            document.getElementById('nota-titulo').value = sub.titulo;
+            document.getElementById('nota-conteudo').value = sub.conteudo;
 
-                container.appendChild(card);
-            });
+            renderizarInterface();
         }
 
-        // Inicializa renderizando as notas salvas no início
-        renderNotes();
+        function salvarSubNotaAtual() {
+            if (!idPastaAtiva || !idSubNotaAtiva) return;
+
+            const pasta = pastas.find(p => p.id === idPastaAtiva);
+            if (pasta) {
+                const sub = pasta.subnotas.find(sn => sn.id === idSubNotaAtiva);
+                if (sub) {
+                    sub.titulo = document.getElementById('nota-titulo').value;
+                    sub.conteudo = document.getElementById('nota-conteudo').value;
+                    salvarNoLocalStorage();
+                    
+                    const elementoSub = document.querySelector(`.item-subnota.ativa span`);
+                    if (elementoSub) elementoSub.innerText = '📄 ' + (sub.titulo || 'Sem título');
+                }
+            }
+        }
+
+        function moverSubParaLixeira(event, idPasta, idSub) {
+            event.stopPropagation();
+            const pasta = pastas.find(p => p.id === idPasta);
+            if (pasta) {
+                const sub = pasta.subnotas.find(sn => sn.id === idSub);
+                if (sub) {
+                    sub.naLixeira = true;
+                    if (idSubNotaAtiva === idSub) fecharEditor();
+                    salvarNoLocalStorage();
+                    renderizarInterface();
+                }
+            }
+        }
+
+        function restaurarSubNota(idPasta, idSub) {
+            const pasta = pastas.find(p => p.id === idPasta);
+            if (pasta) {
+                const sub = pasta.subnotas.find(sn => sn.id === idSub);
+                if (sub) {
+                    sub.naLixeira = false;
+                    salvarNoLocalStorage();
+                    carregarSubNota(idPasta, idSub);
+                }
+            }
+        }
+
+        function excluirSubPermanente(idPasta, idSub) {
+            if (confirm("Excluir permanentemente esta sub-nota?")) {
+                const pasta = pastas.find(p => p.id === idPasta);
+                if (pasta) {
+                    pasta.subnotas = pasta.subnotas.filter(sn => sn.id !== idSub);
+                    salvarNoLocalStorage();
+                    renderizarInterface();
+                }
+            }
+        }
+
+        function excluirPasta(event, idPasta) {
+            event.stopPropagation();
+            if (confirm("Deseja apagar esta pasta e todas as suas sub-notas?")) {
+                pastas = pastas.filter(p => p.id !== idPasta);
+                if (idPastaAtiva === idPasta) fecharEditor();
+                salvarNoLocalStorage();
+                renderizarInterface();
+            }
+        }
+
+        function fecharEditor() {
+            idSubNotaAtiva = null;
+            document.getElementById('editor').style.display = 'none';
+            document.getElementById('aviso-vazio').style.display = 'flex';
+            renderizarInterface();
+        }
+
+        function salvarNoLocalStorage() {
+            localStorage.setItem('livro_pastas_sistema', JSON.stringify(pastas));
+        }
+
+        function mudarTamanhoFonte(valor) {
+            const caixaTexto = document.getElementById('nota-conteudo');
+            if (caixaTexto) caixaTexto.style.fontSize = valor + 'px';
+            document.getElementById('valor-fonte').innerText = valor + 'px';
+            document.getElementById('alterar-fonte').value = valor;
+            localStorage.setItem('preferencia_fonte', valor);
+        }
+
+        function exportarBackup() {
+            if (pastas.length === 0) {
+                alert("Nenhum dado para exportar.");
+                return;
+            }
+            const dadosStr = JSON.stringify(pastas, null, 2);
+            const blob = new Blob([dadosStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `backup_mobile_${new Date().toISOString().slice(0, 10)}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importarBackup(event) {
+            const arquivo = event.target.files[0];
+            if (!arquivo) return;
+
+            const leitor = new FileReader();
+            leitor.onload = function(e) {
+                try {
+                    const dados = JSON.parse(e.target.result);
+                    if (Array.isArray(dados)) {
+                        pastas = dados;
+                        salvarNoLocalStorage();
+                        fecharEditor();
+                        renderizarInterface();
+                        alert("Backup importado!");
+                    } else {
+                        alert("Formato inválido.");
+                    }
+                } catch (err) {
+                    alert("Erro ao ler arquivo.");
+                }
+                event.target.value = '';
+            };
+            leitor.readAsText(arquivo);
+        }
     </script>
 </body>
 </html>
