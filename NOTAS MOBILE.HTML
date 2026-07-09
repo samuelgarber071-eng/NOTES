@@ -2,16 +2,16 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Notas do Livro - Versão Mobile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Notas do Livro - Otimizado 6.26"</title>
     <style>
         :root {
-            --bg-sidebar: #1e1f22;
-            --bg-main: #2b2d31;
-            --bg-input: #383a40;
+            --bg-sidebar: #191a1c;
+            --bg-main: #222426;
+            --bg-input: #2f3136;
             --text-main: #f2f3f5;
-            --text-muted: #949ba4;
-            --border-color: #3f4147;
+            --text-muted: #8e9297;
+            --border-color: #36393f;
             --accent-green: #23a55a;
             --accent-blue: #5865f2;
             --accent-red: #da373c;
@@ -31,21 +31,22 @@
             color: var(--text-main);
             display: flex;
             height: 100vh;
+            height: -webkit-fill-available; /* Ajuste para navegadores mobile */
             overflow: hidden;
             position: relative;
         }
 
-        /* --- BOTÃO HAMBÚRGUER FIXO (TOPO MOBILE) --- */
+        /* --- CABEÇALHO MOBILE --- */
         .header-mobile {
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 60px;
+            height: 54px;
             background-color: var(--bg-sidebar);
             display: flex;
             align-items: center;
-            padding: 0 15px;
+            padding: 0 12px;
             border-bottom: 1px solid var(--border-color);
             z-index: 90;
         }
@@ -54,17 +55,14 @@
             background-color: var(--bg-input);
             color: var(--text-main);
             border: 1px solid var(--border-color);
-            padding: 10px 16px;
-            border-radius: 8px;
+            padding: 8px 14px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
         }
 
-        /* --- SIDEBAR MOBILE (SLIDE OUT DE TELA CHEIA) --- */
+        /* --- SIDEBAR MENU (TELA CHEIA SLIDE) --- */
         .sidebar {
             position: absolute;
             top: 0;
@@ -74,10 +72,10 @@
             background-color: var(--bg-sidebar);
             display: flex;
             flex-direction: column;
-            padding: 20px 15px;
+            padding: 16px 12px;
             z-index: 100;
             transform: translateX(-100%);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .sidebar.aberta {
@@ -89,15 +87,14 @@
             background: transparent;
             border: none;
             color: var(--text-muted);
-            font-size: 28px;
-            padding: 5px 10px;
+            font-size: 26px;
+            padding: 4px 8px;
             cursor: pointer;
         }
 
         .botoes-topo {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 14px;
         }
 
         .btn-nova-pasta {
@@ -105,34 +102,32 @@
             background-color: var(--accent-blue);
             color: #fff;
             border: none;
-            padding: 14px;
+            padding: 12px;
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 15px;
-            text-align: center;
+            font-size: 14px;
         }
 
-        /* --- BACKUP CONTAINER --- */
+        /* --- CONTAINER DE BACKUP --- */
         .backup-container {
-            background-color: rgba(255, 255, 255, 0.03);
+            background-color: rgba(255, 255, 255, 0.02);
             border: 1px dashed var(--border-color);
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 14px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
         }
 
         .btn-backup {
             background-color: var(--bg-input);
             color: var(--text-main);
             border: none;
-            padding: 10px;
+            padding: 8px;
             border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: bold;
             text-align: center;
             width: 100%;
@@ -142,95 +137,94 @@
         input[type="file"] { display: none; }
 
         .section-title {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
             color: var(--text-muted);
-            margin: 15px 0 8px 5px;
+            margin: 10px 0 6px 4px;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
+            letter-spacing: 0.6px;
         }
 
         .lista-pastas {
             overflow-y: auto;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
-        #lista-fixados { flex: none; max-height: 180px; }
+        #lista-fixados { flex: none; max-height: 160px; }
         #lista-comuns { flex: 1; }
 
-        /* --- PASTAS E SUB-NOTAS --- */
+        /* --- DESIGN DAS PASTAS E SUB-NOTAS --- */
         .container-pasta {
-            margin-bottom: 10px;
-            background: rgba(255,255,255,0.02);
+            margin-bottom: 8px;
+            background: rgba(255,255,255,0.01);
             border-radius: 8px;
             border: 1px solid var(--border-color);
-            padding: 6px;
+            padding: 4px;
         }
 
         .item-pasta {
-            padding: 10px 6px;
+            padding: 8px 4px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-weight: bold;
-            font-size: 15px;
+            font-size: 14px;
         }
 
         .info-pasta {
             display: flex;
             align-items: center;
-            gap: 8px;
-            width: 55%;
+            gap: 6px;
+            width: 50%;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
         .contador-sub {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-muted);
             background: var(--bg-input);
-            padding: 2px 8px;
-            border-radius: 12px;
+            padding: 1px 6px;
+            border-radius: 10px;
         }
 
         .lista-subnotas {
-            margin-left: 12px;
+            margin-left: 10px;
             border-left: 2px solid var(--border-color);
-            padding-left: 8px;
-            margin-top: 6px;
+            padding-left: 6px;
+            margin-top: 4px;
         }
 
         .item-subnota {
-            padding: 12px 8px;
+            padding: 10px 8px;
             margin: 4px 0;
             border-radius: 6px;
-            background: rgba(0,0,0,0.1);
+            background: rgba(0,0,0,0.12);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .item-subnota.ativa {
-            background-color: rgba(88, 101, 242, 0.2);
+            background-color: rgba(88, 101, 242, 0.15);
             border: 1px solid var(--accent-blue);
         }
 
-        .item-subnota span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 70%; }
+        .item-subnota span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 68%; }
 
         .btn-actions-group {
             display: flex;
-            gap: 8px;
+            gap: 6px;
         }
 
         .btn-action {
             background: var(--bg-input);
             border: none;
             color: var(--text-main);
-            cursor: pointer;
-            font-size: 14px;
-            padding: 6px 10px;
+            font-size: 13px;
+            padding: 6px 8px;
             border-radius: 6px;
             display: flex;
             align-items: center;
@@ -244,8 +238,8 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            padding: 15px;
-            padding-top: 75px;
+            padding: 12px;
+            padding-top: 66px;
             background-color: var(--bg-main);
             height: 100%;
         }
@@ -262,35 +256,35 @@
             align-items: center;
             justify-content: space-between;
             background-color: var(--bg-sidebar);
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            font-size: 13px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            font-size: 12px;
         }
 
         .fonte-control input[type="range"] {
             accent-color: var(--accent-blue);
-            width: 50%;
+            width: 55%;
         }
 
         .input-titulo {
             background: transparent;
             border: none;
             color: var(--text-main);
-            font-size: 22px;
+            font-size: 20px;
             font-weight: bold;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             outline: none;
             width: 100%;
             border-bottom: 1px solid var(--border-color);
-            padding-bottom: 8px;
+            padding-bottom: 6px;
         }
 
         .textarea-conteudo {
             background: transparent;
             border: none;
             color: var(--text-main);
-            font-size: 16px;
+            font-size: 16px; /* Evita zoom automático no mobile */
             line-height: 1.5;
             outline: none;
             resize: none;
@@ -305,15 +299,15 @@
             align-items: center;
             height: 100%;
             color: var(--text-muted);
-            font-size: 15px;
+            font-size: 14px;
             text-align: center;
-            padding: 20px;
-            line-height: 1.6;
+            padding: 16px;
+            line-height: 1.5;
         }
 
         .aviso-vazio span {
-            font-size: 40px;
-            margin-bottom: 10px;
+            font-size: 36px;
+            margin-bottom: 8px;
         }
     </style>
 </head>
@@ -345,14 +339,14 @@
         <div class="lista-pastas" id="lista-comuns"></div>
 
         <div class="section-title">Lixeira (Sub-notas)</div>
-        <div class="lista-notas" id="lista-lixeira" style="max-height: 110px; overflow-y: auto;"></div>
+        <div class="lista-notas" id="lista-lixeira" style="max-height: 100px; overflow-y: auto;"></div>
     </div>
 
     <div class="main-content">
         <div class="editor-container" id="editor" style="display: none;">
             <div class="fonte-control">
                 <span>A-</span>
-                <input type="range" id="alterar-fonte" min="14" max="28" value="16" oninput="mudarTamanhoFonte(this.value)">
+                <input type="range" id="alterar-fonte" min="14" max="26" value="16" oninput="mudarTamanhoFonte(this.value)">
                 <span>A+</span>
                 <span id="valor-fonte">16px</span>
             </div>
@@ -363,7 +357,7 @@
         
         <div class="aviso-vazio" id="aviso-vazio">
             <span>📝</span>
-            Toque no botão <b>"☰ Menu Coleções"</b> acima para criar pastas ou selecionar suas sub-notas.
+            Toque no botão <b>"☰ Menu Coleções"</b> acima para gerenciar suas pastas e sub-notas.
         </div>
     </div>
 
@@ -501,7 +495,7 @@
                         };
                         divSub.innerHTML = `
                             <span>📄 ${sub.titulo || 'Sem título'}</span>
-                            <button class="btn-action" style="background:transparent" onclick="moverSubParaLixeira(event, '${pasta.id}', '${sub.id}')">🗑️</button>
+                            <button class="btn-action" style="background:transparent; padding:4px;" onclick="moverSubParaLixeira(event, '${pasta.id}', '${sub.id}')">🗑️</button>
                         `;
                         divListaSub.appendChild(divSub);
                     });
@@ -648,7 +642,7 @@
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `backup_mobile_${new Date().toISOString().slice(0, 10)}.json`;
+            link.download = `backup_6.26_${new Date().toISOString().slice(0, 10)}.json`;
             link.click();
             URL.revokeObjectURL(url);
         }
@@ -666,7 +660,7 @@
                         salvarNoLocalStorage();
                         fecharEditor();
                         renderizarInterface();
-                        alert("Backup importado!");
+                        alert("Backup carregado!");
                     } else {
                         alert("Formato inválido.");
                     }
