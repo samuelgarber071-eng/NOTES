@@ -1,37 +1,25 @@
 <!DOCTYPE html>
-<html lang="pt-PT">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notas do Livro - Interface Pro</title>
+    <title>Notas do Livro - Completo</title>
     <style>
         :root {
-            --bg-body: #0b0f17;
-            --bg-sidebar: #111827;
-            --bg-main: #1f2937;
-            --bg-card: #374151;
-            --bg-input: #1f2937;
-            
-            --text-main: #f9fafb;
-            --text-muted: #9ca3af;
-            --text-dim: #6b7280;
-            
-            --border-color: #374151;
-            --border-hover: #4b5563;
-            
-            --accent-primary: #6366f1;
-            --accent-primary-hover: #4f46e5;
-            --accent-green: #10b981;
-            --accent-red: #ef4444;
-            --accent-blue: #3b82f6;
-            
-            --radius-sm: 6px;
-            --radius-md: 10px;
-            --radius-lg: 16px;
-            
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
-            --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
-            --transition-fast: 0.2s ease;
+            --bg-sidebar: #1e1f22;
+            --bg-main: #2b2d31;
+            --bg-input: #383a40;
+            --bg-hover: rgba(255, 255, 255, 0.06);
+            --bg-active: rgba(88, 101, 242, 0.15);
+            --text-main: #f2f3f5;
+            --text-muted: #949ba4;
+            --border-color: #3f4147;
+            --accent-green: #23a55a;
+            --accent-blue: #5865f2;
+            --accent-red: #da373c;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
         * {
@@ -43,7 +31,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-body);
+            background-color: var(--bg-main);
             color: var(--text-main);
             display: flex;
             height: 100vh;
@@ -51,66 +39,24 @@
             position: relative;
         }
 
-        /* --- BOTÃO ALTERNAR SIDEBAR --- */
-        .btn-toggle-sidebar {
-            position: fixed;
-            top: 16px;
-            left: 16px;
-            background-color: var(--bg-card);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            padding: 10px 14px;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            z-index: 100;
-            font-size: 14px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: var(--shadow-md);
-            transition: all var(--transition-fast);
-        }
-
-        .btn-toggle-sidebar:hover {
-            background-color: var(--border-hover);
-            transform: translateY(-1px);
-        }
-
-        /* --- SIDEBAR --- */
+        /* --- SIDEBAR (Barra Lateral) --- */
         .sidebar {
             width: 300px;
             background-color: var(--bg-sidebar);
             display: flex;
             flex-direction: column;
-            padding: 20px 14px;
+            padding: 16px 12px;
             border-right: 1px solid var(--border-color);
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 90;
-            flex-shrink: 0;
+            z-index: 10;
         }
 
         .sidebar.escondida {
             margin-left: -300px;
         }
 
-        .sidebar-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
-            padding-left: 4px;
-        }
-
-        .sidebar-header h2 {
-            font-size: 16px;
-            font-weight: 700;
-            letter-spacing: -0.3px;
-            color: var(--text-main);
-        }
-
         .btn-nova-nota {
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-primary-hover));
+            background-color: var(--accent-blue);
             color: #ffffff;
             border: none;
             padding: 12px 16px;
@@ -118,22 +64,25 @@
             cursor: pointer;
             font-weight: 600;
             font-size: 14px;
+            text-align: center;
+            margin-bottom: 16px;
+            transition: background 0.2s, transform 0.1s;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            margin-bottom: 16px;
             box-shadow: var(--shadow-sm);
-            transition: all var(--transition-fast);
         }
 
         .btn-nova-nota:hover {
-            opacity: 0.95;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+            background-color: #4752c4;
         }
 
-        /* --- BACKUP CONTAINER --- */
+        .btn-nova-nota:active {
+            transform: scale(0.98);
+        }
+
+        /* --- ÁREA DE BACKUP --- */
         .backup-container {
             background-color: rgba(255, 255, 255, 0.02);
             border: 1px dashed var(--border-color);
@@ -141,72 +90,58 @@
             border-radius: var(--radius-md);
             margin-bottom: 16px;
             display: flex;
+            flex-direction: column;
             gap: 8px;
         }
 
         .btn-backup {
-            flex: 1;
-            background-color: var(--bg-card);
+            background-color: var(--bg-input);
             color: var(--text-main);
             border: 1px solid var(--border-color);
-            padding: 8px 6px;
-            border-radius: var(--radius-sm);
+            padding: 8px 12px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 600;
             text-align: center;
-            transition: all var(--transition-fast);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
+            transition: all 0.2s ease;
+            display: block;
+            width: 100%;
         }
 
-        .btn-backup:hover {
-            background-color: var(--border-hover);
-            border-color: var(--text-muted);
+        .btn-backup.exportar:hover {
+            background-color: var(--accent-blue);
+            border-color: var(--accent-blue);
         }
 
-        .file-input-label { display: block; }
-        input[type="file"] { display: none; }
+        .btn-backup.importar:hover {
+            background-color: var(--accent-green);
+            border-color: var(--accent-green);
+        }
 
-        /* --- LISTAS DE NOTAS --- */
-        .section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin: 12px 4px 6px 4px;
+        .file-input-label {
+            display: block;
+            text-align: center;
+        }
+
+        input[type="file"] {
+            display: none;
         }
 
         .section-title {
             font-size: 11px;
             font-weight: 700;
-            color: var(--text-dim);
+            color: var(--text-muted);
+            margin: 12px 0 6px 6px;
             text-transform: uppercase;
             letter-spacing: 0.8px;
         }
 
-        .section-count {
-            font-size: 10px;
-            background: var(--bg-card);
-            color: var(--text-muted);
-            padding: 2px 6px;
-            border-radius: 10px;
-        }
-
         .lista-notas {
-            overflow-y: auto;
-            margin-bottom: 10px;
-            padding-right: 2px;
-        }
-
-        #lista-ativas {
             flex: 1;
-        }
-
-        #lista-lixeira {
-            max-height: 140px;
-            flex: none;
+            overflow-y: auto;
+            margin-bottom: 12px;
+            padding-right: 2px;
         }
 
         .item-nota {
@@ -217,46 +152,27 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 500;
-            color: var(--text-muted);
-            background-color: transparent;
+            transition: background-color 0.15s ease, color 0.15s ease;
             border: 1px solid transparent;
-            transition: all var(--transition-fast);
         }
 
         .item-nota:hover {
-            background-color: rgba(255, 255, 255, 0.04);
-            color: var(--text-main);
+            background-color: var(--bg-hover);
         }
 
         .item-nota.ativa {
-            background-color: rgba(99, 102, 241, 0.12);
-            color: var(--text-main);
-            border-color: rgba(99, 102, 241, 0.3);
-            font-weight: 600;
+            background-color: var(--bg-active);
+            color: #ffffff;
+            border-color: rgba(88, 101, 242, 0.4);
         }
 
-        .item-nota-title {
+        .item-nota span {
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            width: 75%;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-actions-group {
-            display: flex;
-            gap: 4px;
-            opacity: 0.6;
-            transition: opacity var(--transition-fast);
-        }
-
-        .item-nota:hover .btn-actions-group,
-        .item-nota.ativa .btn-actions-group {
-            opacity: 1;
+            width: 78%;
         }
 
         .btn-action {
@@ -266,23 +182,56 @@
             cursor: pointer;
             font-size: 13px;
             padding: 4px 6px;
-            border-radius: var(--radius-sm);
-            transition: all var(--transition-fast);
+            border-radius: 4px;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .btn-action:hover {
-            background-color: var(--bg-card);
+            background-color: var(--bg-input);
             color: var(--text-main);
         }
 
         .btn-delete:hover {
-            background-color: rgba(239, 68, 68, 0.15);
             color: var(--accent-red);
+            background-color: rgba(218, 55, 60, 0.15);
         }
 
         .btn-restore:hover {
-            background-color: rgba(16, 185, 129, 0.15);
             color: var(--accent-green);
+            background-color: rgba(35, 165, 90, 0.15);
+        }
+
+        /* --- BOTÃO FLUTUANTE SIDEBAR --- */
+        .btn-toggle-sidebar {
+            position: absolute;
+            top: 18px;
+            left: 18px;
+            background-color: var(--bg-sidebar);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 8px 14px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            z-index: 100;
+            font-size: 13px;
+            font-weight: 600;
+            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s, border-color 0.2s;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        body:not(.sidebar-recuada) .btn-toggle-sidebar {
+            left: 315px;
+        }
+
+        .btn-toggle-sidebar:hover {
+            background-color: var(--bg-input);
+            border-color: var(--text-muted);
         }
 
         /* --- ÁREA PRINCIPAL --- */
@@ -290,12 +239,12 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            padding: 30px;
+            padding: 40px;
             padding-top: 80px;
             background-color: var(--bg-main);
-            height: 100%;
-            overflow-y: auto;
-            position: relative;
+            transition: padding-left 0.3s ease;
+            height: 100vh;
+            overflow: hidden;
         }
 
         .editor-container {
@@ -307,29 +256,33 @@
             margin: 0 auto;
         }
 
-        .editor-bar {
+        .header-editor {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            margin-bottom: 24px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--border-color);
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .status-salvamento {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-style: italic;
         }
 
         .fonte-control {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             background-color: var(--bg-sidebar);
+            border: 1px solid var(--border-color);
             padding: 6px 14px;
             border-radius: 20px;
             font-size: 12px;
             color: var(--text-muted);
-            border: 1px solid var(--border-color);
         }
 
         .fonte-control input[type="range"] {
-            accent-color: var(--accent-primary);
+            accent-color: var(--accent-blue);
             cursor: pointer;
             width: 90px;
         }
@@ -338,34 +291,32 @@
             background: transparent;
             border: none;
             color: var(--text-main);
-            font-size: 32px;
-            font-weight: 800;
+            font-size: 30px;
+            font-weight: 700;
             margin-bottom: 20px;
             outline: none;
             width: 100%;
             letter-spacing: -0.5px;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s ease;
         }
 
-        .input-titulo::placeholder {
-            color: var(--text-dim);
+        .input-titulo:focus {
+            border-bottom-color: var(--border-color);
         }
 
         .textarea-conteudo {
             background: transparent;
             border: none;
-            color: #e5e7eb;
-            font-family: 'Georgia', Cambria, serif;
+            color: var(--text-main);
+            font-family: 'Georgia', serif;
             font-size: 18px;
             line-height: 1.7;
             outline: none;
             resize: none;
             flex: 1;
             width: 100%;
-        }
-
-        .textarea-conteudo::placeholder {
-            color: var(--text-dim);
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            padding-right: 10px;
         }
 
         .aviso-vazio {
@@ -377,109 +328,71 @@
             color: var(--text-muted);
             font-size: 16px;
             text-align: center;
+            line-height: 1.6;
             gap: 12px;
         }
 
-        .aviso-vazio-icon {
+        .aviso-vazio .icone-vazio {
             font-size: 48px;
             opacity: 0.6;
         }
 
-        /* Scrollbar Personalizada */
         ::-webkit-scrollbar {
             width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
         }
         ::-webkit-scrollbar-thumb {
             background: var(--border-color);
             border-radius: 3px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--border-hover);
-        }
-
-        /* RESPONSIVIDADE PARA DISPOSITIVOS MÓVEIS / TABLETS */
-        @media (max-width: 768px) {
-            .sidebar {
-                position: absolute;
-                top: 0;
-                left: 0;
-                height: 100%;
-                box-shadow: var(--shadow-md);
-            }
-            .main-content {
-                padding: 20px;
-                padding-top: 80px;
-            }
-            .input-titulo {
-                font-size: 24px;
-            }
-            .textarea-conteudo {
-                font-size: 16px;
-            }
+            background: var(--text-muted);
         }
     </style>
 </head>
 <body>
 
     <button class="btn-toggle-sidebar" id="toggle-btn" onclick="toggleSidebar()">
-        <span>☰</span>
-        <span>Menu</span>
+        <span>☰</span> <span>Barra Lateral</span>
     </button>
 
     <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <h2>📚 Notas do Livro</h2>
-        </div>
-
         <button class="btn-nova-nota" onclick="criarNovaNota()">
-            <span>➕</span> Nova Nota
+            <span>➕</span> <span>Nova nota</span>
         </button>
 
         <div class="backup-container">
-            <button class="btn-backup" onclick="exportarBackup()" title="Guardar cópia de segurança">
-                💾 Exportar
-            </button>
-            <label class="btn-backup file-input-label" title="Carregar cópia de segurança">
-                📂 Importar
+            <button class="btn-backup exportar" onclick="exportarBackup()">💾 Exportar Backup (.json)</button>
+            <label class="btn-backup importar file-input-label">
+                📂 Importar Backup
                 <input type="file" id="input-backup" accept=".json" onchange="importarBackup(event)">
             </label>
         </div>
 
-        <div class="section-header">
-            <span class="section-title">Minhas Notas</span>
-            <span class="section-count" id="count-ativas">0</span>
-        </div>
+        <div class="section-title">Minhas Notas</div>
         <div class="lista-notas" id="lista-ativas"></div>
 
-        <div class="section-header">
-            <span class="section-title">Lixeira</span>
-            <span class="section-count" id="count-lixeira">0</span>
-        </div>
-        <div class="lista-notas" id="lista-lixeira"></div>
+        <div class="section-title">Lixeira</div>
+        <div class="lista-notas" id="lista-lixeira" style="max-height: 160px; flex: none;"></div>
     </div>
 
     <div class="main-content">
         <div class="editor-container" id="editor" style="display: none;">
-            <div class="editor-bar">
-                <div style="font-size: 12px; color: var(--text-dim);">A editar nota</div>
+            <div class="header-editor">
+                <span class="status-salvamento" id="status-salvamento">Salvo automaticamente</span>
                 <div class="fonte-control">
                     <span>A-</span>
                     <input type="range" id="alterar-fonte" min="14" max="32" value="18" oninput="mudarTamanhoFonte(this.value)">
                     <span>A+</span>
-                    <span id="valor-fonte" style="font-weight: 600; color: var(--text-main);">18px</span>
+                    <span id="valor-fonte">18px</span>
                 </div>
             </div>
 
             <input type="text" id="nota-titulo" class="input-titulo" placeholder="Título da nota..." oninput="salvarNotaAtual()">
             <textarea id="nota-conteudo" class="textarea-conteudo" placeholder="Comece a escrever as informações do seu livro aqui..." oninput="salvarNotaAtual()"></textarea>
         </div>
-        
         <div class="aviso-vazio" id="aviso-vazio">
-            <div class="aviso-vazio-icon">📝</div>
-            <p>Selecione uma nota da lista ou crie uma nova para começar a escrever.</p>
+            <div class="icone-vazio">📖</div>
+            <div>Selecione uma nota na barra lateral<br>ou crie uma nova para começar a escrever.</div>
         </div>
     </div>
 
@@ -506,40 +419,25 @@
         function renderizarListas() {
             const listaAtivas = document.getElementById('lista-ativas');
             const listaLixeira = document.getElementById('lista-lixeira');
-            const countAtivas = document.getElementById('count-ativas');
-            const countLixeira = document.getElementById('count-lixeira');
             
             listaAtivas.innerHTML = '';
             listaLixeira.innerHTML = '';
-
-            let qtdAtivas = 0;
-            let qtdLixeira = 0;
 
             notas.forEach(nota => {
                 const item = document.createElement('div');
                 item.className = `item-nota ${nota.id === idNotaAtiva ? 'ativa' : ''}`;
                 
                 if (!nota.naLixeira) {
-                    qtdAtivas++;
                     item.onclick = () => carregarNota(nota.id);
                     item.innerHTML = `
-                        <div class="item-nota-title">
-                            <span>📄</span>
-                            <span>${escapeHtml(nota.titulo) || 'Sem título'}</span>
-                        </div>
-                        <div class="btn-actions-group">
-                            <button class="btn-action btn-delete" title="Mover para a lixeira" onclick="moverParaLixeira(event, '${nota.id}')">🗑️</button>
-                        </div>
+                        <span>📄 ${nota.titulo || 'Sem título'}</span>
+                        <button class="btn-action btn-delete" title="Mover para a lixeira" onclick="moverParaLixeira(event, '${nota.id}')">🗑️</button>
                     `;
                     listaAtivas.appendChild(item);
                 } else {
-                    qtdLixeira++;
                     item.innerHTML = `
-                        <div class="item-nota-title" style="color: var(--text-dim); text-decoration: line-through;">
-                            <span>📄</span>
-                            <span>${escapeHtml(nota.titulo) || 'Sem título'}</span>
-                        </div>
-                        <div class="btn-actions-group">
+                        <span style="color: var(--text-muted); text-decoration: line-through;">${nota.titulo || 'Sem título'}</span>
+                        <div style="display: flex; gap: 2px;">
                             <button class="btn-action btn-restore" title="Restaurar" onclick="restaurarDaLixeira(event, '${nota.id}')">↩️</button>
                             <button class="btn-action btn-delete" title="Excluir Permanentemente" onclick="excluirPermanente(event, '${nota.id}')">❌</button>
                         </div>
@@ -547,19 +445,6 @@
                     listaLixeira.appendChild(item);
                 }
             });
-
-            countAtivas.innerText = qtdAtivas;
-            countLixeira.innerText = qtdLixeira;
-        }
-
-        function escapeHtml(texto) {
-            if (!texto) return '';
-            return texto
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
         }
 
         function carregarNota(id) {
@@ -588,6 +473,12 @@
                 nota.conteudo = document.getElementById('nota-conteudo').value;
                 salvarNoLocalStorage();
                 renderizarListas();
+                
+                const status = document.getElementById('status-salvamento');
+                if (status) {
+                    status.innerText = 'Salvando...';
+                    setTimeout(() => { status.innerText = 'Salvo automaticamente'; }, 400);
+                }
             }
         }
 
@@ -644,7 +535,10 @@
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
+            const corpo = document.body;
+            
             sidebar.classList.toggle('escondida');
+            corpo.classList.toggle('sidebar-recuada');
         }
 
         function exportarBackup() {
