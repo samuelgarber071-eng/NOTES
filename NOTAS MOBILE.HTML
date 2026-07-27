@@ -3,20 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notas do Livro - Completo</title>
+    <title>Notas do Livro - Sistema de Coleções e Sub-notas</title>
     <style>
         :root {
             --bg-sidebar: #1e1f22;
             --bg-main: #2b2d31;
             --bg-input: #383a40;
             --bg-hover: rgba(255, 255, 255, 0.06);
-            --bg-active: rgba(88, 101, 242, 0.15);
+            --bg-active: rgba(88, 101, 242, 0.18);
             --text-main: #f2f3f5;
             --text-muted: #949ba4;
             --border-color: #3f4147;
             --accent-green: #23a55a;
             --accent-blue: #5865f2;
             --accent-red: #da373c;
+            --accent-yellow: #f0b232;
             --radius-md: 8px;
             --radius-lg: 12px;
             --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
@@ -41,7 +42,7 @@
 
         /* --- SIDEBAR (Barra Lateral) --- */
         .sidebar {
-            width: 300px;
+            width: 320px;
             background-color: var(--bg-sidebar);
             display: flex;
             flex-direction: column;
@@ -52,10 +53,10 @@
         }
 
         .sidebar.escondida {
-            margin-left: -300px;
+            margin-left: -320px;
         }
 
-        .btn-nova-nota {
+        .btn-nova-pasta {
             background-color: var(--accent-blue);
             color: #ffffff;
             border: none;
@@ -65,7 +66,7 @@
             font-weight: 600;
             font-size: 14px;
             text-align: center;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             transition: background 0.2s, transform 0.1s;
             display: flex;
             align-items: center;
@@ -74,11 +75,11 @@
             box-shadow: var(--shadow-sm);
         }
 
-        .btn-nova-nota:hover {
+        .btn-nova-pasta:hover {
             background-color: #4752c4;
         }
 
-        .btn-nova-nota:active {
+        .btn-nova-pasta:active {
             transform: scale(0.98);
         }
 
@@ -88,7 +89,7 @@
             border: 1px dashed var(--border-color);
             padding: 10px;
             border-radius: var(--radius-md);
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -132,47 +133,96 @@
             font-size: 11px;
             font-weight: 700;
             color: var(--text-muted);
-            margin: 12px 0 6px 6px;
+            margin: 10px 0 6px 6px;
             text-transform: uppercase;
             letter-spacing: 0.8px;
         }
 
-        .lista-notas {
-            flex: 1;
+        .lista-pastas {
             overflow-y: auto;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             padding-right: 2px;
         }
 
-        .item-nota {
-            padding: 10px 12px;
+        #lista-fixados { flex: none; max-height: 200px; }
+        #lista-comuns { flex: 1; }
+
+        /* --- PASTAS E SUB-NOTAS --- */
+        .container-pasta {
+            margin-bottom: 8px;
+            background: rgba(255,255,255,0.02);
             border-radius: var(--radius-md);
-            cursor: pointer;
-            margin-bottom: 4px;
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 4px;
+        }
+
+        .item-pasta {
+            padding: 8px 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            font-weight: 600;
             font-size: 14px;
-            font-weight: 500;
-            transition: background-color 0.15s ease, color 0.15s ease;
-            border: 1px solid transparent;
+            border-radius: 6px;
         }
 
-        .item-nota:hover {
+        .item-pasta:hover {
             background-color: var(--bg-hover);
         }
 
-        .item-nota.ativa {
+        .info-pasta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 60%;
+        }
+
+        .contador-sub {
+            font-size: 11px;
+            color: var(--text-muted);
+            background: var(--bg-input);
+            padding: 2px 7px;
+            border-radius: 10px;
+        }
+
+        .lista-subnotas {
+            margin-left: 12px;
+            border-left: 2px solid var(--border-color);
+            padding-left: 6px;
+            margin-top: 4px;
+        }
+
+        .item-subnota {
+            padding: 8px 10px;
+            margin: 3px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            transition: background-color 0.15s ease;
+            border: 1px solid transparent;
+        }
+
+        .item-subnota:hover {
+            background-color: var(--bg-hover);
+        }
+
+        .item-subnota.ativa {
             background-color: var(--bg-active);
             color: #ffffff;
             border-color: rgba(88, 101, 242, 0.4);
         }
 
-        .item-nota span {
+        .item-subnota span {
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            width: 78%;
+            width: 75%;
         }
 
         .btn-action {
@@ -180,13 +230,10 @@
             border: none;
             color: var(--text-muted);
             cursor: pointer;
-            font-size: 13px;
-            padding: 4px 6px;
+            font-size: 12px;
+            padding: 3px 5px;
             border-radius: 4px;
             transition: all 0.15s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
         .btn-action:hover {
@@ -199,9 +246,13 @@
             background-color: rgba(218, 55, 60, 0.15);
         }
 
-        .btn-restore:hover {
-            color: var(--accent-green);
-            background-color: rgba(35, 165, 90, 0.15);
+        .btn-pin.fixado {
+            color: var(--accent-yellow);
+        }
+
+        .btn-pin:hover {
+            color: var(--accent-yellow);
+            background-color: rgba(240, 178, 50, 0.15);
         }
 
         /* --- BOTÃO FLUTUANTE SIDEBAR --- */
@@ -226,7 +277,7 @@
         }
         
         body:not(.sidebar-recuada) .btn-toggle-sidebar {
-            left: 315px;
+            left: 335px;
         }
 
         .btn-toggle-sidebar:hover {
@@ -356,8 +407,8 @@
     </button>
 
     <div class="sidebar" id="sidebar">
-        <button class="btn-nova-nota" onclick="criarNovaNota()">
-            <span>➕</span> <span>Nova nota</span>
+        <button class="btn-nova-pasta" onclick="criarNovaPasta()">
+            <span>📁</span> <span>+ Nova Coleção</span>
         </button>
 
         <div class="backup-container">
@@ -368,11 +419,14 @@
             </label>
         </div>
 
-        <div class="section-title">Minhas Notas</div>
-        <div class="lista-notas" id="lista-ativas"></div>
+        <div class="section-title" id="titulo-fixados">Fixados (0/3)</div>
+        <div class="lista-pastas" id="lista-fixados"></div>
 
-        <div class="section-title">Lixeira</div>
-        <div class="lista-notas" id="lista-lixeira" style="max-height: 160px; flex: none;"></div>
+        <div class="section-title">Minhas Coleções / Pastas</div>
+        <div class="lista-pastas" id="lista-comuns"></div>
+
+        <div class="section-title">Lixeira (Sub-notas)</div>
+        <div class="lista-notas" id="lista-lixeira" style="max-height: 130px; overflow-y: auto;"></div>
     </div>
 
     <div class="main-content">
@@ -387,147 +441,281 @@
                 </div>
             </div>
 
-            <input type="text" id="nota-titulo" class="input-titulo" placeholder="Título da nota..." oninput="salvarNotaAtual()">
-            <textarea id="nota-conteudo" class="textarea-conteudo" placeholder="Comece a escrever as informações do seu livro aqui..." oninput="salvarNotaAtual()"></textarea>
+            <input type="text" id="nota-titulo" class="input-titulo" placeholder="Título da sub-nota..." oninput="salvarSubNotaAtual()">
+            <textarea id="nota-conteudo" class="textarea-conteudo" placeholder="Comece a escrever o conteúdo da sub-nota aqui..." oninput="salvarSubNotaAtual()"></textarea>
         </div>
+
         <div class="aviso-vazio" id="aviso-vazio">
-            <div class="icone-vazio">📖</div>
-            <div>Selecione uma nota na barra lateral<br>ou crie uma nova para começar a escrever.</div>
+            <div class="icone-vazio">📚</div>
+            <div>Crie uma Coleção utilizando o botão acima,<br>adicione sub-notas no botão ➕ e selecione-as para começar.</div>
         </div>
     </div>
 
     <script>
-        let notas = JSON.parse(localStorage.getItem('livro_notas')) || [];
-        let idNotaAtiva = null;
+        // Migração automática e carregamento de dados do localStorage
+        let pastas = JSON.parse(localStorage.getItem('livro_pastas_sistema'));
+
+        if (!pastas) {
+            let notasAntigas = JSON.parse(localStorage.getItem('livro_notas'));
+            if (notasAntigas && notasAntigas.length > 0) {
+                pastas = [{
+                    id: "padrao",
+                    titulo: "Minhas Notas",
+                    fixada: false,
+                    subnotas: notasAntigas.map(n => ({
+                        id: n.id,
+                        titulo: n.titulo,
+                        conteudo: n.conteudo,
+                        naLixeira: n.naLixeira || false
+                    }))
+                }];
+            } else {
+                pastas = [];
+            }
+        }
+
+        let idPastaAtiva = null;
+        let idSubNotaAtiva = null;
         let tamanhoFonteSalvo = localStorage.getItem('preferencia_fonte') || '18';
 
-        renderizarListas();
+        renderizarInterface();
         mudarTamanhoFonte(tamanhoFonteSalvo);
 
-        function criarNovaNota() {
-            const novaNota = {
+        function criarNovaPasta() {
+            const nomePasta = prompt("Digite o nome da nova coleção/pasta:", "Nova Coleção");
+            if (!nomePasta) return;
+
+            const novaPasta = {
                 id: Date.now().toString(),
-                titulo: 'Nova Nota',
+                titulo: nomePasta,
+                fixada: false,
+                subnotas: []
+            };
+            pastas.unshift(novaPasta);
+            salvarNoLocalStorage();
+            renderizarInterface();
+        }
+
+        function criarSubNota(event, idPasta) {
+            event.stopPropagation();
+            const pasta = pastas.find(p => p.id === idPasta);
+            if (!pasta) return;
+
+            const novaSubNota = {
+                id: Date.now().toString(),
+                titulo: 'Nova Sub-nota',
                 conteudo: '',
                 naLixeira: false
             };
-            notas.unshift(novaNota);
+
+            pasta.subnotas.unshift(novaSubNota);
             salvarNoLocalStorage();
-            carregarNota(novaNota.id);
+            carregarSubNota(idPasta, novaSubNota.id);
         }
 
-        function renderizarListas() {
-            const listaAtivas = document.getElementById('lista-ativas');
-            const listaLixeira = document.getElementById('lista-lixeira');
-            
-            listaAtivas.innerHTML = '';
-            listaLixeira.innerHTML = '';
+        function toggleFixarPasta(event, idPasta) {
+            event.stopPropagation();
+            const pasta = pastas.find(p => p.id === idPasta);
+            if (!pasta) return;
 
-            notas.forEach(nota => {
-                const item = document.createElement('div');
-                item.className = `item-nota ${nota.id === idNotaAtiva ? 'ativa' : ''}`;
-                
-                if (!nota.naLixeira) {
-                    item.onclick = () => carregarNota(nota.id);
-                    item.innerHTML = `
-                        <span>📄 ${nota.titulo || 'Sem título'}</span>
-                        <button class="btn-action btn-delete" title="Mover para a lixeira" onclick="moverParaLixeira(event, '${nota.id}')">🗑️</button>
-                    `;
-                    listaAtivas.appendChild(item);
-                } else {
-                    item.innerHTML = `
-                        <span style="color: var(--text-muted); text-decoration: line-through;">${nota.titulo || 'Sem título'}</span>
-                        <div style="display: flex; gap: 2px;">
-                            <button class="btn-action btn-restore" title="Restaurar" onclick="restaurarDaLixeira(event, '${nota.id}')">↩️</button>
-                            <button class="btn-action btn-delete" title="Excluir Permanentemente" onclick="excluirPermanente(event, '${nota.id}')">❌</button>
-                        </div>
-                    `;
-                    listaLixeira.appendChild(item);
+            if (!pasta.fixada) {
+                const totalFixadas = pastas.filter(p => p.fixada).length;
+                if (totalFixadas >= 3) {
+                    alert("Você só pode fixar no máximo 3 coleções!");
+                    return;
                 }
-            });
+                pasta.fixada = true;
+            } else {
+                pasta.fixada = false;
+            }
+
+            salvarNoLocalStorage();
+            renderizarInterface();
         }
 
-        function carregarNota(id) {
-            const nota = notas.find(n => n.id === id);
-            if (!nota || nota.naLixeira) {
+        function renderizarInterface() {
+            const containerFixados = document.getElementById('lista-fixados');
+            const containerComuns = document.getElementById('lista-comuns');
+            const containerLixeira = document.getElementById('lista-lixeira');
+            
+            containerFixados.innerHTML = '';
+            containerComuns.innerHTML = '';
+            containerLixeira.innerHTML = '';
+
+            let qtdFixados = 0;
+
+            pastas.forEach(pasta => {
+                if (pasta.fixada) qtdFixados++;
+
+                const divPastaContainer = document.createElement('div');
+                divPastaContainer.className = 'container-pasta';
+
+                const subNotasAtivas = pasta.subnotas.filter(sn => !sn.naLixeira);
+
+                const divPasta = document.createElement('div');
+                divPasta.className = `item-pasta ${pasta.id === idPastaAtiva ? 'ativa' : ''}`;
+                divPasta.innerHTML = `
+                    <div class="info-pasta">
+                        <span>📁</span>
+                        <span title="${pasta.titulo}">${pasta.titulo}</span>
+                        <span class="contador-sub">${subNotasAtivas.length}</span>
+                    </div>
+                    <div>
+                        <button class="btn-action btn-pin ${pasta.fixada ? 'fixado' : ''}" title="${pasta.fixada ? 'Desafixar' : 'Fixar no topo (Máx 3)'}" onclick="toggleFixarPasta(event, '${pasta.id}')">📌</button>
+                        <button class="btn-action" title="Adicionar Sub-nota" onclick="criarSubNota(event, '${pasta.id}')">➕</button>
+                        <button class="btn-action btn-delete" title="Excluir Pasta Inteira" onclick="excluirPasta(event, '${pasta.id}')">🗑️</button>
+                    </div>
+                `;
+                divPastaContainer.appendChild(divPasta);
+
+                if (subNotasAtivas.length > 0) {
+                    const divListaSub = document.createElement('div');
+                    divListaSub.className = 'lista-subnotas';
+
+                    subNotasAtivas.forEach(sub => {
+                        const divSub = document.createElement('div');
+                        divSub.className = `item-subnota ${sub.id === idSubNotaAtiva ? 'ativa' : ''}`;
+                        divSub.onclick = () => carregarSubNota(pasta.id, sub.id);
+                        divSub.innerHTML = `
+                            <span title="${sub.titulo}">📄 ${sub.titulo || 'Sem título'}</span>
+                            <button class="btn-action btn-delete" title="Mover para lixeira" onclick="moverSubParaLixeira(event, '${pasta.id}', '${sub.id}')">🗑️</button>
+                        `;
+                        divListaSub.appendChild(divSub);
+                    });
+                    divPastaContainer.appendChild(divListaSub);
+                }
+
+                if (pasta.fixada) {
+                    containerFixados.appendChild(divPastaContainer);
+                } else {
+                    containerComuns.appendChild(divPastaContainer);
+                }
+
+                pasta.subnotas.forEach(sub => {
+                    if (sub.naLixeira) {
+                        const itemLixo = document.createElement('div');
+                        itemLixo.className = 'item-subnota';
+                        itemLixo.style.justifyContent = 'space-between';
+                        itemLixo.innerHTML = `
+                            <span style="color: var(--text-muted); text-decoration: line-through; font-size:12px;">${sub.titulo} (${pasta.titulo})</span>
+                            <div style="display: flex; gap: 2px;">
+                                <button class="btn-action" title="Restaurar" onclick="restaurarSubNota('${pasta.id}', '${sub.id}')">↩️</button>
+                                <button class="btn-action btn-delete" title="Apagar Permanentemente" onclick="excluirSubPermanente('${pasta.id}', '${sub.id}')">❌</button>
+                            </div>
+                        `;
+                        containerLixeira.appendChild(itemLixo);
+                    }
+                });
+            });
+
+            document.getElementById('titulo-fixados').innerText = `Fixados (${qtdFixados}/3)`;
+        }
+
+        function carregarSubNota(idPasta, idSub) {
+            const pasta = pastas.find(p => p.id === idPasta);
+            if (!pasta) return;
+            const sub = pasta.subnotas.find(sn => sn.id === idSub);
+            if (!sub || sub.naLixeira) {
                 fecharEditor();
                 return;
             }
 
-            idNotaAtiva = id;
+            idPastaAtiva = idPasta;
+            idSubNotaAtiva = idSub;
+
             document.getElementById('aviso-vazio').style.display = 'none';
             document.getElementById('editor').style.display = 'flex';
 
-            document.getElementById('nota-titulo').value = nota.titulo;
-            document.getElementById('nota-conteudo').value = nota.conteudo;
+            document.getElementById('nota-titulo').value = sub.titulo;
+            document.getElementById('nota-conteudo').value = sub.conteudo;
 
-            renderizarListas();
+            renderizarInterface();
         }
 
-        function salvarNotaAtual() {
-            if (!idNotaAtiva) return;
+        function salvarSubNotaAtual() {
+            if (!idPastaAtiva || !idSubNotaAtiva) return;
 
-            const nota = notas.find(n => n.id === idNotaAtiva);
-            if (nota) {
-                nota.titulo = document.getElementById('nota-titulo').value;
-                nota.conteudo = document.getElementById('nota-conteudo').value;
-                salvarNoLocalStorage();
-                renderizarListas();
-                
-                const status = document.getElementById('status-salvamento');
-                if (status) {
-                    status.innerText = 'Salvando...';
-                    setTimeout(() => { status.innerText = 'Salvo automaticamente'; }, 400);
+            const pasta = pastas.find(p => p.id === idPastaAtiva);
+            if (pasta) {
+                const sub = pasta.subnotas.find(sn => sn.id === idSubNotaAtiva);
+                if (sub) {
+                    sub.titulo = document.getElementById('nota-titulo').value;
+                    sub.conteudo = document.getElementById('nota-conteudo').value;
+                    salvarNoLocalStorage();
+                    
+                    const elementoSub = document.querySelector(`.item-subnota.ativa span`);
+                    if (elementoSub) elementoSub.innerText = '📄 ' + (sub.titulo || 'Sem título');
+
+                    const status = document.getElementById('status-salvamento');
+                    if (status) {
+                        status.innerText = 'Salvando...';
+                        setTimeout(() => { status.innerText = 'Salvo automaticamente'; }, 400);
+                    }
                 }
             }
         }
 
-        function moverParaLixeira(event, id) {
+        function moverSubParaLixeira(event, idPasta, idSub) {
             event.stopPropagation();
-            const nota = notas.find(n => n.id === id);
-            if (nota) {
-                nota.naLixeira = true;
-                if (idNotaAtiva === id) fecharEditor();
-                salvarNoLocalStorage();
-                renderizarListas();
+            const pasta = pastas.find(p => p.id === idPasta);
+            if (pasta) {
+                const sub = pasta.subnotas.find(sn => sn.id === idSub);
+                if (sub) {
+                    sub.naLixeira = true;
+                    if (idSubNotaAtiva === idSub) fecharEditor();
+                    salvarNoLocalStorage();
+                    renderizarInterface();
+                }
             }
         }
 
-        function restaurarDaLixeira(event, id) {
-            event.stopPropagation();
-            const nota = notas.find(n => n.id === id);
-            if (nota) {
-                nota.naLixeira = false;
-                salvarNoLocalStorage();
-                carregarNota(id);
+        function restaurarSubNota(idPasta, idSub) {
+            const pasta = pastas.find(p => p.id === idPasta);
+            if (pasta) {
+                const sub = pasta.subnotas.find(sn => sn.id === idSub);
+                if (sub) {
+                    sub.naLixeira = false;
+                    salvarNoLocalStorage();
+                    carregarSubNota(idPasta, idSub);
+                }
             }
         }
 
-        function excluirPermanente(event, id) {
+        function excluirSubPermanente(idPasta, idSub) {
+            if (confirm("Excluir permanentemente esta sub-nota?")) {
+                const pasta = pastas.find(p => p.id === idPasta);
+                if (pasta) {
+                    pasta.subnotas = pasta.subnotas.filter(sn => sn.id !== idSub);
+                    salvarNoLocalStorage();
+                    renderizarInterface();
+                }
+            }
+        }
+
+        function excluirPasta(event, idPasta) {
             event.stopPropagation();
-            if (confirm("Deseja excluir permanentemente esta nota? Esta ação não pode ser desfeita.")) {
-                notas = notas.filter(n => n.id !== id);
+            if (confirm("Deseja apagar esta pasta e todas as suas sub-notas?")) {
+                pastas = pastas.filter(p => p.id !== idPasta);
+                if (idPastaAtiva === idPasta) fecharEditor();
                 salvarNoLocalStorage();
-                renderizarListas();
+                renderizarInterface();
             }
         }
 
         function fecharEditor() {
-            idNotaAtiva = null;
+            idSubNotaAtiva = null;
             document.getElementById('editor').style.display = 'none';
             document.getElementById('aviso-vazio').style.display = 'flex';
-            renderizarListas();
+            renderizarInterface();
         }
 
         function salvarNoLocalStorage() {
-            localStorage.setItem('livro_notas', JSON.stringify(notas));
+            localStorage.setItem('livro_pastas_sistema', JSON.stringify(pastas));
         }
 
         function mudarTamanhoFonte(valor) {
             const caixaTexto = document.getElementById('nota-conteudo');
-            if (caixaTexto) {
-                caixaTexto.style.fontSize = valor + 'px';
-            }
+            if (caixaTexto) caixaTexto.style.fontSize = valor + 'px';
             document.getElementById('valor-fonte').innerText = valor + 'px';
             document.getElementById('alterar-fonte').value = valor;
             localStorage.setItem('preferencia_fonte', valor);
@@ -535,28 +723,22 @@
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
-            const corpo = document.body;
-            
             sidebar.classList.toggle('escondida');
-            corpo.classList.toggle('sidebar-recuada');
+            document.body.classList.toggle('sidebar-recuada');
         }
 
         function exportarBackup() {
-            if (notas.length === 0) {
-                alert("Você não possui notas para exportar.");
+            if (pastas.length === 0) {
+                alert("Nenhum dado para exportar.");
                 return;
             }
-            
-            const dadosStr = JSON.stringify(notas, null, 2);
+            const dadosStr = JSON.stringify(pastas, null, 2);
             const blob = new Blob([dadosStr], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
-            
-            const dataAtual = new Date().toISOString().slice(0, 10);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `backup_livro_${dataAtual}.json`;
+            link.download = `backup_colecoes_${new Date().toISOString().slice(0, 10)}.json`;
             link.click();
-            
             URL.revokeObjectURL(url);
         }
 
@@ -567,26 +749,18 @@
             const leitor = new FileReader();
             leitor.onload = function(e) {
                 try {
-                    const notasImportadas = JSON.parse(e.target.result);
-                    
-                    if (Array.isArray(notasImportadas)) {
-                        if (confirm("Deseja mesclar as notas importadas com as atuais? (Clique em Cancelar para substituir tudo).")) {
-                            const idsExistentes = new Set(notas.map(n => n.id));
-                            const novasFiltradas = notasImportadas.filter(n => !idsExistentes.has(n.id));
-                            notas = [...novasFiltradas, ...notas];
-                        } else {
-                            notas = notasImportadas;
-                        }
-                        
+                    const dados = JSON.parse(e.target.result);
+                    if (Array.isArray(dados)) {
+                        pastas = dados;
                         salvarNoLocalStorage();
                         fecharEditor();
-                        renderizarListas();
-                        alert("Backup importado com sucesso!");
+                        renderizarInterface();
+                        alert("Backup de coleções importado com sucesso!");
                     } else {
-                        alert("Formato de arquivo inválido.");
+                        alert("Formato inválido.");
                     }
-                } catch (erro) {
-                    alert("Erro ao ler o arquivo de backup.");
+                } catch (err) {
+                    alert("Erro ao ler arquivo.");
                 }
                 event.target.value = '';
             };
