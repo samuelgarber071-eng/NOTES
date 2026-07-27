@@ -1,21 +1,37 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Notas do Livro - Tablet 10.1"</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notas do Livro - Interface Pro</title>
     <style>
         :root {
-            --bg-sidebar: #1e1f22;
-            --bg-main: #2b2d31;
-            --bg-input: #383a40;
-            --text-main: #f2f3f5;
-            --text-muted: #949ba4;
-            --border-color: #3f4147;
-            --accent-green: #23a55a;
-            --accent-blue: #5865f2;
-            --accent-red: #da373c;
-            --accent-yellow: #f0b232;
+            --bg-body: #0b0f17;
+            --bg-sidebar: #111827;
+            --bg-main: #1f2937;
+            --bg-card: #374151;
+            --bg-input: #1f2937;
+            
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --text-dim: #6b7280;
+            
+            --border-color: #374151;
+            --border-hover: #4b5563;
+            
+            --accent-primary: #6366f1;
+            --accent-primary-hover: #4f46e5;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-blue: #3b82f6;
+            
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+            --transition-fast: 0.2s ease;
         }
 
         * {
@@ -27,7 +43,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-main);
+            background-color: var(--bg-body);
             color: var(--text-main);
             display: flex;
             height: 100vh;
@@ -35,260 +51,321 @@
             position: relative;
         }
 
-        /* --- BARRA SUPERIOR PARA TABLET --- */
-        .topbar-tablet {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 55px;
-            background-color: var(--bg-sidebar);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 15px;
-            border-bottom: 1px solid var(--border-color);
-            z-index: 80;
-        }
-
-        .btn-menu-toggle {
-            background-color: var(--bg-input);
+        /* --- BOTÃO ALTERNAR SIDEBAR --- */
+        .btn-toggle-sidebar {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            background-color: var(--bg-card);
             color: var(--text-main);
             border: 1px solid var(--border-color);
-            padding: 8px 14px;
-            border-radius: 6px;
+            padding: 10px 14px;
+            border-radius: var(--radius-md);
             cursor: pointer;
-            font-size: 15px;
+            z-index: 100;
+            font-size: 14px;
             font-weight: 600;
             display: flex;
             align-items: center;
             gap: 8px;
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-fast);
         }
 
-        .titulo-app {
-            font-size: 16px;
-            font-weight: bold;
-            color: var(--text-main);
+        .btn-toggle-sidebar:hover {
+            background-color: var(--border-hover);
+            transform: translateY(-1px);
         }
 
-        /* --- SIDEBAR (BARRA LATERAL ADAPTÁVEL) --- */
+        /* --- SIDEBAR --- */
         .sidebar {
-            width: 320px;
+            width: 300px;
             background-color: var(--bg-sidebar);
             display: flex;
             flex-direction: column;
-            padding: 15px;
+            padding: 20px 14px;
             border-right: 1px solid var(--border-color);
-            z-index: 100;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            height: 100%;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 90;
+            flex-shrink: 0;
         }
 
-        .botoes-topo {
+        .sidebar.escondida {
+            margin-left: -300px;
+        }
+
+        .sidebar-header {
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-left: 4px;
         }
 
-        .btn-nova-pasta {
-            flex: 1;
-            background-color: var(--accent-blue);
-            color: #fff;
+        .sidebar-header h2 {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            color: var(--text-main);
+        }
+
+        .btn-nova-nota {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-primary-hover));
+            color: #ffffff;
             border: none;
-            padding: 12px;
-            border-radius: 8px;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 600;
             font-size: 14px;
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-fast);
+        }
+
+        .btn-nova-nota:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
         }
 
         /* --- BACKUP CONTAINER --- */
         .backup-container {
-            background-color: rgba(255, 255, 255, 0.03);
+            background-color: rgba(255, 255, 255, 0.02);
             border: 1px dashed var(--border-color);
             padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 15px;
+            border-radius: var(--radius-md);
+            margin-bottom: 16px;
             display: flex;
             gap: 8px;
         }
 
         .btn-backup {
             flex: 1;
-            background-color: var(--bg-input);
+            background-color: var(--bg-card);
             color: var(--text-main);
-            border: none;
-            padding: 8px;
-            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            padding: 8px 6px;
+            border-radius: var(--radius-sm);
             cursor: pointer;
-            font-size: 12px;
-            font-weight: bold;
+            font-size: 11px;
+            font-weight: 600;
             text-align: center;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
         }
 
-        .file-input-label { display: block; text-align: center; }
+        .btn-backup:hover {
+            background-color: var(--border-hover);
+            border-color: var(--text-muted);
+        }
+
+        .file-input-label { display: block; }
         input[type="file"] { display: none; }
+
+        /* --- LISTAS DE NOTAS --- */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 12px 4px 6px 4px;
+        }
 
         .section-title {
             font-size: 11px;
-            font-weight: bold;
-            color: var(--text-muted);
-            margin: 10px 0 6px 4px;
+            font-weight: 700;
+            color: var(--text-dim);
             text-transform: uppercase;
             letter-spacing: 0.8px;
         }
 
-        .lista-pastas {
-            overflow-y: auto;
-            margin-bottom: 10px;
-        }
-
-        #lista-fixados { flex: none; max-height: 200px; }
-        #lista-comuns { flex: 1; }
-
-        /* --- ESTRUTURA DE COLEÇÕES E SUB-NOTAS --- */
-        .container-pasta {
-            margin-bottom: 8px;
-            background: rgba(255,255,255,0.02);
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            padding: 4px;
-        }
-
-        .item-pasta {
-            padding: 10px 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        .info-pasta {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            width: 55%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .contador-sub {
-            font-size: 11px;
+        .section-count {
+            font-size: 10px;
+            background: var(--bg-card);
             color: var(--text-muted);
-            background: var(--bg-input);
-            padding: 2px 7px;
+            padding: 2px 6px;
             border-radius: 10px;
         }
 
-        .lista-subnotas {
-            margin-left: 12px;
-            border-left: 2px solid var(--border-color);
-            padding-left: 6px;
-            margin-top: 4px;
+        .lista-notas {
+            overflow-y: auto;
+            margin-bottom: 10px;
+            padding-right: 2px;
         }
 
-        .item-subnota {
-            padding: 10px 8px;
-            margin: 3px 0;
-            border-radius: 6px;
-            background: rgba(0,0,0,0.12);
+        #lista-ativas {
+            flex: 1;
+        }
+
+        #lista-lixeira {
+            max-height: 140px;
+            flex: none;
+        }
+
+        .item-nota {
+            padding: 10px 12px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            margin-bottom: 4px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-size: 13px;
-            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-muted);
+            background-color: transparent;
+            border: 1px solid transparent;
+            transition: all var(--transition-fast);
         }
 
-        .item-subnota.ativa {
-            background-color: rgba(88, 101, 242, 0.25);
-            border: 1px solid var(--accent-blue);
+        .item-nota:hover {
+            background-color: rgba(255, 255, 255, 0.04);
+            color: var(--text-main);
         }
 
-        .item-subnota span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 75%; }
+        .item-nota.ativa {
+            background-color: rgba(99, 102, 241, 0.12);
+            color: var(--text-main);
+            border-color: rgba(99, 102, 241, 0.3);
+            font-weight: 600;
+        }
+
+        .item-nota-title {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 75%;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
         .btn-actions-group {
             display: flex;
-            gap: 6px;
+            gap: 4px;
+            opacity: 0.6;
+            transition: opacity var(--transition-fast);
+        }
+
+        .item-nota:hover .btn-actions-group,
+        .item-nota.ativa .btn-actions-group {
+            opacity: 1;
         }
 
         .btn-action {
-            background: var(--bg-input);
+            background: transparent;
             border: none;
-            color: var(--text-main);
+            color: var(--text-muted);
             cursor: pointer;
             font-size: 13px;
-            padding: 6px 8px;
-            border-radius: 6px;
+            padding: 4px 6px;
+            border-radius: var(--radius-sm);
+            transition: all var(--transition-fast);
         }
 
-        .btn-pin.fixado { color: var(--accent-yellow); background: rgba(240, 178, 50, 0.15); }
+        .btn-action:hover {
+            background-color: var(--bg-card);
+            color: var(--text-main);
+        }
 
-        /* --- ÁREA PRINCIPAL DO EDITOR --- */
+        .btn-delete:hover {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: var(--accent-red);
+        }
+
+        .btn-restore:hover {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+        }
+
+        /* --- ÁREA PRINCIPAL --- */
         .main-content {
             flex: 1;
             display: flex;
             flex-direction: column;
-            padding: 25px;
-            padding-top: 75px;
+            padding: 30px;
+            padding-top: 80px;
             background-color: var(--bg-main);
             height: 100%;
             overflow-y: auto;
+            position: relative;
         }
 
         .editor-container {
             display: flex;
             flex-direction: column;
             height: 100%;
-            max-width: 900px;
+            max-width: 850px;
             width: 100%;
             margin: 0 auto;
+        }
+
+        .editor-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .fonte-control {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 12px;
             background-color: var(--bg-sidebar);
-            padding: 10px 18px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 13px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--text-muted);
             border: 1px solid var(--border-color);
         }
 
         .fonte-control input[type="range"] {
-            accent-color: var(--accent-blue);
-            width: 40%;
+            accent-color: var(--accent-primary);
             cursor: pointer;
+            width: 90px;
         }
 
         .input-titulo {
             background: transparent;
             border: none;
             color: var(--text-main);
-            font-size: 26px;
-            font-weight: bold;
-            margin-bottom: 15px;
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 20px;
             outline: none;
             width: 100%;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .input-titulo::placeholder {
+            color: var(--text-dim);
         }
 
         .textarea-conteudo {
             background: transparent;
             border: none;
-            color: var(--text-main);
+            color: #e5e7eb;
+            font-family: 'Georgia', Cambria, serif;
             font-size: 18px;
-            line-height: 1.6;
+            line-height: 1.7;
             outline: none;
             resize: none;
             flex: 1;
             width: 100%;
-            font-family: 'Georgia', serif;
+        }
+
+        .textarea-conteudo::placeholder {
+            color: var(--text-dim);
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
         .aviso-vazio {
@@ -300,382 +377,292 @@
             color: var(--text-muted);
             font-size: 16px;
             text-align: center;
-            line-height: 1.6;
+            gap: 12px;
         }
 
-        .aviso-vazio span {
+        .aviso-vazio-icon {
             font-size: 48px;
-            margin-bottom: 12px;
+            opacity: 0.6;
         }
 
-        /* --- RESPONSIVIDADE ESPECÍFICA DE 10.1 POLEGADAS --- */
-        
-        /* MODO RETRATO (Portrait: largura < 900px) */
-        @media (max-width: 900px) {
+        /* Scrollbar Personalizada */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--border-hover);
+        }
+
+        /* RESPONSIVIDADE PARA DISPOSITIVOS MÓVEIS / TABLETS */
+        @media (max-width: 768px) {
             .sidebar {
                 position: absolute;
                 top: 0;
                 left: 0;
-                transform: translateX(-100%);
+                height: 100%;
+                box-shadow: var(--shadow-md);
             }
-            .sidebar.aberta {
-                transform: translateX(0);
-                box-shadow: 5px 0 20px rgba(0,0,0,0.5);
+            .main-content {
+                padding: 20px;
+                padding-top: 80px;
             }
-        }
-
-        /* MODO PAISAGEM (Landscape: largura >= 901px) */
-        @media (min-width: 901px) {
-            .topbar-tablet { display: none; }
-            .main-content { padding-top: 25px; }
-            .sidebar {
-                position: relative;
-                transform: none !important;
+            .input-titulo {
+                font-size: 24px;
+            }
+            .textarea-conteudo {
+                font-size: 16px;
             }
         }
-
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
     </style>
 </head>
 <body>
 
-    <div class="topbar-tablet">
-        <button class="btn-menu-toggle" onclick="toggleSidebar()">☰ Menu Coleções</button>
-        <div class="titulo-app">Notas do Livro</div>
-    </div>
+    <button class="btn-toggle-sidebar" id="toggle-btn" onclick="toggleSidebar()">
+        <span>☰</span>
+        <span>Menu</span>
+    </button>
 
     <div class="sidebar" id="sidebar">
-        <div class="botoes-topo">
-            <button class="btn-nova-pasta" onclick="criarNovaPasta()">📁 + Nova Coleção</button>
+        <div class="sidebar-header">
+            <h2>📚 Notas do Livro</h2>
         </div>
 
+        <button class="btn-nova-nota" onclick="criarNovaNota()">
+            <span>➕</span> Nova Nota
+        </button>
+
         <div class="backup-container">
-            <button class="btn-backup" onclick="exportarBackup()">💾 Exportar (.json)</button>
-            <label class="btn-backup file-input-label">
+            <button class="btn-backup" onclick="exportarBackup()" title="Guardar cópia de segurança">
+                💾 Exportar
+            </button>
+            <label class="btn-backup file-input-label" title="Carregar cópia de segurança">
                 📂 Importar
                 <input type="file" id="input-backup" accept=".json" onchange="importarBackup(event)">
             </label>
         </div>
 
-        <div class="section-title" id="titulo-fixados">Fixados (0/3)</div>
-        <div class="lista-pastas" id="lista-fixados"></div>
+        <div class="section-header">
+            <span class="section-title">Minhas Notas</span>
+            <span class="section-count" id="count-ativas">0</span>
+        </div>
+        <div class="lista-notas" id="lista-ativas"></div>
 
-        <div class="section-title">Minhas Coleções / Pastas</div>
-        <div class="lista-pastas" id="lista-comuns"></div>
-
-        <div class="section-title">Lixeira (Sub-notas)</div>
-        <div class="lista-notas" id="lista-lixeira" style="max-height: 120px; overflow-y: auto;"></div>
+        <div class="section-header">
+            <span class="section-title">Lixeira</span>
+            <span class="section-count" id="count-lixeira">0</span>
+        </div>
+        <div class="lista-notas" id="lista-lixeira"></div>
     </div>
 
     <div class="main-content">
         <div class="editor-container" id="editor" style="display: none;">
-            <div class="fonte-control">
-                <span>Tamanho da Fonte:</span>
-                <input type="range" id="alterar-fonte" min="14" max="32" value="18" oninput="mudarTamanhoFonte(this.value)">
-                <span id="valor-fonte">18px</span>
+            <div class="editor-bar">
+                <div style="font-size: 12px; color: var(--text-dim);">A editar nota</div>
+                <div class="fonte-control">
+                    <span>A-</span>
+                    <input type="range" id="alterar-fonte" min="14" max="32" value="18" oninput="mudarTamanhoFonte(this.value)">
+                    <span>A+</span>
+                    <span id="valor-fonte" style="font-weight: 600; color: var(--text-main);">18px</span>
+                </div>
             </div>
 
-            <input type="text" id="nota-titulo" class="input-titulo" placeholder="Título da sub-nota..." oninput="salvarSubNotaAtual()">
-            <textarea id="nota-conteudo" class="textarea-conteudo" placeholder="Escreva as notas do seu livro aqui..." oninput="salvarSubNotaAtual()"></textarea>
+            <input type="text" id="nota-titulo" class="input-titulo" placeholder="Título da nota..." oninput="salvarNotaAtual()">
+            <textarea id="nota-conteudo" class="textarea-conteudo" placeholder="Comece a escrever as informações do seu livro aqui..." oninput="salvarNotaAtual()"></textarea>
         </div>
         
         <div class="aviso-vazio" id="aviso-vazio">
-            <span>📖</span>
-            Selecione uma sub-nota no painel lateral ou crie uma nova coleção para começar.
+            <div class="aviso-vazio-icon">📝</div>
+            <p>Selecione uma nota da lista ou crie uma nova para começar a escrever.</p>
         </div>
     </div>
 
     <script>
-        let pastas = JSON.parse(localStorage.getItem('livro_pastas_sistema'));
-        
-        if (!pastas) {
-            let notasAntigas = JSON.parse(localStorage.getItem('livro_notas'));
-            if (notasAntigas && notasAntigas.length > 0) {
-                pastas = [{
-                    id: "padrao",
-                    titulo: "Minhas Notas",
-                    fixada: false,
-                    subnotas: notasAntigas.map(n => ({
-                        id: n.id,
-                        titulo: n.titulo,
-                        conteudo: n.conteudo,
-                        naLixeira: n.naLixeira || false
-                    }))
-                }];
-            } else {
-                pastas = [];
-            }
-        }
-
-        let idPastaAtiva = null;
-        let idSubNotaAtiva = null;
+        let notas = JSON.parse(localStorage.getItem('livro_notas')) || [];
+        let idNotaAtiva = null;
         let tamanhoFonteSalvo = localStorage.getItem('preferencia_fonte') || '18';
 
-        renderizarInterface();
+        renderizarListas();
         mudarTamanhoFonte(tamanhoFonteSalvo);
 
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('aberta');
-        }
-
-        function fecharSidebarMobile() {
-            if (window.innerWidth <= 900) {
-                document.getElementById('sidebar').classList.remove('aberta');
-            }
-        }
-
-        function criarNovaPasta() {
-            const nomePasta = prompt("Nome da nova coleção/pasta:", "Nova Coleção");
-            if (!nomePasta) return;
-
-            const novaPasta = {
+        function criarNovaNota() {
+            const novaNota = {
                 id: Date.now().toString(),
-                titulo: nomePasta,
-                fixada: false,
-                subnotas: []
-            };
-            pastas.unshift(novaPasta);
-            salvarNoLocalStorage();
-            renderizarInterface();
-        }
-
-        function criarSubNota(event, idPasta) {
-            event.stopPropagation();
-            const pasta = pastas.find(p => p.id === idPasta);
-            if (!pasta) return;
-
-            const novaSubNota = {
-                id: Date.now().toString(),
-                titulo: 'Nova Sub-nota',
+                titulo: 'Nova Nota',
                 conteudo: '',
                 naLixeira: false
             };
-
-            pasta.subnotas.unshift(novaSubNota);
+            notas.unshift(novaNota);
             salvarNoLocalStorage();
-            idPastaAtiva = idPasta;
-            carregarSubNota(idPasta, novaSubNota.id);
-            fecharSidebarMobile();
+            carregarNota(novaNota.id);
         }
 
-        function toggleFixarPasta(event, idPasta) {
-            event.stopPropagation();
-            const pasta = pastas.find(p => p.id === idPasta);
-            if (!pasta) return;
-
-            if (!pasta.fixada) {
-                const totalFixadas = pastas.filter(p => p.fixada).length;
-                if (totalFixadas >= 3) {
-                    alert("Você só pode fixar no máximo 3 coleções!");
-                    return;
-                }
-                pasta.fixada = true;
-            } else {
-                pasta.fixada = false;
-            }
-
-            salvarNoLocalStorage();
-            renderizarInterface();
-        }
-
-        function renderizarInterface() {
-            const containerFixados = document.getElementById('lista-fixados');
-            const containerComuns = document.getElementById('lista-comuns');
-            const containerLixeira = document.getElementById('lista-lixeira');
+        function renderizarListas() {
+            const listaAtivas = document.getElementById('lista-ativas');
+            const listaLixeira = document.getElementById('lista-lixeira');
+            const countAtivas = document.getElementById('count-ativas');
+            const countLixeira = document.getElementById('count-lixeira');
             
-            containerFixados.innerHTML = '';
-            containerComuns.innerHTML = '';
-            containerLixeira.innerHTML = '';
+            listaAtivas.innerHTML = '';
+            listaLixeira.innerHTML = '';
 
-            let qtdFixados = 0;
+            let qtdAtivas = 0;
+            let qtdLixeira = 0;
 
-            pastas.forEach(pasta => {
-                if (pasta.fixada) qtdFixados++;
-
-                const divPastaContainer = document.createElement('div');
-                divPastaContainer.className = 'container-pasta';
-
-                const subNotasAtivas = pasta.subnotas.filter(sn => !sn.naLixeira);
-
-                const divPasta = document.createElement('div');
-                divPasta.className = `item-pasta`;
-                divPasta.innerHTML = `
-                    <div class="info-pasta">
-                        <span>📁</span>
-                        <span title="${pasta.titulo}">${pasta.titulo}</span>
-                        <span class="contador-sub">${subNotasAtivas.length}</span>
-                    </div>
-                    <div class="btn-actions-group">
-                        <button class="btn-action btn-pin ${pasta.fixada ? 'fixado' : ''}" onclick="toggleFixarPasta(event, '${pasta.id}')">📌</button>
-                        <button class="btn-action" onclick="criarSubNota(event, '${pasta.id}')">➕</button>
-                        <button class="btn-action" onclick="excluirPasta(event, '${pasta.id}')">🗑️</button>
-                    </div>
-                `;
-                divPastaContainer.appendChild(divPasta);
-
-                if (subNotasAtivas.length > 0) {
-                    const divListaSub = document.createElement('div');
-                    divListaSub.className = 'lista-subnotas';
-
-                    subNotasAtivas.forEach(sub => {
-                        const divSub = document.createElement('div');
-                        divSub.className = `item-subnota ${sub.id === idSubNotaAtiva ? 'ativa' : ''}`;
-                        divSub.onclick = () => {
-                            carregarSubNota(pasta.id, sub.id);
-                            fecharSidebarMobile();
-                        };
-                        divSub.innerHTML = `
-                            <span>📄 ${sub.titulo || 'Sem título'}</span>
-                            <button class="btn-action" style="background:transparent" onclick="moverSubParaLixeira(event, '${pasta.id}', '${sub.id}')">🗑️</button>
-                        `;
-                        divListaSub.appendChild(divSub);
-                    });
-                    divPastaContainer.appendChild(divListaSub);
-                }
-
-                if (pasta.fixada) {
-                    containerFixados.appendChild(divPastaContainer);
+            notas.forEach(nota => {
+                const item = document.createElement('div');
+                item.className = `item-nota ${nota.id === idNotaAtiva ? 'ativa' : ''}`;
+                
+                if (!nota.naLixeira) {
+                    qtdAtivas++;
+                    item.onclick = () => carregarNota(nota.id);
+                    item.innerHTML = `
+                        <div class="item-nota-title">
+                            <span>📄</span>
+                            <span>${escapeHtml(nota.titulo) || 'Sem título'}</span>
+                        </div>
+                        <div class="btn-actions-group">
+                            <button class="btn-action btn-delete" title="Mover para a lixeira" onclick="moverParaLixeira(event, '${nota.id}')">🗑️</button>
+                        </div>
+                    `;
+                    listaAtivas.appendChild(item);
                 } else {
-                    containerComuns.appendChild(divPastaContainer);
+                    qtdLixeira++;
+                    item.innerHTML = `
+                        <div class="item-nota-title" style="color: var(--text-dim); text-decoration: line-through;">
+                            <span>📄</span>
+                            <span>${escapeHtml(nota.titulo) || 'Sem título'}</span>
+                        </div>
+                        <div class="btn-actions-group">
+                            <button class="btn-action btn-restore" title="Restaurar" onclick="restaurarDaLixeira(event, '${nota.id}')">↩️</button>
+                            <button class="btn-action btn-delete" title="Excluir Permanentemente" onclick="excluirPermanente(event, '${nota.id}')">❌</button>
+                        </div>
+                    `;
+                    listaLixeira.appendChild(item);
                 }
-
-                pasta.subnotas.forEach(sub => {
-                    if (sub.naLixeira) {
-                        const itemLixo = document.createElement('div');
-                        itemLixo.className = 'item-subnota';
-                        itemLixo.style.justifyContent = 'space-between';
-                        itemLixo.innerHTML = `
-                            <span style="color: var(--text-muted); text-decoration: line-through; font-size:12px;">${sub.titulo}</span>
-                            <div class="btn-actions-group">
-                                <button class="btn-action" onclick="restaurarSubNota('${pasta.id}', '${sub.id}')">↩️</button>
-                                <button class="btn-action" onclick="excluirSubPermanente('${pasta.id}', '${sub.id}')">❌</button>
-                            </div>
-                        `;
-                        containerLixeira.appendChild(itemLixo);
-                    }
-                });
             });
 
-            document.getElementById('titulo-fixados').innerText = `Fixados (${qtdFixados}/3)`;
+            countAtivas.innerText = qtdAtivas;
+            countLixeira.innerText = qtdLixeira;
         }
 
-        function carregarSubNota(idPasta, idSub) {
-            const pasta = pastas.find(p => p.id === idPasta);
-            if (!pasta) return;
-            const sub = pasta.subnotas.find(sn => sn.id === idSub);
-            if (!sub || sub.naLixeira) {
+        function escapeHtml(texto) {
+            if (!texto) return '';
+            return texto
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function carregarNota(id) {
+            const nota = notas.find(n => n.id === id);
+            if (!nota || nota.naLixeira) {
                 fecharEditor();
                 return;
             }
 
-            idPastaAtiva = idPasta;
-            idSubNotaAtiva = idSub;
-
+            idNotaAtiva = id;
             document.getElementById('aviso-vazio').style.display = 'none';
             document.getElementById('editor').style.display = 'flex';
 
-            document.getElementById('nota-titulo').value = sub.titulo;
-            document.getElementById('nota-conteudo').value = sub.conteudo;
+            document.getElementById('nota-titulo').value = nota.titulo;
+            document.getElementById('nota-conteudo').value = nota.conteudo;
 
-            renderizarInterface();
+            renderizarListas();
         }
 
-        function salvarSubNotaAtual() {
-            if (!idPastaAtiva || !idSubNotaAtiva) return;
+        function salvarNotaAtual() {
+            if (!idNotaAtiva) return;
 
-            const pasta = pastas.find(p => p.id === idPastaAtiva);
-            if (pasta) {
-                const sub = pasta.subnotas.find(sn => sn.id === idSubNotaAtiva);
-                if (sub) {
-                    sub.titulo = document.getElementById('nota-titulo').value;
-                    sub.conteudo = document.getElementById('nota-conteudo').value;
-                    salvarNoLocalStorage();
-                    
-                    const elementoSub = document.querySelector(`.item-subnota.ativa span`);
-                    if (elementoSub) elementoSub.innerText = '📄 ' + (sub.titulo || 'Sem título');
-                }
-            }
-        }
-
-        function moverSubParaLixeira(event, idPasta, idSub) {
-            event.stopPropagation();
-            const pasta = pastas.find(p => p.id === idPasta);
-            if (pasta) {
-                const sub = pasta.subnotas.find(sn => sn.id === idSub);
-                if (sub) {
-                    sub.naLixeira = true;
-                    if (idSubNotaAtiva === idSub) fecharEditor();
-                    salvarNoLocalStorage();
-                    renderizarInterface();
-                }
-            }
-        }
-
-        function restaurarSubNota(idPasta, idSub) {
-            const pasta = pastas.find(p => p.id === idPasta);
-            if (pasta) {
-                const sub = pasta.subnotas.find(sn => sn.id === idSub);
-                if (sub) {
-                    sub.naLixeira = false;
-                    salvarNoLocalStorage();
-                    carregarSubNota(idPasta, idSub);
-                }
-            }
-        }
-
-        function excluirSubPermanente(idPasta, idSub) {
-            if (confirm("Excluir permanentemente esta sub-nota?")) {
-                const pasta = pastas.find(p => p.id === idPasta);
-                if (pasta) {
-                    pasta.subnotas = pasta.subnotas.filter(sn => sn.id !== idSub);
-                    salvarNoLocalStorage();
-                    renderizarInterface();
-                }
-            }
-        }
-
-        function excluirPasta(event, idPasta) {
-            event.stopPropagation();
-            if (confirm("Deseja apagar esta pasta e todas as suas sub-notas?")) {
-                pastas = pastas.filter(p => p.id !== idPasta);
-                if (idPastaAtiva === idPasta) fecharEditor();
+            const nota = notas.find(n => n.id === idNotaAtiva);
+            if (nota) {
+                nota.titulo = document.getElementById('nota-titulo').value;
+                nota.conteudo = document.getElementById('nota-conteudo').value;
                 salvarNoLocalStorage();
-                renderizarInterface();
+                renderizarListas();
+            }
+        }
+
+        function moverParaLixeira(event, id) {
+            event.stopPropagation();
+            const nota = notas.find(n => n.id === id);
+            if (nota) {
+                nota.naLixeira = true;
+                if (idNotaAtiva === id) fecharEditor();
+                salvarNoLocalStorage();
+                renderizarListas();
+            }
+        }
+
+        function restaurarDaLixeira(event, id) {
+            event.stopPropagation();
+            const nota = notas.find(n => n.id === id);
+            if (nota) {
+                nota.naLixeira = false;
+                salvarNoLocalStorage();
+                carregarNota(id);
+            }
+        }
+
+        function excluirPermanente(event, id) {
+            event.stopPropagation();
+            if (confirm("Deseja excluir permanentemente esta nota? Esta ação não pode ser desfeita.")) {
+                notas = notas.filter(n => n.id !== id);
+                salvarNoLocalStorage();
+                renderizarListas();
             }
         }
 
         function fecharEditor() {
-            idSubNotaAtiva = null;
+            idNotaAtiva = null;
             document.getElementById('editor').style.display = 'none';
             document.getElementById('aviso-vazio').style.display = 'flex';
-            renderizarInterface();
+            renderizarListas();
         }
 
         function salvarNoLocalStorage() {
-            localStorage.setItem('livro_pastas_sistema', JSON.stringify(pastas));
+            localStorage.setItem('livro_notas', JSON.stringify(notas));
         }
 
         function mudarTamanhoFonte(valor) {
             const caixaTexto = document.getElementById('nota-conteudo');
-            if (caixaTexto) caixaTexto.style.fontSize = valor + 'px';
+            if (caixaTexto) {
+                caixaTexto.style.fontSize = valor + 'px';
+            }
             document.getElementById('valor-fonte').innerText = valor + 'px';
             document.getElementById('alterar-fonte').value = valor;
             localStorage.setItem('preferencia_fonte', valor);
         }
 
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('escondida');
+        }
+
         function exportarBackup() {
-            if (pastas.length === 0) {
-                alert("Nenhum dado para exportar.");
+            if (notas.length === 0) {
+                alert("Você não possui notas para exportar.");
                 return;
             }
-            const dadosStr = JSON.stringify(pastas, null, 2);
+            
+            const dadosStr = JSON.stringify(notas, null, 2);
             const blob = new Blob([dadosStr], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
+            
+            const dataAtual = new Date().toISOString().slice(0, 10);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `backup_tablet_${new Date().toISOString().slice(0, 10)}.json`;
+            link.download = `backup_livro_${dataAtual}.json`;
             link.click();
+            
             URL.revokeObjectURL(url);
         }
 
@@ -686,18 +673,26 @@
             const leitor = new FileReader();
             leitor.onload = function(e) {
                 try {
-                    const dados = JSON.parse(e.target.result);
-                    if (Array.isArray(dados)) {
-                        pastas = dados;
+                    const notasImportadas = JSON.parse(e.target.result);
+                    
+                    if (Array.isArray(notasImportadas)) {
+                        if (confirm("Deseja mesclar as notas importadas com as atuais? (Clique em Cancelar para substituir tudo).")) {
+                            const idsExistentes = new Set(notas.map(n => n.id));
+                            const novasFiltradas = notasImportadas.filter(n => !idsExistentes.has(n.id));
+                            notas = [...novasFiltradas, ...notas];
+                        } else {
+                            notas = notasImportadas;
+                        }
+                        
                         salvarNoLocalStorage();
                         fecharEditor();
-                        renderizarInterface();
+                        renderizarListas();
                         alert("Backup importado com sucesso!");
                     } else {
-                        alert("Formato inválido.");
+                        alert("Formato de arquivo inválido.");
                     }
-                } catch (err) {
-                    alert("Erro ao ler arquivo.");
+                } catch (erro) {
+                    alert("Erro ao ler o arquivo de backup.");
                 }
                 event.target.value = '';
             };
