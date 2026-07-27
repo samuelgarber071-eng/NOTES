@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Notas do Livro - Mobile 6.26"</title>
+    <title>Notas do Livro - Tablet 10.1"</title>
     <style>
         :root {
             --bg-sidebar: #1e1f22;
@@ -35,69 +35,58 @@
             position: relative;
         }
 
-        /* --- CABEÇALHO MOBILE --- */
-        .header-mobile {
+        /* --- BARRA SUPERIOR PARA TABLET --- */
+        .topbar-tablet {
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 54px; /* Altura ideal para telas de 6.26" */
+            height: 55px;
             background-color: var(--bg-sidebar);
             display: flex;
             align-items: center;
-            padding: 0 12px;
+            justify-content: space-between;
+            padding: 0 15px;
             border-bottom: 1px solid var(--border-color);
-            z-index: 90;
+            z-index: 80;
         }
 
-        .btn-toggle-sidebar {
+        .btn-menu-toggle {
             background-color: var(--bg-input);
             color: var(--text-main);
             border: 1px solid var(--border-color);
             padding: 8px 14px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
+            font-size: 15px;
+            font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
 
-        /* --- BARRA LATERAL (MENU SLIDE-IN TELA CHEIA) --- */
+        .titulo-app {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--text-main);
+        }
+
+        /* --- SIDEBAR (BARRA LATERAL ADAPTÁVEL) --- */
         .sidebar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            width: 320px;
             background-color: var(--bg-sidebar);
             display: flex;
             flex-direction: column;
-            padding: 15px 12px;
+            padding: 15px;
+            border-right: 1px solid var(--border-color);
             z-index: 100;
-            transform: translateX(-100%);
-            transition: transform 0.25s ease-out;
-        }
-
-        .sidebar.aberta {
-            transform: translateX(0);
-        }
-
-        .btn-fechar-sidebar {
-            align-self: flex-end;
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            font-size: 24px;
-            padding: 4px 8px;
-            cursor: pointer;
-            margin-bottom: 10px;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
         }
 
         .botoes-topo {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             margin-bottom: 15px;
         }
 
@@ -107,35 +96,35 @@
             color: #fff;
             border: none;
             padding: 12px;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
             font-size: 14px;
             text-align: center;
         }
 
-        /* --- CONTAINER DE BACKUP --- */
+        /* --- BACKUP CONTAINER --- */
         .backup-container {
-            background-color: rgba(255, 255, 255, 0.02);
+            background-color: rgba(255, 255, 255, 0.03);
             border: 1px dashed var(--border-color);
             padding: 10px;
-            border-radius: 6px;
+            border-radius: 8px;
             margin-bottom: 15px;
             display: flex;
-            flex-direction: column;
             gap: 8px;
         }
 
         .btn-backup {
+            flex: 1;
             background-color: var(--bg-input);
             color: var(--text-main);
             border: none;
             padding: 8px;
             border-radius: 6px;
+            cursor: pointer;
             font-size: 12px;
             font-weight: bold;
             text-align: center;
-            width: 100%;
         }
 
         .file-input-label { display: block; text-align: center; }
@@ -147,7 +136,7 @@
             color: var(--text-muted);
             margin: 10px 0 6px 4px;
             text-transform: uppercase;
-            letter-spacing: 0.6px;
+            letter-spacing: 0.8px;
         }
 
         .lista-pastas {
@@ -155,20 +144,20 @@
             margin-bottom: 10px;
         }
 
-        #lista-fixados { flex: none; max-height: 150px; }
+        #lista-fixados { flex: none; max-height: 200px; }
         #lista-comuns { flex: 1; }
 
-        /* --- DESIGN DAS PASTAS E SUB-NOTAS --- */
+        /* --- ESTRUTURA DE COLEÇÕES E SUB-NOTAS --- */
         .container-pasta {
             margin-bottom: 8px;
-            background: rgba(255,255,255,0.01);
-            border-radius: 6px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 8px;
             border: 1px solid var(--border-color);
             padding: 4px;
         }
 
         .item-pasta {
-            padding: 8px 4px;
+            padding: 10px 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -179,8 +168,8 @@
         .info-pasta {
             display: flex;
             align-items: center;
-            gap: 6px;
-            width: 50%;
+            gap: 8px;
+            width: 55%;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -190,12 +179,12 @@
             font-size: 11px;
             color: var(--text-muted);
             background: var(--bg-input);
-            padding: 1px 6px;
+            padding: 2px 7px;
             border-radius: 10px;
         }
 
         .lista-subnotas {
-            margin-left: 10px;
+            margin-left: 12px;
             border-left: 2px solid var(--border-color);
             padding-left: 6px;
             margin-top: 4px;
@@ -203,25 +192,26 @@
 
         .item-subnota {
             padding: 10px 8px;
-            margin: 4px 0;
-            border-radius: 5px;
-            background: rgba(0,0,0,0.15);
+            margin: 3px 0;
+            border-radius: 6px;
+            background: rgba(0,0,0,0.12);
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-size: 13px;
+            cursor: pointer;
         }
 
         .item-subnota.ativa {
-            background-color: rgba(88, 101, 242, 0.15);
+            background-color: rgba(88, 101, 242, 0.25);
             border: 1px solid var(--accent-blue);
         }
 
-        .item-subnota span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 65%; }
+        .item-subnota span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 75%; }
 
         .btn-actions-group {
             display: flex;
-            gap: 6px; /* Espaço seguro entre ações para evitar toques errados */
+            gap: 6px;
         }
 
         .btn-action {
@@ -230,31 +220,31 @@
             color: var(--text-main);
             cursor: pointer;
             font-size: 13px;
-            padding: 6px 9px;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding: 6px 8px;
+            border-radius: 6px;
         }
 
-        .btn-pin.fixado { color: var(--accent-yellow); background: rgba(240, 178, 50, 0.1); }
+        .btn-pin.fixado { color: var(--accent-yellow); background: rgba(240, 178, 50, 0.15); }
 
         /* --- ÁREA PRINCIPAL DO EDITOR --- */
         .main-content {
             flex: 1;
             display: flex;
             flex-direction: column;
-            padding: 12px;
-            padding-top: 66px; /* Ajustado à altura do header fixo */
+            padding: 25px;
+            padding-top: 75px;
             background-color: var(--bg-main);
             height: 100%;
+            overflow-y: auto;
         }
 
         .editor-container {
             display: flex;
             flex-direction: column;
             height: 100%;
+            max-width: 900px;
             width: 100%;
+            margin: 0 auto;
         }
 
         .fonte-control {
@@ -262,40 +252,43 @@
             align-items: center;
             justify-content: space-between;
             background-color: var(--bg-sidebar);
-            padding: 8px 12px;
-            border-radius: 6px;
-            margin-bottom: 12px;
-            font-size: 12px;
+            padding: 10px 18px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            border: 1px solid var(--border-color);
         }
 
         .fonte-control input[type="range"] {
             accent-color: var(--accent-blue);
-            width: 55%;
+            width: 40%;
+            cursor: pointer;
         }
 
         .input-titulo {
             background: transparent;
             border: none;
             color: var(--text-main);
-            font-size: 20px; /* Tamanho proporcional para 6.26" */
+            font-size: 26px;
             font-weight: bold;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
             outline: none;
             width: 100%;
             border-bottom: 1px solid var(--border-color);
-            padding-bottom: 6px;
+            padding-bottom: 10px;
         }
 
         .textarea-conteudo {
             background: transparent;
             border: none;
             color: var(--text-main);
-            font-size: 15px; /* Tamanho confortável para leitura vertical */
-            line-height: 1.5;
+            font-size: 18px;
+            line-height: 1.6;
             outline: none;
             resize: none;
             flex: 1;
             width: 100%;
+            font-family: 'Georgia', serif;
         }
 
         .aviso-vazio {
@@ -305,35 +298,62 @@
             align-items: center;
             height: 100%;
             color: var(--text-muted);
-            font-size: 14px;
+            font-size: 16px;
             text-align: center;
-            padding: 15px;
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
         .aviso-vazio span {
-            font-size: 36px;
-            margin-bottom: 8px;
+            font-size: 48px;
+            margin-bottom: 12px;
         }
+
+        /* --- RESPONSIVIDADE ESPECÍFICA DE 10.1 POLEGADAS --- */
+        
+        /* MODO RETRATO (Portrait: largura < 900px) */
+        @media (max-width: 900px) {
+            .sidebar {
+                position: absolute;
+                top: 0;
+                left: 0;
+                transform: translateX(-100%);
+            }
+            .sidebar.aberta {
+                transform: translateX(0);
+                box-shadow: 5px 0 20px rgba(0,0,0,0.5);
+            }
+        }
+
+        /* MODO PAISAGEM (Landscape: largura >= 901px) */
+        @media (min-width: 901px) {
+            .topbar-tablet { display: none; }
+            .main-content { padding-top: 25px; }
+            .sidebar {
+                position: relative;
+                transform: none !important;
+            }
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
     </style>
 </head>
 <body>
 
-    <div class="header-mobile">
-        <button class="btn-toggle-sidebar" onclick="abrirSidebar()">☰ Menu Coleções</button>
+    <div class="topbar-tablet">
+        <button class="btn-menu-toggle" onclick="toggleSidebar()">☰ Menu Coleções</button>
+        <div class="titulo-app">Notas do Livro</div>
     </div>
 
     <div class="sidebar" id="sidebar">
-        <button class="btn-fechar-sidebar" onclick="fecharSidebar()">✕</button>
-        
         <div class="botoes-topo">
             <button class="btn-nova-pasta" onclick="criarNovaPasta()">📁 + Nova Coleção</button>
         </div>
 
         <div class="backup-container">
-            <button class="btn-backup" onclick="exportarBackup()">💾 Exportar Backup (.json)</button>
+            <button class="btn-backup" onclick="exportarBackup()">💾 Exportar (.json)</button>
             <label class="btn-backup file-input-label">
-                📂 Importar Backup
+                📂 Importar
                 <input type="file" id="input-backup" accept=".json" onchange="importarBackup(event)">
             </label>
         </div>
@@ -345,25 +365,24 @@
         <div class="lista-pastas" id="lista-comuns"></div>
 
         <div class="section-title">Lixeira (Sub-notas)</div>
-        <div class="lista-notas" id="lista-lixeira" style="max-height: 95px; overflow-y: auto;"></div>
+        <div class="lista-notas" id="lista-lixeira" style="max-height: 120px; overflow-y: auto;"></div>
     </div>
 
     <div class="main-content">
         <div class="editor-container" id="editor" style="display: none;">
             <div class="fonte-control">
-                <span>A-</span>
-                <input type="range" id="alterar-fonte" min="13" max="24" value="15" oninput="mudarTamanhoFonte(this.value)">
-                <span>A+</span>
-                <span id="valor-fonte">15px</span>
+                <span>Tamanho da Fonte:</span>
+                <input type="range" id="alterar-fonte" min="14" max="32" value="18" oninput="mudarTamanhoFonte(this.value)">
+                <span id="valor-fonte">18px</span>
             </div>
 
             <input type="text" id="nota-titulo" class="input-titulo" placeholder="Título da sub-nota..." oninput="salvarSubNotaAtual()">
-            <textarea id="nota-conteudo" class="textarea-conteudo" placeholder="Escreva o conteúdo da sub-nota aqui..." oninput="salvarSubNotaAtual()"></textarea>
+            <textarea id="nota-conteudo" class="textarea-conteudo" placeholder="Escreva as notas do seu livro aqui..." oninput="salvarSubNotaAtual()"></textarea>
         </div>
         
         <div class="aviso-vazio" id="aviso-vazio">
-            <span>静态📝</span>
-            Toque no botão <b>"☰ Menu Coleções"</b> acima para criar coleções ou selecionar suas sub-notas.
+            <span>📖</span>
+            Selecione uma sub-nota no painel lateral ou crie uma nova coleção para começar.
         </div>
     </div>
 
@@ -391,13 +410,20 @@
 
         let idPastaAtiva = null;
         let idSubNotaAtiva = null;
-        let tamanhoFonteSalvo = localStorage.getItem('preferencia_fonte') || '15';
+        let tamanhoFonteSalvo = localStorage.getItem('preferencia_fonte') || '18';
 
         renderizarInterface();
         mudarTamanhoFonte(tamanhoFonteSalvo);
 
-        function abrirSidebar() { document.getElementById('sidebar').classList.add('aberta'); }
-        function fecharSidebar() { document.getElementById('sidebar').classList.remove('aberta'); }
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('aberta');
+        }
+
+        function fecharSidebarMobile() {
+            if (window.innerWidth <= 900) {
+                document.getElementById('sidebar').classList.remove('aberta');
+            }
+        }
 
         function criarNovaPasta() {
             const nomePasta = prompt("Nome da nova coleção/pasta:", "Nova Coleção");
@@ -430,7 +456,7 @@
             salvarNoLocalStorage();
             idPastaAtiva = idPasta;
             carregarSubNota(idPasta, novaSubNota.id);
-            fecharSidebar();
+            fecharSidebarMobile();
         }
 
         function toggleFixarPasta(event, idPasta) {
@@ -497,11 +523,11 @@
                         divSub.className = `item-subnota ${sub.id === idSubNotaAtiva ? 'ativa' : ''}`;
                         divSub.onclick = () => {
                             carregarSubNota(pasta.id, sub.id);
-                            fecharSidebar();
+                            fecharSidebarMobile();
                         };
                         divSub.innerHTML = `
                             <span>📄 ${sub.titulo || 'Sem título'}</span>
-                            <button class="btn-action" style="background:transparent; padding:4px;" onclick="moverSubParaLixeira(event, '${pasta.id}', '${sub.id}')">🗑️</button>
+                            <button class="btn-action" style="background:transparent" onclick="moverSubParaLixeira(event, '${pasta.id}', '${sub.id}')">🗑️</button>
                         `;
                         divListaSub.appendChild(divSub);
                     });
@@ -648,7 +674,7 @@
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `backup_mobile_${new Date().toISOString().slice(0, 10)}.json`;
+            link.download = `backup_tablet_${new Date().toISOString().slice(0, 10)}.json`;
             link.click();
             URL.revokeObjectURL(url);
         }
@@ -666,7 +692,7 @@
                         salvarNoLocalStorage();
                         fecharEditor();
                         renderizarInterface();
-                        alert("Backup importado!");
+                        alert("Backup importado com sucesso!");
                     } else {
                         alert("Formato inválido.");
                     }
