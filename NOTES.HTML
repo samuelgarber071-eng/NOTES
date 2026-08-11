@@ -3,281 +3,284 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aura Notes</title>
+  <title>Meu Bloco de Notas Avançado</title>
   <style>
     :root {
-      --bg-primary: #121214;
-      --bg-secondary: #202024;
-      --bg-card: #29292e;
-      --accent: #8257e5;
-      --accent-hover: #996dff;
-      --text-main: #e1e1e6;
-      --text-muted: #a8a8b3;
-      --border: #323238;
-      --danger: #f75a68;
+      --bg-color: #f4f6f8;
+      --card-bg: #ffffff;
+      --text-color: #333333;
+      --primary-color: #4a90e2;
+      --danger-color: #e74c3c;
+      --success-color: #2ecc71;
+      --border-color: #e0e0e0;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     body {
-      background-color: var(--bg-primary);
-      color: var(--text-main);
-      display: flex;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    /* Sidebar */
-    aside {
-      width: 260px;
-      background-color: var(--bg-secondary);
-      border-right: 1px solid var(--border);
+      background-color: var(--bg-color);
+      color: var(--text-color);
       padding: 20px;
       display: flex;
-      flex-direction: column;
-      gap: 20px;
+      justify-content: center;
     }
 
-    .logo {
-      font-size: 1.2rem;
-      font-weight: bold;
-      color: var(--accent);
+    .container {
+      width: 100%;
+      max-width: 700px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+
+    .input-group {
       display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .nav-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .nav-item {
-      padding: 10px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      color: var(--text-muted);
-      transition: all 0.2s;
-    }
-
-    .nav-item:hover, .nav-item.active {
-      background-color: var(--bg-card);
-      color: var(--text-main);
-    }
-
-    /* Main Content */
-    main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      padding: 30px;
-      overflow-y: auto;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 25px;
-    }
-
-    /* Form para Nova Nota */
-    .note-form {
-      background-color: var(--bg-secondary);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 15px;
-      margin-bottom: 30px;
-      display: flex;
-      flex-direction: column;
       gap: 10px;
+      margin-bottom: 20px;
     }
 
-    .note-form input, .note-form textarea {
-      background: transparent;
-      border: none;
-      color: var(--text-main);
+    input[type="text"] {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
       outline: none;
-      font-size: 0.95rem;
+      font-size: 14px;
     }
 
-    .note-form input {
-      font-size: 1.1rem;
-      font-weight: bold;
+    input[type="text"]:focus {
+      border-color: var(--primary-color);
     }
 
-    .note-form textarea {
-      resize: none;
-      height: 70px;
-    }
-
-    .form-actions {
-      display: flex;
-      justify-content: flex-end;
-    }
-
-    button.btn-add {
-      background-color: var(--accent);
-      color: #fff;
+    button {
+      padding: 10px 16px;
       border: none;
-      padding: 8px 16px;
       border-radius: 6px;
       cursor: pointer;
-      font-weight: 600;
+      font-weight: bold;
       transition: background 0.2s;
     }
 
-    button.btn-add:hover {
-      background-color: var(--accent-hover);
+    .btn-main {
+      background-color: var(--primary-color);
+      color: white;
     }
 
-    /* Grid de Notas */
-    .notes-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 20px;
+    .btn-main:hover {
+      background-color: #357abd;
+    }
+
+    .notes-list {
+      list-style: none;
     }
 
     .note-card {
-      background-color: var(--bg-secondary);
-      border: 1px solid var(--border);
+      background-color: var(--card-bg);
       border-radius: 8px;
-      padding: 18px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 12px;
-      transition: transform 0.2s, border-color 0.2s;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      border-left: 5px solid var(--primary-color);
     }
 
-    .note-card:hover {
-      transform: translateY(-2px);
-      border-color: var(--accent);
-    }
-
-    .note-title {
-      font-size: 1.05rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-
-    .note-body {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      line-height: 1.4;
-      white-space: pre-wrap;
-    }
-
-    .note-footer {
+    .note-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 10px;
-      font-size: 0.75rem;
-      color: var(--text-muted);
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-small {
+      padding: 4px 8px;
+      font-size: 12px;
+      border-radius: 4px;
+    }
+
+    .btn-add-sub {
+      background-color: #eef5fc;
+      color: var(--primary-color);
     }
 
     .btn-delete {
-      background: none;
-      border: none;
-      color: var(--danger);
-      cursor: pointer;
-      font-size: 0.8rem;
+      background-color: #fde8e8;
+      color: var(--danger-color);
     }
 
-    .btn-delete:hover {
-      text-decoration: underline;
+    /* Estilos das Subnotas */
+    .subnotes-list {
+      list-style: none;
+      margin-top: 10px;
+      padding-left: 20px;
+      border-left: 2px solid var(--border-color);
+    }
+
+    .subnote-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 14px;
+    }
+
+    .completed {
+      text-decoration: line-through;
+      color: #888;
+    }
+
+    .sub-input-group {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .sub-input-group input {
+      padding: 6px;
+      font-size: 12px;
     }
   </style>
 </head>
 <body>
 
-  <aside>
-    <div class="logo">⚡ Aura Notes</div>
-    <ul class="nav-list">
-      <li class="nav-item active">📝 Todas as Notas</li>
-      <li class="nav-item">⭐ Favoritas</li>
-      <li class="nav-item">🏷️ Tags</li>
-      <li class="nav-item">🗑️ Lixeira</li>
-    </ul>
-  </aside>
-
-  <main>
-    <header>
-      <h2>Minhas Anotações</h2>
-    </header>
-
-    <div class="note-form">
-      <input type="text" id="titleInput" placeholder="Título da nota...">
-      <textarea id="bodyInput" placeholder="Escreva algo incrível..."></textarea>
-      <div class="form-actions">
-        <button class="btn-add" onclick="addNote()">Salvar Nota</button>
-      </div>
+  <div class="container">
+    <h1>📝 Minhas Notas & Subnotas</h1>
+    
+    <div class="input-group">
+      <input type="text" id="noteInput" placeholder="Digite o título da nota principal...">
+      <button class="btn-main" onclick="addNote()">Criar Nota</button>
     </div>
 
-    <div class="notes-grid" id="notesGrid">
-      
-      <div class="note-card">
-        <div>
-          <div class="note-title">Ideias de Projetos</div>
-          <div class="note-body">Criar uma CLI em Rust para organizar arquivos baixados automaticamente por extensão.</div>
-        </div>
-        <div class="note-footer">
-          <span>Hoje</span>
-          <button class="btn-delete" onclick="this.closest('.note-card').remove()">Excluir</button>
-        </div>
-      </div>
-
-      <div class="note-card">
-        <div>
-          <div class="note-title">Livros para ler</div>
-          <div class="note-body">- O Entusiasta Pragmatico&#10;- O Design do Dia a Dia&#10;- Clean Code</div>
-        </div>
-        <div class="note-footer">
-          <span>Ontem</span>
-          <button class="btn-delete" onclick="this.closest('.note-card').remove()">Excluir</button>
-        </div>
-      </div>
-
-    </div>
-  </main>
+    <ul class="notes-list" id="notesContainer"></ul>
+  </div>
 
   <script>
-    function addNote() {
-      const titleInput = document.getElementById('titleInput');
-      const bodyInput = document.getElementById('bodyInput');
-      const notesGrid = document.getElementById('notesGrid');
+    let notes = JSON.parse(localStorage.getItem('my_notes')) || [];
 
-      if (!titleInput.value.trim() && !bodyInput.value.trim()) {
-        alert('Escreva algo na nota antes de salvar!');
-        return;
-      }
-
-      const card = document.createElement('div');
-      card.className = 'note-card';
-      card.innerHTML = `
-        <div>
-          <div class="note-title">${titleInput.value || 'Sem Título'}</div>
-          <div class="note-body">${bodyInput.value}</div>
-        </div>
-        <div class="note-footer">
-          <span>Agora mesmo</span>
-          <button class="btn-delete" onclick="this.closest('.note-card').remove()">Excluir</button>
-        </div>
-      `;
-
-      notesGrid.prepend(card);
-
-      titleInput.value = '';
-      bodyInput.value = '';
+    function saveNotes() {
+      localStorage.setItem('my_notes', JSON.stringify(notes));
+      renderNotes();
     }
+
+    function addNote() {
+      const input = document.getElementById('noteInput');
+      const text = input.value.trim();
+      if (text === '') return;
+
+      notes.push({
+        id: Date.now(),
+        title: text,
+        subnotes: [],
+        showSubInput: false
+      });
+
+      input.value = '';
+      saveNotes();
+    }
+
+    function deleteNote(id) {
+      notes = notes.filter(n => n.id !== id);
+      saveNotes();
+    }
+
+    function toggleSubInput(id) {
+      const note = notes.find(n => n.id === id);
+      if (note) {
+        note.showSubInput = !note.showSubInput;
+        renderNotes();
+      }
+    }
+
+    function addSubNote(noteId) {
+      const input = document.getElementById(`sub-input-${noteId}`);
+      const text = input.value.trim();
+      if (text === '') return;
+
+      const note = notes.find(n => n.id === noteId);
+      if (note) {
+        note.subnotes.push({
+          id: Date.now(),
+          text: text,
+          done: false
+        });
+        note.showSubInput = false;
+        saveNotes();
+      }
+    }
+
+    function toggleSubNote(noteId, subId) {
+      const note = notes.find(n => n.id === noteId);
+      if (note) {
+        const sub = note.subnotes.find(s => s.id === subId);
+        if (sub) sub.done = !sub.done;
+        saveNotes();
+      }
+    }
+
+    function deleteSubNote(noteId, subId) {
+      const note = notes.find(n => n.id === noteId);
+      if (note) {
+        note.subnotes = note.subnotes.filter(s => s.id !== subId);
+        saveNotes();
+      }
+    }
+
+    function renderNotes() {
+      const container = document.getElementById('notesContainer');
+      container.innerHTML = '';
+
+      notes.forEach(note => {
+        const card = document.createElement('li');
+        card.className = 'note-card';
+
+        let subnotesHTML = note.subnotes.map(sub => `
+          <li class="subnote-item">
+            <span class="${sub.done ? 'completed' : ''}" style="cursor:pointer;" onclick="toggleSubNote(${note.id}, ${sub.id})">
+              ${sub.done ? '☑' : '☐'} ${sub.text}
+            </span>
+            <button class="btn-small btn-delete" onclick="deleteSubNote(${note.id}, ${sub.id})">✕</button>
+          </li>
+        `).join('');
+
+        card.innerHTML = `
+          <div class="note-header">
+            <span>${note.title}</span>
+            <div class="actions">
+              <button class="btn-small btn-add-sub" onclick="toggleSubInput(${note.id})">+ Subnota</button>
+              <button class="btn-small btn-delete" onclick="deleteNote(${note.id})">Excluir</button>
+            </div>
+          </div>
+          
+          ${note.showSubInput ? `
+            <div class="sub-input-group">
+              <input type="text" id="sub-input-${note.id}" placeholder="Digite a subnota...">
+              <button class="btn-main btn-small" onclick="addSubNote(${note.id})">Salvar</button>
+            </div>
+          ` : ''}
+
+          <ul class="subnotes-list">
+            ${subnotesHTML}
+          </ul>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    // Carregar notas iniciais
+    renderNotes();
   </script>
 </body>
 </html>
