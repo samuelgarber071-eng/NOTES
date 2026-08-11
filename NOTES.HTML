@@ -1,460 +1,283 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Notas Avançado</title>
-    <style>
-        :root {
-            --bg-sidebar: #202123;
-            --bg-main: #343541;
-            --bg-input: #40414F;
-            --text-main: #ECECF1;
-            --text-muted: #9A9B9F;
-            --border-color: #4D4D4F;
-            --accent-green: #10a37f;
-            --accent-blue: #3498db;
-            --accent-red: #ef4444;
-            --accent-yellow: #f1c40f;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aura Notes</title>
+  <style>
+    :root {
+      --bg-primary: #121214;
+      --bg-secondary: #202024;
+      --bg-card: #29292e;
+      --accent: #8257e5;
+      --accent-hover: #996dff;
+      --text-main: #e1e1e6;
+      --text-muted: #a8a8b3;
+      --border: #323238;
+      --danger: #f75a68;
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-            position: relative;
-        }
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
 
-        /* --- SIDEBAR --- */
-        .sidebar {
-            width: 320px;
-            background-color: var(--bg-sidebar);
-            display: flex;
-            flex-direction: column;
-            padding: 12px;
-            border-right: 1px solid var(--border-color);
-            transition: margin-left 0.3s ease;
-            z-index: 10;
-        }
+    /* Sidebar */
+    aside {
+      width: 260px;
+      background-color: var(--bg-secondary);
+      border-right: 1px solid var(--border);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
 
-        body.sidebar-fechada .sidebar {
-            margin-left: -320px;
-        }
+    .logo {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-        .botoes-topo {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
 
-        .btn-nova-pasta {
-            flex: 1;
-            background-color: var(--accent-green);
-            color: #fff;
-            border: none;
-            padding: 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 13px;
-            transition: background 0.2s, transform 0.1s;
-        }
+    .nav-item {
+      padding: 10px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
 
-        .btn-nova-pasta:hover {
-            background-color: #0e8e6d;
-        }
+    .nav-item:hover, .nav-item.active {
+      background-color: var(--bg-card);
+      color: var(--text-main);
+    }
 
-        .btn-nova-pasta:active {
-            transform: scale(0.98);
-        }
+    /* Main Content */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 30px;
+      overflow-y: auto;
+    }
 
-        /* --- BACKUP --- */
-        .backup-container {
-            background-color: rgba(255, 255, 255, 0.03);
-            border: 1px dashed var(--border-color);
-            padding: 8px;
-            border-radius: 6px;
-            margin-bottom: 12px;
-            display: flex;
-            gap: 6px;
-        }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
 
-        .btn-backup {
-            flex: 1;
-            background-color: var(--bg-input);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            padding: 6px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 11px;
-            font-weight: bold;
-            text-align: center;
-            transition: background 0.2s;
-        }
+    /* Form para Nova Nota */
+    .note-form {
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
 
-        .btn-backup:hover { background-color: rgba(255,255,255,0.1); }
-        .file-input-label { display: block; text-align: center; }
-        input[type="file"] { display: none; }
+    .note-form input, .note-form textarea {
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      outline: none;
+      font-size: 0.95rem;
+    }
 
-        .section-title {
-            font-size: 11px;
-            font-weight: bold;
-            color: var(--text-muted);
-            margin: 12px 0 6px 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: flex;
-            justify-content: space-between;
-        }
+    .note-form input {
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
 
-        .area-rolavel {
-            flex: 1;
-            overflow-y: auto;
-            padding-right: 4px;
-        }
+    .note-form textarea {
+      resize: none;
+      height: 70px;
+    }
 
-        /* --- ESTRUTURA DE PASTAS E SUB-NOTAS --- */
-        .container-pasta {
-            margin-bottom: 8px;
-            background: rgba(255,255,255,0.02);
-            border-radius: 6px;
-            border: 1px solid rgba(255,255,255,0.05);
-            padding: 6px;
-            transition: border-color 0.2s;
-        }
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
 
-        .container-pasta.fixada {
-            border-color: rgba(241, 196, 15, 0.4);
-            background: rgba(241, 196, 15, 0.03);
-        }
+    button.btn-add {
+      background-color: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
 
-        .item-pasta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 600;
-            font-size: 14px;
-            border-radius: 4px;
-            padding: 4px;
-        }
+    button.btn-add:hover {
+      background-color: var(--accent-hover);
+    }
 
-        .info-pasta {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            width: 55%;
-        }
+    /* Grid de Notas */
+    .notes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+    }
 
-        .contador-sub {
-            font-size: 10px;
-            color: var(--text-muted);
-            background: var(--bg-input);
-            padding: 2px 6px;
-            border-radius: 10px;
-        }
+    .note-card {
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      transition: transform 0.2s, border-color 0.2s;
+    }
 
-        .acoes-pasta {
-            display: flex;
-            gap: 2px;
-        }
+    .note-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+    }
 
-        .lista-subnotas {
-            margin-left: 14px;
-            border-left: 2px solid var(--border-color);
-            padding-left: 6px;
-            margin-top: 6px;
-        }
+    .note-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
 
-        .item-subnota {
-            padding: 6px 8px;
-            margin: 3px 0;
-            border-radius: 4px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 13px;
-            transition: background 0.15s;
-        }
+    .note-body {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      white-space: pre-wrap;
+    }
 
-        .item-subnota:hover { background-color: rgba(255,255,255,0.08); }
-        .item-subnota.ativa { background-color: rgba(52, 152, 219, 0.3); font-weight: bold; }
-        .item-subnota span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 80%; }
+    .note-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
 
-        .btn-action {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 12px;
-            padding: 3px 5px;
-            border-radius: 3px;
-            transition: color 0.15s, background 0.15s;
-        }
+    .btn-delete {
+      background: none;
+      border: none;
+      color: var(--danger);
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
 
-        .btn-action:hover { color: var(--text-main); background-color: rgba(255,255,255,0.1); }
-        .btn-delete:hover { color: var(--accent-red); }
-        .btn-add-sub:hover { color: var(--accent-green); }
-        .btn-pin.fixado { color: var(--accent-yellow); }
-
-        /* --- BOTÃO FLUTUANTE SIDEBAR --- */
-        .btn-toggle-sidebar {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background-color: var(--bg-input);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            padding: 8px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            z-index: 100;
-            font-size: 13px;
-            font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        }
-        
-        body:not(.sidebar-fechada) .btn-toggle-sidebar { left: 335px; }
-
-        /* --- ÁREA PRINCIPAL --- */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 30px;
-            padding-top: 70px;
-            background-color: var(--bg-main);
-        }
-
-        .editor-container {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            max-width: 850px;
-            width: 100%;
-            margin: 0 auto;
-        }
-
-        .fonte-control {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background-color: rgba(0, 0, 0, 0.2);
-            padding: 6px 14px;
-            border-radius: 20px;
-            align-self: flex-end;
-            margin-bottom: 15px;
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
-        .fonte-control input[type="range"] {
-            accent-color: var(--accent-blue);
-            cursor: pointer;
-            width: 90px;
-        }
-
-        .input-titulo {
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid transparent;
-            color: var(--text-main);
-            font-size: 26px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            outline: none;
-            width: 100%;
-            padding-bottom: 5px;
-        }
-
-        .input-titulo:focus {
-            border-bottom-color: var(--border-color);
-        }
-
-        .textarea-conteudo {
-            background: transparent;
-            border: none;
-            color: var(--text-main);
-            font-family: 'Georgia', serif;
-            font-size: 18px;
-            line-height: 1.6;
-            outline: none;
-            resize: none;
-            flex: 1;
-            width: 100%;
-        }
-
-        .aviso-vazio {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            color: var(--text-muted);
-            font-size: 16px;
-            text-align: center;
-            line-height: 1.6;
-        }
-
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
-    </style>
+    .btn-delete:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
 
-    <button class="btn-toggle-sidebar" onclick="toggleSidebar()">☰ Menu</button>
+  <aside>
+    <div class="logo">⚡ Aura Notes</div>
+    <ul class="nav-list">
+      <li class="nav-item active">📝 Todas as Notas</li>
+      <li class="nav-item">⭐ Favoritas</li>
+      <li class="nav-item">🏷️ Tags</li>
+      <li class="nav-item">🗑️ Lixeira</li>
+    </ul>
+  </aside>
 
-    <div class="sidebar" id="sidebar">
-        <div class="botoes-topo">
-            <button class="btn-nova-pasta" onclick="criarNovaPasta()">📁 Nova Coleção</button>
-        </div>
+  <main>
+    <header>
+      <h2>Minhas Anotações</h2>
+    </header>
 
-        <div class="backup-container">
-            <button class="btn-backup" onclick="exportarBackup()">💾 Exportar</button>
-            <label class="btn-backup file-input-label">
-                📂 Importar
-                <input type="file" id="input-backup" accept=".json" onchange="importarBackup(event)">
-            </label>
-        </div>
-
-        <div class="area-rolavel">
-            <div class="section-title">
-                <span>📌 Fixados</span>
-                <span id="contador-fixados">0/3</span>
-            </div>
-            <div id="lista-fixados"></div>
-
-            <div class="section-title">
-                <span>📁 Todas as Coleções</span>
-            </div>
-            <div id="lista-comuns"></div>
-
-            <div class="section-title">
-                <span>🗑️ Lixeira</span>
-            </div>
-            <div id="lista-lixeira" style="max-height: 120px; overflow-y: auto;"></div>
-        </div>
+    <div class="note-form">
+      <input type="text" id="titleInput" placeholder="Título da nota...">
+      <textarea id="bodyInput" placeholder="Escreva algo incrível..."></textarea>
+      <div class="form-actions">
+        <button class="btn-add" onclick="addNote()">Salvar Nota</button>
+      </div>
     </div>
 
-    <div class="main-content">
-        <div class="editor-container" id="editor" style="display: none;">
-            <div class="fonte-control">
-                <span>A-</span>
-                <input type="range" id="alterar-fonte" min="14" max="32" value="18" oninput="mudarTamanhoFonte(this.value)">
-                <span>A+</span>
-                <span id="valor-fonte">18px</span>
-            </div>
-
-            <input type="text" id="nota-titulo" class="input-titulo" placeholder="Título da sub-nota..." oninput="salvarSubNotaAtual()">
-            <textarea id="nota-conteudo" class="textarea-conteudo" placeholder="Escreva aqui as suas anotações..." oninput="salvarSubNotaAtual()"></textarea>
+    <div class="notes-grid" id="notesGrid">
+      
+      <div class="note-card">
+        <div>
+          <div class="note-title">Ideias de Projetos</div>
+          <div class="note-body">Criar uma CLI em Rust para organizar arquivos baixados automaticamente por extensão.</div>
         </div>
-
-        <div class="aviso-vazio" id="aviso-vazio">
-            Crie uma <b>Coleção</b> na barra lateral,<br>
-            adicione sub-notas clicando no botão <b>➕</b> e selecione para editar.
+        <div class="note-footer">
+          <span>Hoje</span>
+          <button class="btn-delete" onclick="this.closest('.note-card').remove()">Excluir</button>
         </div>
+      </div>
+
+      <div class="note-card">
+        <div>
+          <div class="note-title">Livros para ler</div>
+          <div class="note-body">- O Entusiasta Pragmatico&#10;- O Design do Dia a Dia&#10;- Clean Code</div>
+        </div>
+        <div class="note-footer">
+          <span>Ontem</span>
+          <button class="btn-delete" onclick="this.closest('.note-card').remove()">Excluir</button>
+        </div>
+      </div>
+
     </div>
+  </main>
 
-    <script>
-        let pastas = [];
-        let idPastaAtiva = null;
-        let idSubNotaAtiva = null;
+  <script>
+    function addNote() {
+      const titleInput = document.getElementById('titleInput');
+      const bodyInput = document.getElementById('bodyInput');
+      const notesGrid = document.getElementById('notesGrid');
 
-        // Inicialização do Sistema
-        carregarDadosIniciais();
+      if (!titleInput.value.trim() && !bodyInput.value.trim()) {
+        alert('Escreva algo na nota antes de salvar!');
+        return;
+      }
 
-        function carregarDadosIniciais() {
-            const dadosSalvos = localStorage.getItem('livro_pastas_sistema');
-            if (dadosSalvos) {
-                pastas = JSON.parse(dadosSalvos);
-            } else {
-                // Tenta migrar a estrutura legada anterior se existir
-                const notasAntigas = JSON.parse(localStorage.getItem('livro_notas'));
-                if (notasAntigas && notasAntigas.length > 0) {
-                    pastas = [{
-                        id: Date.now().toString(),
-                        titulo: "Minhas Notas Antigas",
-                        fixada: false,
-                        subnotas: notasAntigas.map(n => ({
-                            id: n.id || Date.now().toString(),
-                            titulo: n.titulo || "Sem título",
-                            conteudo: n.conteudo || "",
-                            naLixeira: n.naLixeira || false
-                        }))
-                    }];
-                    salvarNoLocalStorage();
-                } else {
-                    pastas = [];
-                }
-            }
+      const card = document.createElement('div');
+      card.className = 'note-card';
+      card.innerHTML = `
+        <div>
+          <div class="note-title">${titleInput.value || 'Sem Título'}</div>
+          <div class="note-body">${bodyInput.value}</div>
+        </div>
+        <div class="note-footer">
+          <span>Agora mesmo</span>
+          <button class="btn-delete" onclick="this.closest('.note-card').remove()">Excluir</button>
+        </div>
+      `;
 
-            const fonteSalva = localStorage.getItem('preferencia_fonte') || '18';
-            mudarTamanhoFonte(fonteSalva);
-            renderizarInterface();
-        }
+      notesGrid.prepend(card);
 
-        function criarNovaPasta() {
-            const nomePasta = prompt("Digite o nome da coleção/pasta:", "Nova Coleção");
-            if (!nomePasta || !nomePasta.trim()) return;
-
-            const novaPasta = {
-                id: Date.now().toString(),
-                titulo: nomePasta.trim(),
-                fixada: false,
-                subnotas: []
-            };
-
-            pastas.unshift(novaPasta);
-            salvarNoLocalStorage();
-            renderizarInterface();
-        }
-
-        function renomearPasta(event, idPasta) {
-            event.stopPropagation();
-            const pasta = pastas.find(p => p.id === idPasta);
-            if (!pasta) return;
-
-            const novoNome = prompt("Novo nome da coleção:", pasta.titulo);
-            if (novoNome && novoNome.trim()) {
-                pasta.titulo = novoNome.trim();
-                salvarNoLocalStorage();
-                renderizarInterface();
-            }
-        }
-
-        function criarSubNota(event, idPasta) {
-            event.stopPropagation();
-            const pasta = pastas.find(p => p.id === idPasta);
-            if (!pasta) return;
-
-            const novaSub = {
-                id: Date.now().toString(),
-                titulo: 'Nova Sub-nota',
-                conteudo: '',
-                naLixeira: false
-            };
-
-            pasta.subnotas.unshift(novaSub);
-            salvarNoLocalStorage();
-            carregarSubNota(idPasta, novaSub.id);
-        }
-
-        function toggleFixarPasta(event, idPasta) {
-            event.stopPropagation();
-            const pasta = pastas.find(p => p.id === idPasta);
-            if (!pasta) return;
-
-            if (!pasta.fixada) {
-                const totalFixadas =
+      titleInput.value = '';
+      bodyInput.value = '';
+    }
+  </script>
+</body>
+</html>
