@@ -2,8 +2,8 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Word Notes Pro - 100% Offline</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Word Notes Tablet 10.1" Pro</title>
     <style>
         :root {
             --word-blue: #2b579a;
@@ -13,7 +13,7 @@
             --word-border: #d1d1d1;
             --sidebar-bg: #1e1e1e;
             --sidebar-text: #cccccc;
-            --sidebar-hover: rgba(255, 255, 255, 0.08);
+            --sidebar-hover: rgba(255, 255, 255, 0.12);
             --sidebar-active: #2b579a;
             --accent-yellow: #f1c40f;
             --accent-red: #e74c3c;
@@ -25,44 +25,50 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
             display: flex;
             height: 100vh;
+            height: 100dvh; /* Altura exata em navegadores mobile/tablet */
             overflow: hidden;
             background-color: var(--word-bg);
             color: #333;
         }
 
-        /* --- SIDEBAR LATERAL --- */
+        /* --- SIDEBAR BARRA LATERAL (AJUSTADA PARA TOUCH) --- */
         .sidebar {
-            width: 320px;
+            width: 300px;
             background-color: var(--sidebar-bg);
             color: var(--sidebar-text);
             display: flex;
             flex-direction: column;
             border-right: 1px solid #333;
-            transition: margin-left 0.3s ease;
-            z-index: 100;
+            transition: transform 0.25s ease-in-out;
+            z-index: 200;
             flex-shrink: 0;
+            height: 100%;
         }
 
         .sidebar.escondida {
-            margin-left: -320px;
+            transform: translateX(-100%);
+            position: absolute;
         }
 
         .sidebar-header {
-            padding: 15px;
+            padding: 16px;
             background: #141414;
             border-bottom: 1px solid #2a2a2a;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
         .sidebar-header h2 {
-            font-size: 16px;
+            font-size: 17px;
             color: #fff;
-            margin-bottom: 12px;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -70,44 +76,44 @@
 
         .btn-criar-pasta {
             width: 100%;
-            padding: 10px;
+            min-height: 44px; /* Otimizado para toque */
             background: var(--word-blue);
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             font-weight: bold;
-            font-size: 13px;
+            font-size: 14px;
             cursor: pointer;
-            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
 
-        .btn-criar-pasta:hover {
+        .btn-criar-pasta:active {
             background: #1d3d6e;
         }
 
         .busca-container {
-            padding: 10px 15px;
+            padding: 10px 14px;
             background: #181818;
             border-bottom: 1px solid #2a2a2a;
         }
 
         .input-busca {
             width: 100%;
+            height: 40px;
             padding: 8px 12px;
-            border-radius: 4px;
+            border-radius: 6px;
             border: 1px solid #3a3a3a;
             background: #252526;
             color: white;
-            font-size: 12px;
+            font-size: 13px;
             outline: none;
         }
 
-        .input-busca:focus {
-            border-color: var(--word-blue);
-        }
-
         .backup-section {
-            padding: 10px 15px;
+            padding: 10px 14px;
             display: flex;
             gap: 8px;
             background: #181818;
@@ -116,18 +122,20 @@
 
         .btn-backup {
             flex: 1;
-            padding: 6px;
+            min-height: 38px;
             background: #2d2d2d;
             color: #ccc;
             border: 1px solid #3a3a3a;
-            border-radius: 4px;
-            font-size: 11px;
+            border-radius: 6px;
+            font-size: 12px;
             cursor: pointer;
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-weight: 600;
         }
 
-        .btn-backup:hover {
+        .btn-backup:active {
             background: #3e3e3e;
             color: white;
         }
@@ -135,8 +143,8 @@
         .section-title {
             font-size: 11px;
             font-weight: bold;
-            color: #777;
-            padding: 12px 15px 6px 15px;
+            color: #888;
+            padding: 12px 14px 6px 14px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -145,66 +153,67 @@
             flex: 1;
             overflow-y: auto;
             padding: 0 10px 10px 10px;
+            -webkit-overflow-scrolling: touch;
         }
 
         .card-pasta {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 6px;
-            margin-bottom: 8px;
-            padding: 6px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            padding: 8px;
         }
 
         .item-pasta-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 6px 8px;
+            padding: 6px;
             font-weight: 600;
-            font-size: 13px;
+            font-size: 14px;
             color: #eee;
         }
 
         .pasta-info {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
-            max-width: 65%;
+            max-width: 60%;
         }
 
         .badge-sub {
             background: #333;
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 10px;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 12px;
             color: #aaa;
         }
 
         .lista-subnotas {
             margin-left: 10px;
             border-left: 2px solid #333;
-            padding-left: 6px;
-            margin-top: 4px;
+            padding-left: 8px;
+            margin-top: 6px;
         }
 
         .item-subnota {
-            padding: 6px 8px;
-            font-size: 12px;
-            border-radius: 4px;
+            min-height: 40px;
+            padding: 6px 10px;
+            font-size: 13px;
+            border-radius: 6px;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
             color: #bbb;
-            margin: 2px 0;
+            margin: 3px 0;
         }
 
-        .item-subnota:hover {
+        .item-subnota:active {
             background: var(--sidebar-hover);
-            color: white;
         }
 
         .item-subnota.ativa {
@@ -216,34 +225,39 @@
         .btn-icon {
             background: transparent;
             border: none;
-            color: #888;
+            color: #aaa;
             cursor: pointer;
-            padding: 2px 4px;
-            font-size: 12px;
-            border-radius: 3px;
+            padding: 6px 8px;
+            font-size: 14px;
+            border-radius: 4px;
+            min-width: 32px;
+            min-height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .btn-icon:hover { color: white; }
         .btn-pin.fixado { color: var(--accent-yellow); }
-        .btn-del:hover { color: var(--accent-red); }
+        .btn-del:active { color: var(--accent-red); }
 
-        /* --- ÁREA PRINCIPAL --- */
+        /* --- ÁREA PRINCIPAL DO DOCUMENTO --- */
         .main-wrapper {
             flex: 1;
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            height: 100%;
             overflow: hidden;
+            position: relative;
         }
 
-        /* --- WORD HEADER --- */
         .word-header {
             background-color: var(--word-blue);
             color: white;
-            padding: 8px 15px;
+            height: 48px;
+            padding: 0 16px;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             user-select: none;
         }
 
@@ -251,41 +265,48 @@
             background: transparent;
             border: none;
             color: white;
-            font-size: 18px;
+            font-size: 20px;
             cursor: pointer;
-            padding: 2px 6px;
-            border-radius: 3px;
+            width: 38px;
+            height: 38px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .btn-toggle-side:hover {
+        .btn-toggle-side:active {
             background: rgba(255,255,255,0.2);
         }
 
         .word-title {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
-            letter-spacing: 0.3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        /* --- RIBBON (FAIXA DE OPÇÕES) --- */
+        /* --- FAIXA RIBBON DO WORD (OTIMIZADA PARA TABLET) --- */
         .ribbon-tabs {
             background-color: var(--word-ribbon-bg);
             border-bottom: 1px solid var(--word-border);
             display: flex;
-            padding: 0 10px;
+            padding: 0 8px;
             user-select: none;
         }
 
         .ribbon-tab {
-            padding: 6px 15px;
-            font-size: 12px;
+            padding: 10px 16px;
+            font-size: 13px;
             cursor: pointer;
             color: #444;
-            border-bottom: 2px solid transparent;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
         }
 
         .ribbon-tab.active {
-            border-bottom: 2px solid var(--word-blue);
+            border-bottom-color: var(--word-blue);
             color: var(--word-blue);
             font-weight: bold;
             background: #fff;
@@ -294,87 +315,90 @@
         .ribbon-toolbar {
             background-color: #fff;
             border-bottom: 1px solid var(--word-border);
-            padding: 6px 15px;
+            padding: 8px 12px;
             display: flex;
             align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            gap: 8px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
             user-select: none;
         }
 
         .tool-group {
             display: flex;
             align-items: center;
-            gap: 3px;
+            gap: 4px;
             padding-right: 8px;
             border-right: 1px solid #e0e0e0;
+            flex-shrink: 0;
         }
 
         .tool-btn {
             background: transparent;
             border: 1px solid transparent;
-            padding: 4px 6px;
-            border-radius: 3px;
+            padding: 6px 10px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 600;
             color: #333;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-width: 26px;
-            height: 26px;
+            min-width: 36px;
+            height: 36px;
         }
 
-        .tool-btn:hover {
+        .tool-btn:active {
             background-color: #e5e5e5;
             border-color: #ccc;
         }
 
         .tool-select {
-            padding: 3px 6px;
+            height: 36px;
+            padding: 0 8px;
             border: 1px solid var(--word-border);
-            border-radius: 3px;
-            font-size: 12px;
+            border-radius: 4px;
+            font-size: 13px;
             outline: none;
             background: white;
-            cursor: pointer;
         }
 
-        /* --- ÁREA DO DOCUMENTO --- */
+        /* --- FOLHA DE PAPEL DO TABLET --- */
         .editor-container-wrapper {
             flex: 1;
             overflow-y: auto;
-            padding: 30px 20px;
+            padding: 20px 12px;
             display: flex;
             justify-content: center;
             background-color: var(--word-bg);
+            -webkit-overflow-scrolling: touch;
         }
 
         .word-document {
             background: white;
             width: 100%;
-            max-width: 800px;
-            min-height: 950px;
-            padding: 60px 70px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-            border-radius: 2px;
+            max-width: 760px; /* Largura ideal para Tablet 10.1" */
+            min-height: 850px;
+            padding: 40px 35px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            border-radius: 4px;
             display: flex;
             flex-direction: column;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
 
         .input-document-title {
             border: none;
-            border-bottom: 2px solid transparent;
+            border-bottom: 2px solid #e0e0e0;
             outline: none;
-            font-size: 26px;
+            font-size: 24px;
             font-weight: bold;
             color: #2b2b2b;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             width: 100%;
-            padding-bottom: 5px;
+            padding-bottom: 8px;
         }
 
         .input-document-title:focus {
@@ -384,14 +408,10 @@
         .editor-body {
             flex: 1;
             outline: none;
-            font-size: 15px;
+            font-size: 16px;
             line-height: 1.7;
             color: #333;
-            min-height: 700px;
-        }
-
-        .editor-body p {
-            margin-bottom: 12px;
+            min-height: 650px;
         }
 
         .aviso-vazio-main {
@@ -402,42 +422,44 @@
             height: 100%;
             color: #666;
             text-align: center;
+            padding: 20px;
         }
 
         .aviso-vazio-main span {
-            font-size: 54px;
-            margin-bottom: 15px;
+            font-size: 50px;
+            margin-bottom: 12px;
         }
 
-        /* --- BARRA DE STATUS (BOTTOM WORD BAR) --- */
+        /* --- BARRA DE STATUS INFERIOR --- */
         .status-bar {
             background-color: var(--status-bg);
             color: white;
-            font-size: 11px;
-            padding: 4px 15px;
+            font-size: 12px;
+            height: 32px;
+            padding: 0 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             user-select: none;
+            flex-shrink: 0;
         }
 
         .status-info {
             display: flex;
-            gap: 15px;
+            gap: 14px;
         }
 
-        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
     </style>
 </head>
 <body>
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <h2>📘 Word Notes Pro</h2>
-            <button class="btn-criar-pasta" onclick="criarColecao()">+ Nova Coleção</button>
+            <h2>📘 Word Notes Tablet</h2>
+            <button class="btn-criar-pasta" onclick="criarColecao()">➕ Nova Coleção</button>
         </div>
 
         <div class="busca-container">
@@ -446,7 +468,7 @@
 
         <div class="backup-section">
             <button class="btn-backup" onclick="exportarBackup()">💾 Exportar</button>
-            <label class="btn-backup" style="display:block; text-align:center;">
+            <label class="btn-backup" style="display:flex; align-items:center; justify-content:center;">
                 📂 Importar
                 <input type="file" id="input-file" accept=".json" style="display:none;" onchange="importarBackup(event)">
             </label>
@@ -459,12 +481,12 @@
         <div class="container-pastas" id="lista-comuns"></div>
 
         <div class="section-title">🗑️ Lixeira</div>
-        <div class="container-pastas" id="lista-lixeira" style="max-height: 120px;"></div>
+        <div class="container-pastas" id="lista-lixeira" style="max-height: 140px;"></div>
     </div>
 
     <div class="main-wrapper">
         <div class="word-header">
-            <button class="btn-toggle-side" onclick="toggleSidebar()" title="Ocultar/Exibir Barra Lateral">☰</button>
+            <button class="btn-toggle-side" onclick="toggleSidebar()" title="Barra Lateral">☰</button>
             <div class="word-title" id="word-header-title">Word Notes Pro - Documento</div>
         </div>
 
@@ -476,8 +498,8 @@
 
         <div class="ribbon-toolbar">
             <div class="tool-group">
-                <button class="tool-btn" onclick="execCmd('undo')" title="Desfazer (Ctrl+Z)">↩️</button>
-                <button class="tool-btn" onclick="execCmd('redo')" title="Refazer (Ctrl+Y)">↪️</button>
+                <button class="tool-btn" onclick="execCmd('undo')" title="Desfazer">↩️</button>
+                <button class="tool-btn" onclick="execCmd('redo')" title="Refazer">↪️</button>
             </div>
 
             <div class="tool-group">
@@ -487,7 +509,6 @@
                     <option value="Georgia">Georgia</option>
                     <option value="Times New Roman">Times New Roman</option>
                     <option value="Courier New">Courier New</option>
-                    <option value="Verdana">Verdana</option>
                 </select>
                 <select class="tool-select" onchange="execCmd('fontSize', this.value)">
                     <option value="2">10pt</option>
@@ -495,33 +516,32 @@
                     <option value="4">14pt</option>
                     <option value="5">18pt</option>
                     <option value="6">24pt</option>
-                    <option value="7">36pt</option>
                 </select>
             </div>
 
             <div class="tool-group">
-                <button class="tool-btn" onclick="execCmd('bold')" title="Negrito (Ctrl+B)"><b>B</b></button>
-                <button class="tool-btn" onclick="execCmd('italic')" title="Itálico (Ctrl+I)"><i>I</i></button>
-                <button class="tool-btn" onclick="execCmd('underline')" title="Sublinhado (Ctrl+U)"><u>U</u></button>
-                <button class="tool-btn" onclick="execCmd('strikeThrough')" title="Tachado"><s>S</s></button>
+                <button class="tool-btn" onclick="execCmd('bold')"><b>B</b></button>
+                <button class="tool-btn" onclick="execCmd('italic')"><i>I</i></button>
+                <button class="tool-btn" onclick="execCmd('underline')"><u>U</u></button>
+                <button class="tool-btn" onclick="execCmd('strikeThrough')"><s>S</s></button>
             </div>
 
             <div class="tool-group">
-                <button class="tool-btn" onclick="execCmd('justifyLeft')" title="Alinhar à Esquerda">⇐</button>
-                <button class="tool-btn" onclick="execCmd('justifyCenter')" title="Centralizar">⇔</button>
-                <button class="tool-btn" onclick="execCmd('justifyRight')" title="Alinhar à Direita">⇒</button>
-                <button class="tool-btn" onclick="execCmd('justifyFull')" title="Justificar">≡</button>
+                <button class="tool-btn" onclick="execCmd('justifyLeft')">⇐</button>
+                <button class="tool-btn" onclick="execCmd('justifyCenter')">⇔</button>
+                <button class="tool-btn" onclick="execCmd('justifyRight')">⇒</button>
+                <button class="tool-btn" onclick="execCmd('justifyFull')">≡</button>
             </div>
 
             <div class="tool-group">
-                <button class="tool-btn" onclick="execCmd('insertUnorderedList')" title="Lista com Marcadores">• Lista</button>
-                <button class="tool-btn" onclick="execCmd('insertOrderedList')" title="Lista Numerada">1. Lista</button>
+                <button class="tool-btn" onclick="execCmd('insertUnorderedList')">• Lista</button>
+                <button class="tool-btn" onclick="execCmd('insertOrderedList')">1. Lista</button>
             </div>
 
             <div class="tool-group">
-                <input type="color" title="Cor do Texto" onchange="execCmd('foreColor', this.value)" style="border:none; width:24px; height:24px; cursor:pointer; background:transparent;">
-                <button class="tool-btn" onclick="execCmd('backColor', '#f1c40f')" title="Marca-Texto Amarelo">🖍️</button>
-                <button class="tool-btn" onclick="execCmd('removeFormat')" title="Limpar Formatação">🧹</button>
+                <input type="color" title="Cor do Texto" onchange="execCmd('foreColor', this.value)" style="border:none; width:30px; height:30px; cursor:pointer; background:transparent;">
+                <button class="tool-btn" onclick="execCmd('backColor', '#f1c40f')">🖍️</button>
+                <button class="tool-btn" onclick="execCmd('removeFormat')">🧹</button>
             </div>
         </div>
 
@@ -534,7 +554,7 @@
             <div class="aviso-vazio-main" id="aviso-vazio">
                 <span>📄</span>
                 <h2>Nenhuma nota selecionada</h2>
-                <p>Crie uma coleção no menu lateral, adicione sub-notas e comece a escrever!</p>
+                <p>Abra o menu lateral, crie uma coleção e adicione sub-notas para começar.</p>
             </div>
         </div>
 
@@ -542,17 +562,15 @@
             <div class="status-info">
                 <span id="stat-words">0 palavras</span>
                 <span id="stat-chars">0 caracteres</span>
-                <span id="stat-readtime">0 min de leitura</span>
             </div>
             <div>
-                <span id="stat-save-status">Pronto (Offline)</span>
+                <span id="stat-save-status">100% Offline</span>
             </div>
         </div>
     </div>
 
     <script>
-        // BANCO DE DADOS LOCAL (LOCALSTORAGE)
-        let colecoes = JSON.parse(localStorage.getItem('word_notes_colecoes')) || [];
+        let colecoes = JSON.parse(localStorage.getItem('word_notes_colecoes_tablet')) || [];
         let idColecaoAtiva = null;
         let idSubNotaAtiva = null;
 
@@ -565,7 +583,7 @@
         }
 
         function criarColecao() {
-            const nome = prompt("Digite o nome da nova coleção/pasta:", "Minha Coleção");
+            const nome = prompt("Digite o nome da nova coleção:", "Nova Coleção");
             if (!nome || !nome.trim()) return;
 
             const nova = {
@@ -588,7 +606,7 @@
             const sub = {
                 id: Date.now().toString(),
                 titulo: "Nova Sub-nota",
-                conteudo: "<p>Comece a escrever seu texto aqui...</p>",
+                conteudo: "<p>Escreva seu texto aqui...</p>",
                 naLixeira: false
             };
 
@@ -605,7 +623,7 @@
             if (!col.fixada) {
                 const fixadas = colecoes.filter(c => c.fixada).length;
                 if (fixadas >= 3) {
-                    alert("Limite atingido! Você só pode fixar no máximo 3 coleções no topo.");
+                    alert("Você só pode fixar no máximo 3 coleções no topo.");
                     return;
                 }
                 col.fixada = true;
@@ -644,9 +662,9 @@
                             <span class="badge-sub">${subNotasValidas.length}</span>
                         </div>
                         <div>
-                            <button class="btn-icon btn-pin ${col.fixada ? 'fixado' : ''}" onclick="toggleFixar(event, '${col.id}')" title="${col.fixada ? 'Desafixar' : 'Fixar no topo (Máx 3)'}">📌</button>
-                            <button class="btn-icon" onclick="criarSubNota(event, '${col.id}')" title="Criar Sub-nota">➕</button>
-                            <button class="btn-icon btn-del" onclick="excluirColecao(event, '${col.id}')" title="Excluir Coleção">🗑️</button>
+                            <button class="btn-icon btn-pin ${col.fixada ? 'fixado' : ''}" onclick="toggleFixar(event, '${col.id}')">📌</button>
+                            <button class="btn-icon" onclick="criarSubNota(event, '${col.id}')">➕</button>
+                            <button class="btn-icon btn-del" onclick="excluirColecao(event, '${col.id}')">🗑️</button>
                         </div>
                     </div>
                 `;
@@ -661,7 +679,7 @@
                         itemSub.onclick = () => carregarSubNota(col.id, sub.id);
                         itemSub.innerHTML = `
                             <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:80%;">📄 ${sub.titulo}</span>
-                            <button class="btn-icon btn-del" onclick="moverParaLixeira(event, '${col.id}', '${sub.id}')" title="Mover para Lixeira">🗑️</button>
+                            <button class="btn-icon btn-del" onclick="moverParaLixeira(event, '${col.id}', '${sub.id}')">🗑️</button>
                         `;
                         subList.appendChild(itemSub);
                     });
@@ -675,15 +693,14 @@
                     listComuns.appendChild(card);
                 }
 
-                // Sub-notas na Lixeira
                 col.subnotas.filter(s => s.naLixeira).forEach(sub => {
                     const lixItem = document.createElement('div');
                     lixItem.className = 'item-subnota';
                     lixItem.innerHTML = `
-                        <span style="text-decoration:line-through; font-size:11px; overflow:hidden; text-overflow:ellipsis; max-width:70%;">${sub.titulo}</span>
+                        <span style="text-decoration:line-through; font-size:11px;">${sub.titulo}</span>
                         <div>
-                            <button class="btn-icon" onclick="restaurarSub('${col.id}', '${sub.id}')" title="Restaurar">↩️</button>
-                            <button class="btn-icon btn-del" onclick="excluirPermanente('${col.id}', '${sub.id}')" title="Apagar para sempre">❌</button>
+                            <button class="btn-icon" onclick="restaurarSub('${col.id}', '${sub.id}')">↩️</button>
+                            <button class="btn-icon btn-del" onclick="excluirPermanente('${col.id}', '${sub.id}')">❌</button>
                         </div>
                     `;
                     listLixeira.appendChild(lixItem);
@@ -709,6 +726,11 @@
             document.getElementById('doc-title').value = sub.titulo;
             document.getElementById('doc-body').innerHTML = sub.conteudo;
             document.getElementById('word-header-title').innerText = `${col.titulo} - ${sub.titulo}`;
+
+            // Fechar sidebar no tablet para dar mais espaço de tela
+            if (window.innerWidth < 900) {
+                document.getElementById('sidebar').classList.add('escondida');
+            }
 
             atualizarEstatisticas();
             renderizar();
@@ -762,7 +784,7 @@
         }
 
         function excluirPermanente(idColecao, idSub) {
-            if (confirm("Deseja apagar esta nota permanentemente?")) {
+            if (confirm("Excluir esta nota permanentemente?")) {
                 const col = colecoes.find(c => c.id === idColecao);
                 if (col) {
                     col.subnotas = col.subnotas.filter(s => s.id !== idSub);
@@ -774,7 +796,7 @@
 
         function excluirColecao(e, idColecao) {
             e.stopPropagation();
-            if (confirm("Deseja apagar esta coleção inteira e todas as suas sub-notas?")) {
+            if (confirm("Excluir esta coleção e todas as suas notas?")) {
                 colecoes = colecoes.filter(c => c.id !== idColecao);
                 if (idColecaoAtiva === idColecao) fecharEditor();
                 salvar();
@@ -787,7 +809,7 @@
             idColecaoAtiva = null;
             document.getElementById('paper-editor').style.display = 'none';
             document.getElementById('aviso-vazio').style.display = 'flex';
-            document.getElementById('word-header-title').innerText = "Word Notes Pro - Documento";
+            document.getElementById('word-header-title').innerText = "Word Notes Pro";
             atualizarEstatisticas(true);
             renderizar();
         }
@@ -796,19 +818,16 @@
             if (zerar) {
                 document.getElementById('stat-words').innerText = "0 palavras";
                 document.getElementById('stat-chars').innerText = "0 caracteres";
-                document.getElementById('stat-readtime').innerText = "0 min de leitura";
                 return;
             }
 
             const texto = document.getElementById('doc-body').innerText || "";
             const caracteres = texto.length;
             const palavras = texto.trim() ? texto.trim().split(/\s+/).length : 0;
-            const tempoLeitura = Math.ceil(palavras / 200);
 
-            document.getElementById('stat-words').innerText = `${palavras} palavra${palavras === 1 ? '' : 's'}`;
-            document.getElementById('stat-chars').innerText = `${caracteres} caractere${caracteres === 1 ? '' : 's'}`;
-            document.getElementById('stat-readtime').innerText = `~${tempoLeitura} min de leitura`;
-            document.getElementById('stat-save-status').innerText = "Salvo automaticamente";
+            document.getElementById('stat-words').innerText = `${palavras} palavras`;
+            document.getElementById('stat-chars').innerText = `${caracteres} caracteres`;
+            document.getElementById('stat-save-status').innerText = "Salvo (Offline)";
         }
 
         function filtrarSubNotas(termo) {
@@ -820,11 +839,11 @@
         }
 
         function salvar() {
-            localStorage.setItem('word_notes_colecoes', JSON.stringify(colecoes));
+            localStorage.setItem('word_notes_colecoes_tablet', JSON.stringify(colecoes));
         }
 
         function exportarComoTxt() {
-            if (!idSubNotaAtiva) return alert("Abra uma nota para exportar em formato TXT.");
+            if (!idSubNotaAtiva) return alert("Selecione uma nota para exportar.");
             const titulo = document.getElementById('doc-title').value || "Nota";
             const texto = document.getElementById('doc-body').innerText || "";
             
@@ -837,17 +856,17 @@
         }
 
         function imprimirDocumento() {
-            if (!idSubNotaAtiva) return alert("Abra uma nota para imprimir.");
+            if (!idSubNotaAtiva) return alert("Selecione uma nota para imprimir.");
             window.print();
         }
 
         function exportarBackup() {
-            if (colecoes.length === 0) return alert("Nenhum dado para exportar.");
+            if (colecoes.length === 0) return alert("Sem dados para exportar.");
             const blob = new Blob([JSON.stringify(colecoes, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `backup_word_notes_${new Date().toISOString().slice(0,10)}.json`;
+            a.download = `backup_notes_tablet_${new Date().toISOString().slice(0,10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
         }
@@ -861,17 +880,11 @@
                 try {
                     const dados = JSON.parse(evt.target.result);
                     if (Array.isArray(dados)) {
-                        if (confirm("Deseja mesclar o backup importado com as coleções existentes? (Clique em Cancelar para substituir tudo).")) {
-                            const idsExistentes = new Set(colecoes.map(c => c.id));
-                            const novasFiltradas = dados.filter(c => !idsExistentes.has(c.id));
-                            colecoes = [...novasFiltradas, ...colecoes];
-                        } else {
-                            colecoes = dados;
-                        }
+                        colecoes = dados;
                         salvar();
                         fecharEditor();
                         renderizar();
-                        alert("Backup importado com sucesso!");
+                        alert("Backup carregado com sucesso!");
                     }
                 } catch(err) {
                     alert("Arquivo de backup inválido.");
