@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Word Notes Tablet 10.1" Pro</title>
+    <title>Word Notes Pro - Sistema de Folhas</title>
     <style>
         :root {
             --word-blue: #2b579a;
@@ -17,8 +17,11 @@
             --sidebar-active: #2b579a;
             --accent-yellow: #f1c40f;
             --accent-red: #e74c3c;
-            --accent-green: #2ecc71;
             --status-bg: #2b579a;
+            
+            /* Dimensões da Folha A4 */
+            --page-width: 750px;
+            --page-height: 960px;
         }
 
         * {
@@ -32,13 +35,13 @@
         body {
             display: flex;
             height: 100vh;
-            height: 100dvh; /* Altura exata em navegadores mobile/tablet */
+            height: 100dvh;
             overflow: hidden;
             background-color: var(--word-bg);
             color: #333;
         }
 
-        /* --- SIDEBAR BARRA LATERAL (AJUSTADA PARA TOUCH) --- */
+        /* --- SIDEBAR LATERAL --- */
         .sidebar {
             width: 300px;
             background-color: var(--sidebar-bg);
@@ -76,7 +79,7 @@
 
         .btn-criar-pasta {
             width: 100%;
-            min-height: 44px; /* Otimizado para toque */
+            min-height: 44px;
             background: var(--word-blue);
             color: white;
             border: none;
@@ -90,9 +93,7 @@
             gap: 6px;
         }
 
-        .btn-criar-pasta:active {
-            background: #1d3d6e;
-        }
+        .btn-criar-pasta:active { background: #1d3d6e; }
 
         .busca-container {
             padding: 10px 14px;
@@ -135,10 +136,7 @@
             font-weight: 600;
         }
 
-        .btn-backup:active {
-            background: #3e3e3e;
-            color: white;
-        }
+        .btn-backup:active { background: #3e3e3e; color: white; }
 
         .section-title {
             font-size: 11px;
@@ -212,15 +210,8 @@
             margin: 3px 0;
         }
 
-        .item-subnota:active {
-            background: var(--sidebar-hover);
-        }
-
-        .item-subnota.ativa {
-            background: var(--sidebar-active);
-            color: white;
-            font-weight: bold;
-        }
+        .item-subnota:active { background: var(--sidebar-hover); }
+        .item-subnota.ativa { background: var(--sidebar-active); color: white; font-weight: bold; }
 
         .btn-icon {
             background: transparent;
@@ -240,7 +231,7 @@
         .btn-pin.fixado { color: var(--accent-yellow); }
         .btn-del:active { color: var(--accent-red); }
 
-        /* --- ÁREA PRINCIPAL DO DOCUMENTO --- */
+        /* --- ÁREA PRINCIPAL --- */
         .main-wrapper {
             flex: 1;
             display: flex;
@@ -275,9 +266,7 @@
             justify-content: center;
         }
 
-        .btn-toggle-side:active {
-            background: rgba(255,255,255,0.2);
-        }
+        .btn-toggle-side:active { background: rgba(255,255,255,0.2); }
 
         .word-title {
             font-size: 14px;
@@ -287,7 +276,7 @@
             text-overflow: ellipsis;
         }
 
-        /* --- FAIXA RIBBON DO WORD (OTIMIZADA PARA TABLET) --- */
+        /* --- FAIXA RIBBON DO WORD --- */
         .ribbon-tabs {
             background-color: var(--word-ribbon-bg);
             border-bottom: 1px solid var(--word-border);
@@ -365,53 +354,75 @@
             background: white;
         }
 
-        /* --- FOLHA DE PAPEL DO TABLET --- */
+        /* --- CONTAINER DE FOLHAS (PAGINAÇÃO A4 REAL) --- */
         .editor-container-wrapper {
             flex: 1;
             overflow-y: auto;
-            padding: 20px 12px;
+            padding: 30px 15px;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
             background-color: var(--word-bg);
             -webkit-overflow-scrolling: touch;
         }
 
-        .word-document {
-            background: white;
+        .document-header-area {
             width: 100%;
-            max-width: 760px; /* Largura ideal para Tablet 10.1" */
-            min-height: 850px;
-            padding: 40px 35px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-            border-radius: 4px;
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 30px;
+            max-width: var(--page-width);
+            margin-bottom: 15px;
         }
 
         .input-document-title {
             border: none;
-            border-bottom: 2px solid #e0e0e0;
+            border-bottom: 2px solid #ccc;
             outline: none;
             font-size: 24px;
             font-weight: bold;
             color: #2b2b2b;
-            margin-bottom: 20px;
             width: 100%;
-            padding-bottom: 8px;
+            padding: 8px 4px;
+            background: transparent;
         }
 
         .input-document-title:focus {
             border-bottom-color: var(--word-blue);
         }
 
-        .editor-body {
-            flex: 1;
+        /* ESTRUTURA DAS FOLHAS INDIVIDUAIS */
+        .pages-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px; /* Espaço entre cada folha */
+            width: 100%;
+        }
+
+        .word-page {
+            background: white;
+            width: 100%;
+            max-width: var(--page-width);
+            height: var(--page-height); /* Altura fixa de uma folha A4 */
+            padding: 50px 50px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 2px;
             outline: none;
             font-size: 16px;
             line-height: 1.7;
             color: #333;
-            min-height: 650px;
+            overflow: hidden; /* O conteúdo excedente é detetado e movido */
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .word-page::after {
+            content: "Folha " attr(data-page-number);
+            position: absolute;
+            bottom: 15px;
+            right: 25px;
+            font-size: 11px;
+            color: #aaa;
+            user-select: none;
+            pointer-events: none;
         }
 
         .aviso-vazio-main {
@@ -430,7 +441,7 @@
             margin-bottom: 12px;
         }
 
-        /* --- BARRA DE STATUS INFERIOR --- */
+        /* --- BARRA DE STATUS --- */
         .status-bar {
             background-color: var(--status-bg);
             color: white;
@@ -446,7 +457,26 @@
 
         .status-info {
             display: flex;
-            gap: 14px;
+            gap: 16px;
+        }
+
+        /* CONFIGURAÇÃO DE IMPRESSÃO / PDF */
+        @media print {
+            .sidebar, .word-header, .ribbon-tabs, .ribbon-toolbar, .status-bar, .document-header-area {
+                display: none !important;
+            }
+            body, .main-wrapper, .editor-container-wrapper {
+                background: white !important;
+                padding: 0 !important;
+                overflow: visible !important;
+            }
+            .word-page {
+                box-shadow: none !important;
+                margin: 0 !important;
+                page-break-after: always;
+                height: 100vh !important;
+            }
+            .word-page::after { display: none; }
         }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -458,7 +488,7 @@
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <h2>📘 Word Notes Tablet</h2>
+            <h2>📘 Word Notes Pro</h2>
             <button class="btn-criar-pasta" onclick="criarColecao()">➕ Nova Coleção</button>
         </div>
 
@@ -492,6 +522,7 @@
 
         <div class="ribbon-tabs">
             <div class="ribbon-tab active">Página Inicial</div>
+            <div class="ribbon-tab" onclick="adicionarFolhaManual()">+ Nova Folha</div>
             <div class="ribbon-tab" onclick="imprimirDocumento()">Imprimir / PDF</div>
             <div class="ribbon-tab" onclick="exportarComoTxt()">Baixar TXT</div>
         </div>
@@ -545,21 +576,24 @@
             </div>
         </div>
 
-        <div class="editor-container-wrapper">
-            <div class="word-document" id="paper-editor" style="display: none;">
+        <div class="editor-container-wrapper" id="editor-wrapper">
+            <div class="document-header-area" id="doc-header-container" style="display: none;">
                 <input type="text" id="doc-title" class="input-document-title" placeholder="Título do Documento..." oninput="salvarNotaAtual()">
-                <div id="doc-body" class="editor-body" contenteditable="true" oninput="salvarNotaAtual()"></div>
             </div>
+
+            <div class="pages-container" id="pages-container" style="display: none;">
+                </div>
 
             <div class="aviso-vazio-main" id="aviso-vazio">
                 <span>📄</span>
                 <h2>Nenhuma nota selecionada</h2>
-                <p>Abra o menu lateral, crie uma coleção e adicione sub-notas para começar.</p>
+                <p>Crie ou escolha uma sub-nota no menu lateral para começar a escrever.</p>
             </div>
         </div>
 
         <div class="status-bar">
             <div class="status-info">
+                <span id="stat-page-count">Página 1 de 1</span>
                 <span id="stat-words">0 palavras</span>
                 <span id="stat-chars">0 caracteres</span>
             </div>
@@ -570,7 +604,7 @@
     </div>
 
     <script>
-        let colecoes = JSON.parse(localStorage.getItem('word_notes_colecoes_tablet')) || [];
+        let colecoes = JSON.parse(localStorage.getItem('word_notes_colecoes_pages')) || [];
         let idColecaoAtiva = null;
         let idSubNotaAtiva = null;
 
@@ -578,9 +612,144 @@
 
         function execCmd(command, value = null) {
             document.execCommand(command, false, value);
-            atualizarEstatisticas();
+            verificarPaginacao();
             salvarNotaAtual();
         }
+
+        /* --- SISTEMA DE GESTÃO E CRIAÇÃO AUTOMÁTICA DE FOLHAS --- */
+
+        function criarElementoFolha(numeroPagina, conteudoHTML = "<p><br></p>") {
+            const folha = document.createElement('div');
+            folha.className = 'word-page';
+            folha.contentEditable = "true";
+            folha.setAttribute('data-page-number', numeroPagina);
+            folha.innerHTML = conteudoHTML;
+
+            // Eventos de escuta para monitorizar o transbordo de texto
+            folha.addEventListener('input', () => {
+                verificarPaginacao();
+                salvarNotaAtual();
+            });
+
+            folha.addEventListener('keyup', () => {
+                atualizarPaginaAtual();
+            });
+
+            folha.addEventListener('focus', () => {
+                atualizarPaginaAtual();
+            });
+
+            return folha;
+        }
+
+        function verificarPaginacao() {
+            const container = document.getElementById('pages-container');
+            const folhas = container.getElementsByClassName('word-page');
+
+            for (let i = 0; i < folhas.length; i++) {
+                const folhaAtual = folhas[i];
+
+                // Deteta se o conteúdo excede a altura máxima da folha A4
+                while (folhaAtual.scrollHeight > folhaAtual.clientHeight && folhaAtual.lastChild) {
+                    let proximaFolha = folhas[i + 1];
+
+                    // Se não existir uma folha seguinte, cria uma automaticamente
+                    if (!proximaFolha) {
+                        proximaFolha = criarElementoFolha(folhas.length + 1, "");
+                        container.appendChild(proximaFolha);
+                    }
+
+                    // Move o último elemento da folha cheia para o início da folha seguinte
+                    proximaFolha.insertBefore(folhaAtual.lastChild, proximaFolha.firstChild);
+                }
+            }
+
+            // Elimina folhas vazias no final do documento (mantendo pelo menos 1)
+            let ult = folhas.length - 1;
+            while (ult > 0) {
+                const f = folhas[ult];
+                const textoLimpo = f.innerText.replace(/\s/g, '');
+                if (textoLimpo === '') {
+                    f.remove();
+                    ult--;
+                } else {
+                    break;
+                }
+            }
+
+            // Atualiza os números das folhas
+            const folhasAtualizadas = container.getElementsByClassName('word-page');
+            for (let idx = 0; idx < folhasAtualizadas.length; idx++) {
+                folhasAtualizadas[idx].setAttribute('data-page-number', idx + 1);
+            }
+
+            atualizarEstatisticas();
+        }
+
+        function adicionarFolhaManual() {
+            if (!idSubNotaAtiva) return alert("Selecione uma nota primeiro.");
+            const container = document.getElementById('pages-container');
+            const numPaginas = container.getElementsByClassName('word-page').length;
+            const novaFolha = criarElementoFolha(numPaginas + 1, "<p><br></p>");
+            container.appendChild(novaFolha);
+            novaFolha.focus();
+            verificarPaginacao();
+        }
+
+        function obterConteudoTotalHTML() {
+            const container = document.getElementById('pages-container');
+            const folhas = container.getElementsByClassName('word-page');
+            let arrayPaginas = [];
+            for (let f of folhas) {
+                arrayPaginas.push(f.innerHTML);
+            }
+            return JSON.stringify(arrayPaginas);
+        }
+
+        function carregarConteudoNasFolhas(conteudoSalvo) {
+            const container = document.getElementById('pages-container');
+            container.innerHTML = '';
+
+            let paginas = [];
+            try {
+                paginas = JSON.parse(conteudoSalvo);
+            } catch(e) {
+                // Compatibilidade com conteúdos antigos em texto/HTML simples
+                paginas = [conteudoSalvo || "<p>Escreva o seu texto aqui...</p>"];
+            }
+
+            if (!Array.isArray(paginas) || paginas.length === 0) {
+                paginas = ["<p>Escreva o seu texto aqui...</p>"];
+            }
+
+            paginas.forEach((htmlPag, idx) => {
+                const folha = criarElementoFolha(idx + 1, htmlPag);
+                container.appendChild(folha);
+            });
+
+            verificarPaginacao();
+        }
+
+        function atualizarPaginaAtual() {
+            const folhas = document.getElementsByClassName('word-page');
+            const total = folhas.length;
+            let paginaAtual = 1;
+
+            const selecao = window.getSelection();
+            if (selecao.rangeCount > 0) {
+                let elemento = selecao.anchorNode;
+                while (elemento && !elemento.classList?.contains('word-page')) {
+                    elemento = elemento.parentNode;
+                }
+                if (elemento && elemento.getAttribute('data-page-number')) {
+                    paginaAtual = parseInt(elemento.getAttribute('data-page-number'));
+                }
+            }
+
+            document.getElementById('stat-page-count').innerText = `Página ${paginaAtual} de ${total}`;
+        }
+
+        /* --- OPERAÇÕES DA APLICAÇÃO --- */
 
         function criarColecao() {
             const nome = prompt("Digite o nome da nova coleção:", "Nova Coleção");
@@ -606,7 +775,7 @@
             const sub = {
                 id: Date.now().toString(),
                 titulo: "Nova Sub-nota",
-                conteudo: "<p>Escreva seu texto aqui...</p>",
+                conteudo: JSON.stringify(["<p>Escreva o seu texto aqui...</p>"]),
                 naLixeira: false
             };
 
@@ -623,7 +792,7 @@
             if (!col.fixada) {
                 const fixadas = colecoes.filter(c => c.fixada).length;
                 if (fixadas >= 3) {
-                    alert("Você só pode fixar no máximo 3 coleções no topo.");
+                    alert("Apenas pode fixar no máximo 3 coleções no topo.");
                     return;
                 }
                 col.fixada = true;
@@ -721,18 +890,18 @@
             idSubNotaAtiva = idSub;
 
             document.getElementById('aviso-vazio').style.display = 'none';
-            document.getElementById('paper-editor').style.display = 'flex';
+            document.getElementById('doc-header-container').style.display = 'block';
+            document.getElementById('pages-container').style.display = 'flex';
 
             document.getElementById('doc-title').value = sub.titulo;
-            document.getElementById('doc-body').innerHTML = sub.conteudo;
             document.getElementById('word-header-title').innerText = `${col.titulo} - ${sub.titulo}`;
 
-            // Fechar sidebar no tablet para dar mais espaço de tela
+            carregarConteudoNasFolhas(sub.conteudo);
+
             if (window.innerWidth < 900) {
                 document.getElementById('sidebar').classList.add('escondida');
             }
 
-            atualizarEstatisticas();
             renderizar();
         }
 
@@ -744,7 +913,7 @@
                 const sub = col.subnotas.find(s => s.id === idSubNotaAtiva);
                 if (sub) {
                     sub.titulo = document.getElementById('doc-title').value || "Sem título";
-                    sub.conteudo = document.getElementById('doc-body').innerHTML;
+                    sub.conteudo = obterConteudoTotalHTML();
                     salvar();
                     
                     document.getElementById('word-header-title').innerText = `${col.titulo} - ${sub.titulo}`;
@@ -807,7 +976,8 @@
         function fecharEditor() {
             idSubNotaAtiva = null;
             idColecaoAtiva = null;
-            document.getElementById('paper-editor').style.display = 'none';
+            document.getElementById('doc-header-container').style.display = 'none';
+            document.getElementById('pages-container').style.display = 'none';
             document.getElementById('aviso-vazio').style.display = 'flex';
             document.getElementById('word-header-title').innerText = "Word Notes Pro";
             atualizarEstatisticas(true);
@@ -816,36 +986,32 @@
 
         function atualizarEstatisticas(zerar = false) {
             if (zerar) {
+                document.getElementById('stat-page-count').innerText = "Página 0 de 0";
                 document.getElementById('stat-words').innerText = "0 palavras";
                 document.getElementById('stat-chars').innerText = "0 caracteres";
                 return;
             }
 
-            const texto = document.getElementById('doc-body').innerText || "";
+            const container = document.getElementById('pages-container');
+            const texto = container.innerText || "";
             const caracteres = texto.length;
             const palavras = texto.trim() ? texto.trim().split(/\s+/).length : 0;
 
             document.getElementById('stat-words').innerText = `${palavras} palavras`;
             document.getElementById('stat-chars').innerText = `${caracteres} caracteres`;
             document.getElementById('stat-save-status').innerText = "Salvo (Offline)";
+
+            atualizarPaginaAtual();
         }
 
-        function filtrarSubNotas(termo) {
-            renderizar(termo);
-        }
-
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('escondida');
-        }
-
-        function salvar() {
-            localStorage.setItem('word_notes_colecoes_tablet', JSON.stringify(colecoes));
-        }
+        function filtrarSubNotas(termo) { renderizar(termo); }
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('escondida'); }
+        function salvar() { localStorage.setItem('word_notes_colecoes_pages', JSON.stringify(colecoes)); }
 
         function exportarComoTxt() {
             if (!idSubNotaAtiva) return alert("Selecione uma nota para exportar.");
             const titulo = document.getElementById('doc-title').value || "Nota";
-            const texto = document.getElementById('doc-body').innerText || "";
+            const texto = document.getElementById('pages-container').innerText || "";
             
             const blob = new Blob([`${titulo}\n\n${texto}`], { type: 'text/plain;charset=utf-8' });
             const link = document.createElement('a');
@@ -866,7 +1032,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `backup_notes_tablet_${new Date().toISOString().slice(0,10)}.json`;
+            a.download = `backup_word_notes_${new Date().toISOString().slice(0,10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
         }
@@ -887,7 +1053,7 @@
                         alert("Backup carregado com sucesso!");
                     }
                 } catch(err) {
-                    alert("Arquivo de backup inválido.");
+                    alert("Ficheiro de backup inválido.");
                 }
                 e.target.value = '';
             };
