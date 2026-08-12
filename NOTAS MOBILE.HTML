@@ -643,4 +643,386 @@
             if (!col.fixada) {
                 const fixadas = colecoes.filter(c => c.fixada).length;
                 if (fixadas >= 3) {
-      
+                    alert("Você só pode fixar no máximo 3 coleções no topo.");
+                    return;
+                }
+                col.fixada = true;
+            } else {
+                col.fixada = false;
+            }
+
+            salvar();
+            renderizar();
+        }
+
+        function renderizar(termoBusca = "") {
+            const listFixados = document.getElementById('lista-fixados');
+            const listComuns = document.getElementById('lista-comuns');
+            const listLixeira = document.getElementById('lista-lixeira');
+
+            listFixados.innerHTML = '';
+            listComuns.innerHTML = '';
+            listLixeira.innerHTML = '';
+
+            let qtdFixados = 0;
+
+            colecoes.forEach(col => {
+                if (col.fixada) qtdFixados++;
+
+                const subNotasValidas = col.subnotas.filter(s => !s.naLixeira && s.titulo.toLowerCase().includes(termoBusca.toLowerCase()));
+
+                const card = document.createElement('div');
+                card.className = 'card-pasta';
+
+                card.innerHTML = `
+                    <div class="item-pasta-header">
+                        <div class="pasta-info">
+                            <span>📁</span>
+                            <span title="${col.titulo}">${col.titulo}</span>
+                            <span class="badge-sub">${subNotasValidas.length}</span>
+                        </div>
+                        <div>
+                            <button class="btn-icon btn-pin ${col.fixada ? 'fixado' : ''}" onclick="toggleFixar(event, '${col.id}')">📌</button>
+                            <button class="btn-icon" onclick="criarSubNota(event, '${col.id}')">➕</button>
+                            <button class="btn-icon btn-del" onclick="excluirColecao(event, '${col.id}')">🗑️</button>
+                        </div>
+                    </div>
+                `;
+
+                if (subNotasValidas.length > 0) {
+                    const subList = document.createElement('div');
+                    subList.className = 'lista-subnotas';
+
+                    subNotasValidas.forEach(sub => {
+                        const itemSub = document.createElement('div');
+                        itemSub.className = `item-subnota ${sub.id === idSubNotaAtiva ? 'ativa' : ''}`;
+                        itemSub.onclick = () => carregarSubNota(col.id, sub.id);
+                        itemSub.innerHTML = `
+                            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:80%;">📄 ${sub.titulo}</span>
+                            <button class="btn-icon btn-del" onclick="moverParaLixeira(event, '${col.id}', '${sub.id}')">🗑️</button>
+                        `;
+                        subList.appendChild(itemSub);
+                    });
+
+                    card.appendChild(subList);
+                }
+
+                if (col.fixada) {
+                    listFixados.appendChild(card);
+                } else {
+                    listComuns.appendChild(card);
+                }
+
+                col.subnotas.filter(s => s.naLixeira).forEach(sub => {
+                    const lixItem = document.createElement('div');
+                    lixItem.className = 'item-subnota';
+                    lixItem.innerHTML = `
+                        <span style="text-decoration:line-through; font-size:11px;">${sub.titulo}</span>
+                        <div>
+                            <button class="btn-icon" onclick="restaurarSub('${col.id}', '${sub.id}')">↩️</button>
+                            <button class="btn-icon btn-del" onclick="excluirPermanente('${col.id}', '${sub.id}')">❌</button>
+                        </div>
+                    `;
+                    listLixeira.appendChild(lixItem);
+                });
+            });
+
+            document.getElementById('title-fixados').innerText = `📌 Fixados (${qtdFixados}/3)`;
+        }
+
+        function carregarSubNota(idColecao, idSub) {
+            const col = colecoes.find(c => c.id === idColecao);
+            if (!col) return;
+
+            const sub = col.subnotas.find(s => s.id === idSub);
+            if (!sub || sub.naLixeira) return;
+
+            idColecaoAtiva = idColecao;
+            idSubNotaAtiva = idSub;
+
+            document.getElementById('aviso-vazio').style.display = 'none';
+            document.getElementById('document-wrapper').style.display = 'flex';
+
+            document.getElementById('doc-title').value = sub.titulo;
+            document.getElementById('word-header-title').innerText = `${col.titulo} - ${sub.titulo}`;
+
+            // Carregar Páginas
+            const container = document.getElementById('pages-container');
+            container.innerHTML = '';
+
+            const paginasConteudo = sub.paginas || ["<p>Comece a escrever...</p>"];
+            paginasConteudo.forEach((html, idx) => {
+                container.appendChild(criarElementoPagina(html, idx + 1));
+            });
+
+            if (window.innerWidth < 900) {
+                document.getElementById('sidebar').classList.add('escondida');
+            }
+
+            verificarPaginacao();
+            renderizar();
+        }
+
+        function criarElementoPagina(conteudoHTML = "<p><br></p>", numero = 1) {
+            const pageDiv = document.createElement('div');
+            pageDiv.className = 'word-page';
+            pageDiv.contentEditable = "true";
+            pageDiv.innerHTML = conteudoHTML;
+
+            const footer = document.createElement('div');
+            footer.className = 'page-number-footer';
+            footer.contentEditable = "false";
+            footer.innerText = `Página ${numero}`;
+            pageDiv.appendChild(footer);
+
+            pageDiv.oninput = () => {
+                verificarPaginacao();
+                salvarNotaAtual();
+            };
+
+            return pageDiv;
+        }
+
+        /* --- LÓGICA INTELIGENTE DE CRIAÇÃO E EXCLUSÃO DE PÁGINAS --- */
+        function verificarPaginacao() {
+            const container = document.getElementById('pages-container');
+            let paginas = Array.from(container.querySelectorAll('.word-page'));
+
+            // 1. Verifica se alguma página estourou a altura (Adiciona nova folha e move o excedente)
+            for (let i = 0; i < paginas.length; i++) {
+                let pag = paginas[i];
+                
+                while (pag.scrollHeight > pag.clientHeight && pag.lastChild) {
+                    let ultimoNo = pag.lastChild;
+                    if (ultimoNo.classList && ultimoNo.classList.contains('page-number-footer')) {
+                        break;
+                    }
+
+                    let proximaPagina = paginas[i + 1];
+                    if (!proximaPagina) {
+                        proximaPagina = criarElementoPagina("<p><br></p>", paginas.length + 1);
+                        container.appendChild(proximaPagina);
+                        paginas.push(proximaPagina);
+                    }
+
+                    proximaPagina.insertBefore(ultimoNo, proximaPagina.firstChild);
+                }
+            }
+
+            // 2. Remove páginas vazias no final (mantém sempre pelo menos a 1ª página)
+            paginas = Array.from(container.querySelectorAll('.word-page'));
+            for (let i = paginas.length - 1; i > 0; i--) {
+                let pag = paginas[i];
+                let textoSemRodape = pag.innerText.replace(/Página \d+$/, '').trim();
+                let temElementoEspecial = pag.querySelector('img, table, iframe');
+
+                if (textoSemRodape === '' && !temElementoEspecial) {
+                    pag.remove();
+                } else {
+                    break; // Para a exclusão assim que encontrar uma página com conteúdo
+                }
+            }
+
+            // 3. Atualizar numeração de páginas no rodapé e na barra de status
+            atualizarNumeracao();
+        }
+
+        function atualizarNumeracao() {
+            const paginas = document.querySelectorAll('.word-page');
+            paginas.forEach((pag, idx) => {
+                let footer = pag.querySelector('.page-number-footer');
+                if (!footer) {
+                    footer = document.createElement('div');
+                    footer.className = 'page-number-footer';
+                    footer.contentEditable = "false";
+                    pag.appendChild(footer);
+                }
+                footer.innerText = `Página ${idx + 1}`;
+            });
+
+            atualizarEstatisticas();
+        }
+
+        function salvarNotaAtual() {
+            if (!idColecaoAtiva || !idSubNotaAtiva) return;
+
+            const col = colecoes.find(c => c.id === idColecaoAtiva);
+            if (col) {
+                const sub = col.subnotas.find(s => s.id === idSubNotaAtiva);
+                if (sub) {
+                    sub.titulo = document.getElementById('doc-title').value || "Sem título";
+                    
+                    const paginasDivs = document.querySelectorAll('.word-page');
+                    sub.paginas = Array.from(paginasDivs).map(p => {
+                        let clone = p.cloneNode(true);
+                        let foot = clone.querySelector('.page-number-footer');
+                        if (foot) foot.remove();
+                        return clone.innerHTML;
+                    });
+
+                    salvar();
+                    document.getElementById('word-header-title').innerText = `${col.titulo} - ${sub.titulo}`;
+                    
+                    const elementoAtivo = document.querySelector('.item-subnota.ativa span');
+                    if(elementoAtivo) elementoAtivo.innerText = '📄 ' + sub.titulo;
+                }
+            }
+        }
+
+        function moverParaLixeira(e, idColecao, idSub) {
+            e.stopPropagation();
+            const col = colecoes.find(c => c.id === idColecao);
+            if (col) {
+                const sub = col.subnotas.find(s => s.id === idSub);
+                if (sub) {
+                    sub.naLixeira = true;
+                    if (idSubNotaAtiva === idSub) fecharEditor();
+                    salvar();
+                    renderizar();
+                }
+            }
+        }
+
+        function restaurarSub(idColecao, idSub) {
+            const col = colecoes.find(c => c.id === idColecao);
+            if (col) {
+                const sub = col.subnotas.find(s => s.id === idSub);
+                if (sub) {
+                    sub.naLixeira = false;
+                    salvar();
+                    carregarSubNota(idColecao, idSub);
+                }
+            }
+        }
+
+        function excluirPermanente(idColecao, idSub) {
+            if (confirm("Excluir esta nota permanentemente?")) {
+                const col = colecoes.find(c => c.id === idColecao);
+                if (col) {
+                    col.subnotas = col.subnotas.filter(s => s.id !== idSub);
+                    salvar();
+                    renderizar();
+                }
+            }
+        }
+
+        function excluirColecao(e, idColecao) {
+            e.stopPropagation();
+            if (confirm("Excluir esta coleção e todas as suas notas?")) {
+                colecoes = colecoes.filter(c => c.id !== idColecao);
+                if (idColecaoAtiva === idColecao) fecharEditor();
+                salvar();
+                renderizar();
+            }
+        }
+
+        function fecharEditor() {
+            idSubNotaAtiva = null;
+            idColecaoAtiva = null;
+            document.getElementById('document-wrapper').style.display = 'none';
+            document.getElementById('aviso-vazio').style.display = 'flex';
+            document.getElementById('word-header-title').innerText = "Word Notes Pro";
+            atualizarEstatisticas(true);
+            renderizar();
+        }
+
+        function atualizarEstatisticas(zerar = false) {
+            if (zerar) {
+                document.getElementById('stat-pages').innerText = "Página 0 de 0";
+                document.getElementById('stat-words').innerText = "0 palavras";
+                document.getElementById('stat-chars').innerText = "0 caracteres";
+                return;
+            }
+
+            const paginas = document.querySelectorAll('.word-page');
+            let textoTotal = "";
+            paginas.forEach(p => {
+                let clone = p.cloneNode(true);
+                let foot = clone.querySelector('.page-number-footer');
+                if (foot) foot.remove();
+                textoTotal += clone.innerText + " ";
+            });
+
+            const caracteres = textoTotal.trim().length;
+            const palavras = textoTotal.trim() ? textoTotal.trim().split(/\s+/).length : 0;
+
+            document.getElementById('stat-pages').innerText = `Página 1 de ${paginas.length}`;
+            document.getElementById('stat-words').innerText = `${palavras} palavras`;
+            document.getElementById('stat-chars').innerText = `${caracteres} caracteres`;
+            document.getElementById('stat-save-status').innerText = "Salvo (Offline)";
+        }
+
+        function filtrarSubNotas(termo) {
+            renderizar(termo);
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('escondida');
+        }
+
+        function salvar() {
+            localStorage.setItem('word_notes_colecoes_paginas', JSON.stringify(colecoes));
+        }
+
+        function exportarComoTxt() {
+            if (!idSubNotaAtiva) return alert("Selecione uma nota para exportar.");
+            const titulo = document.getElementById('doc-title').value || "Nota";
+            
+            const paginas = document.querySelectorAll('.word-page');
+            let texto = "";
+            paginas.forEach((p, idx) => {
+                let clone = p.cloneNode(true);
+                let foot = clone.querySelector('.page-number-footer');
+                if (foot) foot.remove();
+                texto += `--- Página ${idx + 1} ---\n` + clone.innerText + "\n\n";
+            });
+
+            const blob = new Blob([`${titulo}\n\n${texto}`], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${titulo.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.txt`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }
+
+        function imprimirDocumento() {
+            if (!idSubNotaAtiva) return alert("Selecione uma nota para imprimir.");
+            window.print();
+        }
+
+        function exportarBackup() {
+            if (colecoes.length === 0) return alert("Sem dados para exportar.");
+            const blob = new Blob([JSON.stringify(colecoes, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `backup_notes_tablet_${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importarBackup(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    const dados = JSON.parse(evt.target.result);
+                    if (Array.isArray(dados)) {
+                        colecoes = dados;
+                        salvar();
+                        fecharEditor();
+                        renderizar();
+                        alert("Backup carregado com sucesso!");
+                    }
+                } catch(err) {
+                    alert("Arquivo de backup inválido.");
+                }
+                e.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+    </script>
+</body>
+</html>
