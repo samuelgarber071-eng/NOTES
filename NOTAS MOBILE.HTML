@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Word Notes Tablet - Páginas Dinâmicas</title>
+    <title>Word Notes Tablet Pro</title>
     <style>
         :root {
             --word-blue: #2b579a;
-            --word-blue-dark: #1b365d;
             --word-bg: #e6e6e6;
             --word-ribbon-bg: #f3f2f1;
             --word-border: #d1d1d1;
@@ -17,7 +16,6 @@
             --sidebar-active: #2b579a;
             --accent-yellow: #f1c40f;
             --accent-red: #e74c3c;
-            --accent-green: #2ecc71;
             --status-bg: #2b579a;
         }
 
@@ -67,11 +65,8 @@
         }
 
         .sidebar-header h2 {
-            font-size: 17px;
+            font-size: 16px;
             color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .btn-criar-pasta {
@@ -84,14 +79,6 @@
             font-weight: bold;
             font-size: 14px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-
-        .btn-criar-pasta:active {
-            background: #1d3d6e;
         }
 
         .busca-container {
@@ -135,25 +122,18 @@
             font-weight: 600;
         }
 
-        .btn-backup:active {
-            background: #3e3e3e;
-            color: white;
-        }
-
         .section-title {
             font-size: 11px;
             font-weight: bold;
             color: #888;
             padding: 12px 14px 6px 14px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .container-pastas {
             flex: 1;
             overflow-y: auto;
             padding: 0 10px 10px 10px;
-            -webkit-overflow-scrolling: touch;
         }
 
         .card-pasta {
@@ -181,7 +161,7 @@
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
-            max-width: 60%;
+            max-width: 65%;
         }
 
         .badge-sub {
@@ -212,10 +192,6 @@
             margin: 3px 0;
         }
 
-        .item-subnota:active {
-            background: var(--sidebar-hover);
-        }
-
         .item-subnota.ativa {
             background: var(--sidebar-active);
             color: white;
@@ -227,7 +203,7 @@
             border: none;
             color: #aaa;
             cursor: pointer;
-            padding: 6px 8px;
+            padding: 6px;
             font-size: 14px;
             border-radius: 4px;
             min-width: 32px;
@@ -238,7 +214,6 @@
         }
 
         .btn-pin.fixado { color: var(--accent-yellow); }
-        .btn-del:active { color: var(--accent-red); }
 
         /* --- ÁREA PRINCIPAL --- */
         .main-wrapper {
@@ -270,13 +245,6 @@
             width: 38px;
             height: 38px;
             border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .btn-toggle-side:active {
-            background: rgba(255,255,255,0.2);
         }
 
         .word-title {
@@ -343,16 +311,12 @@
             font-size: 13px;
             font-weight: 600;
             color: #333;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             min-width: 36px;
             height: 36px;
         }
 
         .tool-btn:active {
             background-color: #e5e5e5;
-            border-color: #ccc;
         }
 
         .tool-select {
@@ -365,7 +329,7 @@
             background: white;
         }
 
-        /* --- GERENCIADOR DE FOLHAS / PÁGINAS --- */
+        /* --- CONTAINER DE FOLHAS DE PAPEL (A4) --- */
         .editor-container-wrapper {
             flex: 1;
             overflow-y: auto;
@@ -375,16 +339,15 @@
             align-items: center;
             background-color: var(--word-bg);
             -webkit-overflow-scrolling: touch;
-            gap: 25px;
         }
 
         .doc-title-container {
             width: 100%;
             max-width: 760px;
             background: white;
-            padding: 20px 35px 5px 35px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 20px 35px 10px 35px;
             border-radius: 4px 4px 0 0;
+            border-bottom: 1px solid #eee;
         }
 
         .input-document-title {
@@ -398,16 +361,19 @@
             padding-bottom: 8px;
         }
 
-        .input-document-title:focus {
-            border-bottom-color: var(--word-blue);
+        .pages-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
         }
 
-        /* FOLHA A4 SIMULADA */
-        .word-page {
+        .word-page-card {
             background: white;
             width: 100%;
             max-width: 760px;
-            height: 920px; /* Altura fixa de uma folha */
+            min-height: 900px;
             padding: 40px 45px 50px 45px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.12);
             border-radius: 2px;
@@ -416,11 +382,9 @@
             font-size: 16px;
             line-height: 1.7;
             color: #333;
-            overflow: hidden; /* Oculta estouro para criar nova folha */
-            flex-shrink: 0;
         }
 
-        .page-number-footer {
+        .page-footer-tag {
             position: absolute;
             bottom: 12px;
             right: 25px;
@@ -484,7 +448,7 @@
 
         <div class="backup-section">
             <button class="btn-backup" onclick="exportarBackup()">💾 Exportar</button>
-            <label class="btn-backup" style="display:flex; align-items:center; justify-content:center;">
+            <label class="btn-backup">
                 📂 Importar
                 <input type="file" id="input-file" accept=".json" style="display:none;" onchange="importarBackup(event)">
             </label>
@@ -502,8 +466,8 @@
 
     <div class="main-wrapper">
         <div class="word-header">
-            <button class="btn-toggle-side" onclick="toggleSidebar()" title="Barra Lateral">☰</button>
-            <div class="word-title" id="word-header-title">Word Notes Pro - Documento</div>
+            <button class="btn-toggle-side" onclick="toggleSidebar()">☰</button>
+            <div class="word-title" id="word-header-title">Word Notes Pro</div>
         </div>
 
         <div class="ribbon-tabs">
@@ -561,13 +525,13 @@
             </div>
         </div>
 
-        <div class="editor-container-wrapper" id="editor-container">
-            <div id="document-wrapper" style="display: none; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 20px;">
+        <div class="editor-container-wrapper" id="editor-wrapper">
+            <div id="document-wrapper" style="display: none; width: 100%; flex-direction: column; align-items: center; gap: 20px;">
                 <div class="doc-title-container">
                     <input type="text" id="doc-title" class="input-document-title" placeholder="Título do Documento..." oninput="salvarNotaAtual()">
                 </div>
                 
-                <div id="pages-container" style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 20px;"></div>
+                <div class="pages-container" id="pages-container"></div>
             </div>
 
             <div class="aviso-vazio-main" id="aviso-vazio">
@@ -590,7 +554,7 @@
     </div>
 
     <script>
-        let colecoes = JSON.parse(localStorage.getItem('word_notes_colecoes_paginas')) || [];
+        let colecoes = JSON.parse(localStorage.getItem('word_notes_v3_tablet')) || [];
         let idColecaoAtiva = null;
         let idSubNotaAtiva = null;
 
@@ -598,7 +562,6 @@
 
         function execCmd(command, value = null) {
             document.execCommand(command, false, value);
-            verificarPaginacao();
             salvarNotaAtual();
         }
 
@@ -626,7 +589,7 @@
             const sub = {
                 id: Date.now().toString(),
                 titulo: "Nova Sub-nota",
-                paginas: ["<p>Comece a escrever seu texto aqui...</p>"],
+                paginas: ["<p>Digite seu texto aqui...</p>"],
                 naLixeira: false
             };
 
@@ -684,7 +647,7 @@
                         <div>
                             <button class="btn-icon btn-pin ${col.fixada ? 'fixado' : ''}" onclick="toggleFixar(event, '${col.id}')">📌</button>
                             <button class="btn-icon" onclick="criarSubNota(event, '${col.id}')">➕</button>
-                            <button class="btn-icon btn-del" onclick="excluirColecao(event, '${col.id}')">🗑️</button>
+                            <button class="btn-icon" onclick="excluirColecao(event, '${col.id}')">🗑️</button>
                         </div>
                     </div>
                 `;
@@ -699,7 +662,7 @@
                         itemSub.onclick = () => carregarSubNota(col.id, sub.id);
                         itemSub.innerHTML = `
                             <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:80%;">📄 ${sub.titulo}</span>
-                            <button class="btn-icon btn-del" onclick="moverParaLixeira(event, '${col.id}', '${sub.id}')">🗑️</button>
+                            <button class="btn-icon" onclick="moverParaLixeira(event, '${col.id}', '${sub.id}')">🗑️</button>
                         `;
                         subList.appendChild(itemSub);
                     });
@@ -720,7 +683,7 @@
                         <span style="text-decoration:line-through; font-size:11px;">${sub.titulo}</span>
                         <div>
                             <button class="btn-icon" onclick="restaurarSub('${col.id}', '${sub.id}')">↩️</button>
-                            <button class="btn-icon btn-del" onclick="excluirPermanente('${col.id}', '${sub.id}')">❌</button>
+                            <button class="btn-icon" onclick="excluirPermanente('${col.id}', '${sub.id}')">❌</button>
                         </div>
                     `;
                     listLixeira.appendChild(lixItem);
@@ -746,100 +709,85 @@
             document.getElementById('doc-title').value = sub.titulo;
             document.getElementById('word-header-title').innerText = `${col.titulo} - ${sub.titulo}`;
 
-            // Carregar Páginas
             const container = document.getElementById('pages-container');
             container.innerHTML = '';
 
-            const paginasConteudo = sub.paginas || ["<p>Comece a escrever...</p>"];
-            paginasConteudo.forEach((html, idx) => {
-                container.appendChild(criarElementoPagina(html, idx + 1));
+            const paginasHTML = sub.paginas && sub.paginas.length > 0 ? sub.paginas : ["<p>Digite seu texto...</p>"];
+            paginasHTML.forEach((html, idx) => {
+                const pag = criarPaginaElemento(html, idx + 1);
+                container.appendChild(pag);
             });
 
             if (window.innerWidth < 900) {
                 document.getElementById('sidebar').classList.add('escondida');
             }
 
-            verificarPaginacao();
+            atualizarEstatisticas();
             renderizar();
         }
 
-        function criarElementoPagina(conteudoHTML = "<p><br></p>", numero = 1) {
+        function criarPaginaElemento(conteudoHTML, numeroPagina) {
             const pageDiv = document.createElement('div');
-            pageDiv.className = 'word-page';
+            pageDiv.className = 'word-page-card';
             pageDiv.contentEditable = "true";
             pageDiv.innerHTML = conteudoHTML;
 
-            const footer = document.createElement('div');
-            footer.className = 'page-number-footer';
-            footer.contentEditable = "false";
-            footer.innerText = `Página ${numero}`;
-            pageDiv.appendChild(footer);
+            const tagNum = document.createElement('div');
+            tagNum.className = 'page-footer-tag';
+            tagNum.contentEditable = "false";
+            tagNum.innerText = `Página ${numeroPagina}`;
+            pageDiv.appendChild(tagNum);
 
             pageDiv.oninput = () => {
-                verificarPaginacao();
+                gerenciarPaginasDinamicas(pageDiv);
                 salvarNotaAtual();
             };
 
             return pageDiv;
         }
 
-        /* --- LÓGICA INTELIGENTE DE CRIAÇÃO E EXCLUSÃO DE PÁGINAS --- */
-        function verificarPaginacao() {
+        /* --- LÓGICA DE GERENCIAMENTO DE PÁGINAS DINÂMICAS --- */
+        function gerenciarPaginasDinamicas(paginaAtual) {
             const container = document.getElementById('pages-container');
-            let paginas = Array.from(container.querySelectorAll('.word-page'));
+            
+            // 1. Adiciona nova página se esta ultrapassar o tamanho limite do papel
+            if (paginaAtual.scrollHeight > paginaAtual.clientHeight + 20) {
+                const paginas = Array.from(container.querySelectorAll('.word-page-card'));
+                const indiceAtual = paginas.indexOf(paginaAtual);
 
-            // 1. Verifica se alguma página estourou a altura (Adiciona nova folha e move o excedente)
-            for (let i = 0; i < paginas.length; i++) {
-                let pag = paginas[i];
-                
-                while (pag.scrollHeight > pag.clientHeight && pag.lastChild) {
-                    let ultimoNo = pag.lastChild;
-                    if (ultimoNo.classList && ultimoNo.classList.contains('page-number-footer')) {
-                        break;
-                    }
-
-                    let proximaPagina = paginas[i + 1];
-                    if (!proximaPagina) {
-                        proximaPagina = criarElementoPagina("<p><br></p>", paginas.length + 1);
-                        container.appendChild(proximaPagina);
-                        paginas.push(proximaPagina);
-                    }
-
-                    proximaPagina.insertBefore(ultimoNo, proximaPagina.firstChild);
+                if (indiceAtual === paginas.length - 1) {
+                    const novaPagina = criarPaginaElemento("<p><br></p>", paginas.length + 1);
+                    container.appendChild(novaPagina);
                 }
             }
 
-            // 2. Remove páginas vazias no final (mantém sempre pelo menos a 1ª página)
-            paginas = Array.from(container.querySelectorAll('.word-page'));
-            for (let i = paginas.length - 1; i > 0; i--) {
-                let pag = paginas[i];
-                let textoSemRodape = pag.innerText.replace(/Página \d+$/, '').trim();
-                let temElementoEspecial = pag.querySelector('img, table, iframe');
-
-                if (textoSemRodape === '' && !temElementoEspecial) {
+            // 2. Remove páginas vazias do final (mantém sempre a primeira)
+            const todasPaginas = Array.from(container.querySelectorAll('.word-page-card'));
+            for (let i = todasPaginas.length - 1; i > 0; i--) {
+                const pag = todasPaginas[i];
+                const texto = pag.innerText.replace(/Página \d+$/, '').trim();
+                if (texto === '' && !pag.querySelector('img, table')) {
                     pag.remove();
                 } else {
-                    break; // Para a exclusão assim que encontrar uma página com conteúdo
+                    break;
                 }
             }
 
-            // 3. Atualizar numeração de páginas no rodapé e na barra de status
-            atualizarNumeracao();
+            atualizarTagsNumeracao();
         }
 
-        function atualizarNumeracao() {
-            const paginas = document.querySelectorAll('.word-page');
+        function atualizarTagsNumeracao() {
+            const paginas = document.querySelectorAll('.word-page-card');
             paginas.forEach((pag, idx) => {
-                let footer = pag.querySelector('.page-number-footer');
-                if (!footer) {
-                    footer = document.createElement('div');
-                    footer.className = 'page-number-footer';
-                    footer.contentEditable = "false";
-                    pag.appendChild(footer);
+                let tag = pag.querySelector('.page-footer-tag');
+                if (!tag) {
+                    tag = document.createElement('div');
+                    tag.className = 'page-footer-tag';
+                    tag.contentEditable = "false";
+                    pag.appendChild(tag);
                 }
-                footer.innerText = `Página ${idx + 1}`;
+                tag.innerText = `Página ${idx + 1}`;
             });
-
             atualizarEstatisticas();
         }
 
@@ -852,19 +800,21 @@
                 if (sub) {
                     sub.titulo = document.getElementById('doc-title').value || "Sem título";
                     
-                    const paginasDivs = document.querySelectorAll('.word-page');
-                    sub.paginas = Array.from(paginasDivs).map(p => {
-                        let clone = p.cloneNode(true);
-                        let foot = clone.querySelector('.page-number-footer');
-                        if (foot) foot.remove();
+                    const paginasElements = document.querySelectorAll('.word-page-card');
+                    sub.paginas = Array.from(paginasElements).map(pag => {
+                        const clone = pag.cloneNode(true);
+                        const tag = clone.querySelector('.page-footer-tag');
+                        if (tag) tag.remove();
                         return clone.innerHTML;
                     });
 
                     salvar();
                     document.getElementById('word-header-title').innerText = `${col.titulo} - ${sub.titulo}`;
                     
-                    const elementoAtivo = document.querySelector('.item-subnota.ativa span');
-                    if(elementoAtivo) elementoAtivo.innerText = '📄 ' + sub.titulo;
+                    const elAtivo = document.querySelector('.item-subnota.ativa span');
+                    if (elAtivo) elAtivo.innerText = '📄 ' + sub.titulo;
+
+                    atualizarEstatisticas();
                 }
             }
         }
@@ -934,19 +884,19 @@
                 return;
             }
 
-            const paginas = document.querySelectorAll('.word-page');
-            let textoTotal = "";
-            paginas.forEach(p => {
-                let clone = p.cloneNode(true);
-                let foot = clone.querySelector('.page-number-footer');
-                if (foot) foot.remove();
-                textoTotal += clone.innerText + " ";
+            const paginas = document.querySelectorAll('.word-page-card');
+            let textoCompleto = "";
+            paginas.forEach(pag => {
+                const clone = pag.cloneNode(true);
+                const tag = clone.querySelector('.page-footer-tag');
+                if (tag) tag.remove();
+                textoCompleto += clone.innerText + " ";
             });
 
-            const caracteres = textoTotal.trim().length;
-            const palavras = textoTotal.trim() ? textoTotal.trim().split(/\s+/).length : 0;
+            const caracteres = textoCompleto.trim().length;
+            const palavras = textoCompleto.trim() ? textoCompleto.trim().split(/\s+/).length : 0;
 
-            document.getElementById('stat-pages').innerText = `Página 1 de ${paginas.length}`;
+            document.getElementById('stat-pages').innerText = `Páginas: ${paginas.length}`;
             document.getElementById('stat-words').innerText = `${palavras} palavras`;
             document.getElementById('stat-chars').innerText = `${caracteres} caracteres`;
             document.getElementById('stat-save-status').innerText = "Salvo (Offline)";
@@ -961,19 +911,19 @@
         }
 
         function salvar() {
-            localStorage.setItem('word_notes_colecoes_paginas', JSON.stringify(colecoes));
+            localStorage.setItem('word_notes_v3_tablet', JSON.stringify(colecoes));
         }
 
         function exportarComoTxt() {
             if (!idSubNotaAtiva) return alert("Selecione uma nota para exportar.");
             const titulo = document.getElementById('doc-title').value || "Nota";
             
-            const paginas = document.querySelectorAll('.word-page');
+            const paginas = document.querySelectorAll('.word-page-card');
             let texto = "";
-            paginas.forEach((p, idx) => {
-                let clone = p.cloneNode(true);
-                let foot = clone.querySelector('.page-number-footer');
-                if (foot) foot.remove();
+            paginas.forEach((pag, idx) => {
+                const clone = pag.cloneNode(true);
+                const tag = clone.querySelector('.page-footer-tag');
+                if (tag) tag.remove();
                 texto += `--- Página ${idx + 1} ---\n` + clone.innerText + "\n\n";
             });
 
