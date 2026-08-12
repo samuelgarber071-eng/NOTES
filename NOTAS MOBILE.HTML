@@ -3,768 +3,882 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notas do Livro - Sistema de Coleções e Sub-notas</title>
+    <title>Word Notes Pro - 100% Offline</title>
     <style>
         :root {
-            --bg-sidebar: #1e1f22;
-            --bg-main: #2b2d31;
-            --bg-input: #383a40;
-            --bg-hover: rgba(255, 255, 255, 0.06);
-            --bg-active: rgba(88, 101, 242, 0.18);
-            --text-main: #f2f3f5;
-            --text-muted: #949ba4;
-            --border-color: #3f4147;
-            --accent-green: #23a55a;
-            --accent-blue: #5865f2;
-            --accent-red: #da373c;
-            --accent-yellow: #f0b232;
-            --radius-md: 8px;
-            --radius-lg: 12px;
-            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+            --word-blue: #2b579a;
+            --word-blue-dark: #1b365d;
+            --word-bg: #e6e6e6;
+            --word-ribbon-bg: #f3f2f1;
+            --word-border: #d1d1d1;
+            --sidebar-bg: #1e1e1e;
+            --sidebar-text: #cccccc;
+            --sidebar-hover: rgba(255, 255, 255, 0.08);
+            --sidebar-active: #2b579a;
+            --accent-yellow: #f1c40f;
+            --accent-red: #e74c3c;
+            --accent-green: #2ecc71;
+            --status-bg: #2b579a;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            -webkit-tap-highlight-color: transparent;
+            font-family: 'Segoe UI', Arial, sans-serif;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-main);
-            color: var(--text-main);
             display: flex;
             height: 100vh;
             overflow: hidden;
-            position: relative;
+            background-color: var(--word-bg);
+            color: #333;
         }
 
-        /* --- SIDEBAR (Barra Lateral) --- */
+        /* --- SIDEBAR LATERAL --- */
         .sidebar {
             width: 320px;
-            background-color: var(--bg-sidebar);
+            background-color: var(--sidebar-bg);
+            color: var(--sidebar-text);
             display: flex;
             flex-direction: column;
-            padding: 16px 12px;
-            border-right: 1px solid var(--border-color);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 10;
+            border-right: 1px solid #333;
+            transition: margin-left 0.3s ease;
+            z-index: 100;
+            flex-shrink: 0;
         }
 
         .sidebar.escondida {
             margin-left: -320px;
         }
 
-        .btn-nova-pasta {
-            background-color: var(--accent-blue);
-            color: #ffffff;
-            border: none;
-            padding: 12px 16px;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            text-align: center;
-            margin-bottom: 14px;
-            transition: background 0.2s, transform 0.1s;
+        .sidebar-header {
+            padding: 15px;
+            background: #141414;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .sidebar-header h2 {
+            font-size: 16px;
+            color: #fff;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 8px;
-            box-shadow: var(--shadow-sm);
         }
 
-        .btn-nova-pasta:hover {
-            background-color: #4752c4;
-        }
-
-        .btn-nova-pasta:active {
-            transform: scale(0.98);
-        }
-
-        /* --- ÁREA DE BACKUP --- */
-        .backup-container {
-            background-color: rgba(255, 255, 255, 0.02);
-            border: 1px dashed var(--border-color);
+        .btn-criar-pasta {
+            width: 100%;
             padding: 10px;
-            border-radius: var(--radius-md);
-            margin-bottom: 14px;
+            background: var(--word-blue);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-criar-pasta:hover {
+            background: #1d3d6e;
+        }
+
+        .busca-container {
+            padding: 10px 15px;
+            background: #181818;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .input-busca {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #3a3a3a;
+            background: #252526;
+            color: white;
+            font-size: 12px;
+            outline: none;
+        }
+
+        .input-busca:focus {
+            border-color: var(--word-blue);
+        }
+
+        .backup-section {
+            padding: 10px 15px;
             display: flex;
-            flex-direction: column;
             gap: 8px;
+            background: #181818;
+            border-bottom: 1px solid #2a2a2a;
         }
 
         .btn-backup {
-            background-color: var(--bg-input);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            padding: 8px 12px;
-            border-radius: 6px;
+            flex: 1;
+            padding: 6px;
+            background: #2d2d2d;
+            color: #ccc;
+            border: 1px solid #3a3a3a;
+            border-radius: 4px;
+            font-size: 11px;
             cursor: pointer;
-            font-size: 12px;
+            text-align: center;
             font-weight: 600;
-            text-align: center;
-            transition: all 0.2s ease;
-            display: block;
-            width: 100%;
         }
 
-        .btn-backup.exportar:hover {
-            background-color: var(--accent-blue);
-            border-color: var(--accent-blue);
-        }
-
-        .btn-backup.importar:hover {
-            background-color: var(--accent-green);
-            border-color: var(--accent-green);
-        }
-
-        .file-input-label {
-            display: block;
-            text-align: center;
-        }
-
-        input[type="file"] {
-            display: none;
+        .btn-backup:hover {
+            background: #3e3e3e;
+            color: white;
         }
 
         .section-title {
             font-size: 11px;
-            font-weight: 700;
-            color: var(--text-muted);
-            margin: 10px 0 6px 6px;
+            font-weight: bold;
+            color: #777;
+            padding: 12px 15px 6px 15px;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
+            letter-spacing: 0.5px;
         }
 
-        .lista-pastas {
+        .container-pastas {
+            flex: 1;
             overflow-y: auto;
-            margin-bottom: 10px;
-            padding-right: 2px;
+            padding: 0 10px 10px 10px;
         }
 
-        #lista-fixados { flex: none; max-height: 200px; }
-        #lista-comuns { flex: 1; }
-
-        /* --- PASTAS E SUB-NOTAS --- */
-        .container-pasta {
+        .card-pasta {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 6px;
             margin-bottom: 8px;
-            background: rgba(255,255,255,0.02);
-            border-radius: var(--radius-md);
-            border: 1px solid rgba(255,255,255,0.05);
-            padding: 4px;
+            padding: 6px;
         }
 
-        .item-pasta {
-            padding: 8px 10px;
+        .item-pasta-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 6px 8px;
             font-weight: 600;
-            font-size: 14px;
-            border-radius: 6px;
+            font-size: 13px;
+            color: #eee;
         }
 
-        .item-pasta:hover {
-            background-color: var(--bg-hover);
-        }
-
-        .info-pasta {
+        .pasta-info {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             overflow: hidden;
-            text-overflow: ellipsis;
             white-space: nowrap;
-            width: 60%;
+            text-overflow: ellipsis;
+            max-width: 65%;
         }
 
-        .contador-sub {
-            font-size: 11px;
-            color: var(--text-muted);
-            background: var(--bg-input);
-            padding: 2px 7px;
+        .badge-sub {
+            background: #333;
+            font-size: 10px;
+            padding: 2px 6px;
             border-radius: 10px;
+            color: #aaa;
         }
 
         .lista-subnotas {
-            margin-left: 12px;
-            border-left: 2px solid var(--border-color);
+            margin-left: 10px;
+            border-left: 2px solid #333;
             padding-left: 6px;
             margin-top: 4px;
         }
 
         .item-subnota {
-            padding: 8px 10px;
-            margin: 3px 0;
-            border-radius: 6px;
+            padding: 6px 8px;
+            font-size: 12px;
+            border-radius: 4px;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 13px;
-            transition: background-color 0.15s ease;
-            border: 1px solid transparent;
+            color: #bbb;
+            margin: 2px 0;
         }
 
         .item-subnota:hover {
-            background-color: var(--bg-hover);
+            background: var(--sidebar-hover);
+            color: white;
         }
 
         .item-subnota.ativa {
-            background-color: var(--bg-active);
-            color: #ffffff;
-            border-color: rgba(88, 101, 242, 0.4);
+            background: var(--sidebar-active);
+            color: white;
+            font-weight: bold;
         }
 
-        .item-subnota span {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            width: 75%;
-        }
-
-        .btn-action {
+        .btn-icon {
             background: transparent;
             border: none;
-            color: var(--text-muted);
+            color: #888;
             cursor: pointer;
+            padding: 2px 4px;
             font-size: 12px;
-            padding: 3px 5px;
-            border-radius: 4px;
-            transition: all 0.15s ease;
+            border-radius: 3px;
         }
 
-        .btn-action:hover {
-            background-color: var(--bg-input);
-            color: var(--text-main);
-        }
-
-        .btn-delete:hover {
-            color: var(--accent-red);
-            background-color: rgba(218, 55, 60, 0.15);
-        }
-
-        .btn-pin.fixado {
-            color: var(--accent-yellow);
-        }
-
-        .btn-pin:hover {
-            color: var(--accent-yellow);
-            background-color: rgba(240, 178, 50, 0.15);
-        }
-
-        /* --- BOTÃO FLUTUANTE SIDEBAR --- */
-        .btn-toggle-sidebar {
-            position: absolute;
-            top: 18px;
-            left: 18px;
-            background-color: var(--bg-sidebar);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            padding: 8px 14px;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            z-index: 100;
-            font-size: 13px;
-            font-weight: 600;
-            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s, border-color 0.2s;
-            box-shadow: var(--shadow-sm);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        body:not(.sidebar-recuada) .btn-toggle-sidebar {
-            left: 335px;
-        }
-
-        .btn-toggle-sidebar:hover {
-            background-color: var(--bg-input);
-            border-color: var(--text-muted);
-        }
+        .btn-icon:hover { color: white; }
+        .btn-pin.fixado { color: var(--accent-yellow); }
+        .btn-del:hover { color: var(--accent-red); }
 
         /* --- ÁREA PRINCIPAL --- */
-        .main-content {
+        .main-wrapper {
             flex: 1;
             display: flex;
             flex-direction: column;
-            padding: 40px;
-            padding-top: 80px;
-            background-color: var(--bg-main);
-            transition: padding-left 0.3s ease;
             height: 100vh;
             overflow: hidden;
         }
 
-        .editor-container {
+        /* --- WORD HEADER --- */
+        .word-header {
+            background-color: var(--word-blue);
+            color: white;
+            padding: 8px 15px;
             display: flex;
-            flex-direction: column;
-            height: 100%;
-            max-width: 850px;
-            width: 100%;
-            margin: 0 auto;
-        }
-
-        .header-editor {
-            display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            gap: 15px;
+            user-select: none;
         }
 
-        .status-salvamento {
+        .btn-toggle-side {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .btn-toggle-side:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .word-title {
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        /* --- RIBBON (FAIXA DE OPÇÕES) --- */
+        .ribbon-tabs {
+            background-color: var(--word-ribbon-bg);
+            border-bottom: 1px solid var(--word-border);
+            display: flex;
+            padding: 0 10px;
+            user-select: none;
+        }
+
+        .ribbon-tab {
+            padding: 6px 15px;
             font-size: 12px;
-            color: var(--text-muted);
-            font-style: italic;
+            cursor: pointer;
+            color: #444;
+            border-bottom: 2px solid transparent;
         }
 
-        .fonte-control {
+        .ribbon-tab.active {
+            border-bottom: 2px solid var(--word-blue);
+            color: var(--word-blue);
+            font-weight: bold;
+            background: #fff;
+        }
+
+        .ribbon-toolbar {
+            background-color: #fff;
+            border-bottom: 1px solid var(--word-border);
+            padding: 6px 15px;
             display: flex;
             align-items: center;
             gap: 10px;
-            background-color: var(--bg-sidebar);
-            border: 1px solid var(--border-color);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            color: var(--text-muted);
+            flex-wrap: wrap;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            user-select: none;
         }
 
-        .fonte-control input[type="range"] {
-            accent-color: var(--accent-blue);
+        .tool-group {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            padding-right: 8px;
+            border-right: 1px solid #e0e0e0;
+        }
+
+        .tool-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            padding: 4px 6px;
+            border-radius: 3px;
             cursor: pointer;
-            width: 90px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 26px;
+            height: 26px;
         }
 
-        .input-titulo {
-            background: transparent;
-            border: none;
-            color: var(--text-main);
-            font-size: 30px;
-            font-weight: 700;
-            margin-bottom: 20px;
+        .tool-btn:hover {
+            background-color: #e5e5e5;
+            border-color: #ccc;
+        }
+
+        .tool-select {
+            padding: 3px 6px;
+            border: 1px solid var(--word-border);
+            border-radius: 3px;
+            font-size: 12px;
             outline: none;
-            width: 100%;
-            letter-spacing: -0.5px;
-            border-bottom: 1px solid transparent;
-            transition: border-color 0.2s ease;
+            background: white;
+            cursor: pointer;
         }
 
-        .input-titulo:focus {
-            border-bottom-color: var(--border-color);
-        }
-
-        .textarea-conteudo {
-            background: transparent;
-            border: none;
-            color: var(--text-main);
-            font-family: 'Georgia', serif;
-            font-size: 18px;
-            line-height: 1.7;
-            outline: none;
-            resize: none;
+        /* --- ÁREA DO DOCUMENTO --- */
+        .editor-container-wrapper {
             flex: 1;
-            width: 100%;
-            padding-right: 10px;
+            overflow-y: auto;
+            padding: 30px 20px;
+            display: flex;
+            justify-content: center;
+            background-color: var(--word-bg);
         }
 
-        .aviso-vazio {
+        .word-document {
+            background: white;
+            width: 100%;
+            max-width: 800px;
+            min-height: 950px;
+            padding: 60px 70px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            border-radius: 2px;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 40px;
+        }
+
+        .input-document-title {
+            border: none;
+            border-bottom: 2px solid transparent;
+            outline: none;
+            font-size: 26px;
+            font-weight: bold;
+            color: #2b2b2b;
+            margin-bottom: 25px;
+            width: 100%;
+            padding-bottom: 5px;
+        }
+
+        .input-document-title:focus {
+            border-bottom-color: var(--word-blue);
+        }
+
+        .editor-body {
+            flex: 1;
+            outline: none;
+            font-size: 15px;
+            line-height: 1.7;
+            color: #333;
+            min-height: 700px;
+        }
+
+        .editor-body p {
+            margin-bottom: 12px;
+        }
+
+        .aviso-vazio-main {
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100%;
-            color: var(--text-muted);
-            font-size: 16px;
+            color: #666;
             text-align: center;
-            line-height: 1.6;
-            gap: 12px;
         }
 
-        .aviso-vazio .icone-vazio {
-            font-size: 48px;
-            opacity: 0.6;
+        .aviso-vazio-main span {
+            font-size: 54px;
+            margin-bottom: 15px;
         }
 
-        ::-webkit-scrollbar {
-            width: 6px;
+        /* --- BARRA DE STATUS (BOTTOM WORD BAR) --- */
+        .status-bar {
+            background-color: var(--status-bg);
+            color: white;
+            font-size: 11px;
+            padding: 4px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
         }
-        ::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 3px;
+
+        .status-info {
+            display: flex;
+            gap: 15px;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-muted);
-        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
     </style>
 </head>
 <body>
 
-    <button class="btn-toggle-sidebar" id="toggle-btn" onclick="toggleSidebar()">
-        <span>☰</span> <span>Barra Lateral</span>
-    </button>
-
     <div class="sidebar" id="sidebar">
-        <button class="btn-nova-pasta" onclick="criarNovaPasta()">
-            <span>📁</span> <span>+ Nova Coleção</span>
-        </button>
+        <div class="sidebar-header">
+            <h2>📘 Word Notes Pro</h2>
+            <button class="btn-criar-pasta" onclick="criarColecao()">+ Nova Coleção</button>
+        </div>
 
-        <div class="backup-container">
-            <button class="btn-backup exportar" onclick="exportarBackup()">💾 Exportar Backup (.json)</button>
-            <label class="btn-backup importar file-input-label">
-                📂 Importar Backup
-                <input type="file" id="input-backup" accept=".json" onchange="importarBackup(event)">
+        <div class="busca-container">
+            <input type="text" class="input-busca" placeholder="🔍 Pesquisar notas..." oninput="filtrarSubNotas(this.value)">
+        </div>
+
+        <div class="backup-section">
+            <button class="btn-backup" onclick="exportarBackup()">💾 Exportar</button>
+            <label class="btn-backup" style="display:block; text-align:center;">
+                📂 Importar
+                <input type="file" id="input-file" accept=".json" style="display:none;" onchange="importarBackup(event)">
             </label>
         </div>
 
-        <div class="section-title" id="titulo-fixados">Fixados (0/3)</div>
-        <div class="lista-pastas" id="lista-fixados"></div>
+        <div class="section-title" id="title-fixados">📌 Fixados (0/3)</div>
+        <div class="container-pastas" id="lista-fixados"></div>
 
-        <div class="section-title">Minhas Coleções / Pastas</div>
-        <div class="lista-pastas" id="lista-comuns"></div>
+        <div class="section-title">📁 Minhas Coleções</div>
+        <div class="container-pastas" id="lista-comuns"></div>
 
-        <div class="section-title">Lixeira (Sub-notas)</div>
-        <div class="lista-notas" id="lista-lixeira" style="max-height: 130px; overflow-y: auto;"></div>
+        <div class="section-title">🗑️ Lixeira</div>
+        <div class="container-pastas" id="lista-lixeira" style="max-height: 120px;"></div>
     </div>
 
-    <div class="main-content">
-        <div class="editor-container" id="editor" style="display: none;">
-            <div class="header-editor">
-                <span class="status-salvamento" id="status-salvamento">Salvo automaticamente</span>
-                <div class="fonte-control">
-                    <span>A-</span>
-                    <input type="range" id="alterar-fonte" min="14" max="32" value="18" oninput="mudarTamanhoFonte(this.value)">
-                    <span>A+</span>
-                    <span id="valor-fonte">18px</span>
-                </div>
-            </div>
-
-            <input type="text" id="nota-titulo" class="input-titulo" placeholder="Título da sub-nota..." oninput="salvarSubNotaAtual()">
-            <textarea id="nota-conteudo" class="textarea-conteudo" placeholder="Comece a escrever o conteúdo da sub-nota aqui..." oninput="salvarSubNotaAtual()"></textarea>
+    <div class="main-wrapper">
+        <div class="word-header">
+            <button class="btn-toggle-side" onclick="toggleSidebar()" title="Ocultar/Exibir Barra Lateral">☰</button>
+            <div class="word-title" id="word-header-title">Word Notes Pro - Documento</div>
         </div>
 
-        <div class="aviso-vazio" id="aviso-vazio">
-            <div class="icone-vazio">📚</div>
-            <div>Crie uma Coleção utilizando o botão acima,<br>adicione sub-notas no botão ➕ e selecione-as para começar.</div>
+        <div class="ribbon-tabs">
+            <div class="ribbon-tab active">Página Inicial</div>
+            <div class="ribbon-tab" onclick="imprimirDocumento()">Imprimir / PDF</div>
+            <div class="ribbon-tab" onclick="exportarComoTxt()">Baixar TXT</div>
+        </div>
+
+        <div class="ribbon-toolbar">
+            <div class="tool-group">
+                <button class="tool-btn" onclick="execCmd('undo')" title="Desfazer (Ctrl+Z)">↩️</button>
+                <button class="tool-btn" onclick="execCmd('redo')" title="Refazer (Ctrl+Y)">↪️</button>
+            </div>
+
+            <div class="tool-group">
+                <select class="tool-select" onchange="execCmd('fontName', this.value)">
+                    <option value="Segoe UI">Segoe UI</option>
+                    <option value="Arial">Arial</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="Times New Roman">Times New Roman</option>
+                    <option value="Courier New">Courier New</option>
+                    <option value="Verdana">Verdana</option>
+                </select>
+                <select class="tool-select" onchange="execCmd('fontSize', this.value)">
+                    <option value="2">10pt</option>
+                    <option value="3" selected>12pt</option>
+                    <option value="4">14pt</option>
+                    <option value="5">18pt</option>
+                    <option value="6">24pt</option>
+                    <option value="7">36pt</option>
+                </select>
+            </div>
+
+            <div class="tool-group">
+                <button class="tool-btn" onclick="execCmd('bold')" title="Negrito (Ctrl+B)"><b>B</b></button>
+                <button class="tool-btn" onclick="execCmd('italic')" title="Itálico (Ctrl+I)"><i>I</i></button>
+                <button class="tool-btn" onclick="execCmd('underline')" title="Sublinhado (Ctrl+U)"><u>U</u></button>
+                <button class="tool-btn" onclick="execCmd('strikeThrough')" title="Tachado"><s>S</s></button>
+            </div>
+
+            <div class="tool-group">
+                <button class="tool-btn" onclick="execCmd('justifyLeft')" title="Alinhar à Esquerda">⇐</button>
+                <button class="tool-btn" onclick="execCmd('justifyCenter')" title="Centralizar">⇔</button>
+                <button class="tool-btn" onclick="execCmd('justifyRight')" title="Alinhar à Direita">⇒</button>
+                <button class="tool-btn" onclick="execCmd('justifyFull')" title="Justificar">≡</button>
+            </div>
+
+            <div class="tool-group">
+                <button class="tool-btn" onclick="execCmd('insertUnorderedList')" title="Lista com Marcadores">• Lista</button>
+                <button class="tool-btn" onclick="execCmd('insertOrderedList')" title="Lista Numerada">1. Lista</button>
+            </div>
+
+            <div class="tool-group">
+                <input type="color" title="Cor do Texto" onchange="execCmd('foreColor', this.value)" style="border:none; width:24px; height:24px; cursor:pointer; background:transparent;">
+                <button class="tool-btn" onclick="execCmd('backColor', '#f1c40f')" title="Marca-Texto Amarelo">🖍️</button>
+                <button class="tool-btn" onclick="execCmd('removeFormat')" title="Limpar Formatação">🧹</button>
+            </div>
+        </div>
+
+        <div class="editor-container-wrapper">
+            <div class="word-document" id="paper-editor" style="display: none;">
+                <input type="text" id="doc-title" class="input-document-title" placeholder="Título do Documento..." oninput="salvarNotaAtual()">
+                <div id="doc-body" class="editor-body" contenteditable="true" oninput="salvarNotaAtual()"></div>
+            </div>
+
+            <div class="aviso-vazio-main" id="aviso-vazio">
+                <span>📄</span>
+                <h2>Nenhuma nota selecionada</h2>
+                <p>Crie uma coleção no menu lateral, adicione sub-notas e comece a escrever!</p>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-info">
+                <span id="stat-words">0 palavras</span>
+                <span id="stat-chars">0 caracteres</span>
+                <span id="stat-readtime">0 min de leitura</span>
+            </div>
+            <div>
+                <span id="stat-save-status">Pronto (Offline)</span>
+            </div>
         </div>
     </div>
 
     <script>
-        // Migração automática e carregamento de dados do localStorage
-        let pastas = JSON.parse(localStorage.getItem('livro_pastas_sistema'));
+        // BANCO DE DADOS LOCAL (LOCALSTORAGE)
+        let colecoes = JSON.parse(localStorage.getItem('word_notes_colecoes')) || [];
+        let idColecaoAtiva = null;
+        let idSubNotaAtiva = null;
 
-        if (!pastas) {
-            let notasAntigas = JSON.parse(localStorage.getItem('livro_notas'));
-            if (notasAntigas && notasAntigas.length > 0) {
-                pastas = [{
-                    id: "padrao",
-                    titulo: "Minhas Notas",
-                    fixada: false,
-                    subnotas: notasAntigas.map(n => ({
-                        id: n.id,
-                        titulo: n.titulo,
-                        conteudo: n.conteudo,
-                        naLixeira: n.naLixeira || false
-                    }))
-                }];
-            } else {
-                pastas = [];
-            }
+        renderizar();
+
+        function execCmd(command, value = null) {
+            document.execCommand(command, false, value);
+            atualizarEstatisticas();
+            salvarNotaAtual();
         }
 
-        let idPastaAtiva = null;
-        let idSubNotaAtiva = null;
-        let tamanhoFonteSalvo = localStorage.getItem('preferencia_fonte') || '18';
+        function criarColecao() {
+            const nome = prompt("Digite o nome da nova coleção/pasta:", "Minha Coleção");
+            if (!nome || !nome.trim()) return;
 
-        renderizarInterface();
-        mudarTamanhoFonte(tamanhoFonteSalvo);
-
-        function criarNovaPasta() {
-            const nomePasta = prompt("Digite o nome da nova coleção/pasta:", "Nova Coleção");
-            if (!nomePasta) return;
-
-            const novaPasta = {
+            const nova = {
                 id: Date.now().toString(),
-                titulo: nomePasta,
+                titulo: nome.trim(),
                 fixada: false,
                 subnotas: []
             };
-            pastas.unshift(novaPasta);
-            salvarNoLocalStorage();
-            renderizarInterface();
+
+            colecoes.unshift(nova);
+            salvar();
+            renderizar();
         }
 
-        function criarSubNota(event, idPasta) {
-            event.stopPropagation();
-            const pasta = pastas.find(p => p.id === idPasta);
-            if (!pasta) return;
+        function criarSubNota(e, idColecao) {
+            e.stopPropagation();
+            const col = colecoes.find(c => c.id === idColecao);
+            if (!col) return;
 
-            const novaSubNota = {
+            const sub = {
                 id: Date.now().toString(),
-                titulo: 'Nova Sub-nota',
-                conteudo: '',
+                titulo: "Nova Sub-nota",
+                conteudo: "<p>Comece a escrever seu texto aqui...</p>",
                 naLixeira: false
             };
 
-            pasta.subnotas.unshift(novaSubNota);
-            salvarNoLocalStorage();
-            carregarSubNota(idPasta, novaSubNota.id);
+            col.subnotas.unshift(sub);
+            salvar();
+            carregarSubNota(idColecao, sub.id);
         }
 
-        function toggleFixarPasta(event, idPasta) {
-            event.stopPropagation();
-            const pasta = pastas.find(p => p.id === idPasta);
-            if (!pasta) return;
+        function toggleFixar(e, idColecao) {
+            e.stopPropagation();
+            const col = colecoes.find(c => c.id === idColecao);
+            if (!col) return;
 
-            if (!pasta.fixada) {
-                const totalFixadas = pastas.filter(p => p.fixada).length;
-                if (totalFixadas >= 3) {
-                    alert("Você só pode fixar no máximo 3 coleções!");
+            if (!col.fixada) {
+                const fixadas = colecoes.filter(c => c.fixada).length;
+                if (fixadas >= 3) {
+                    alert("Limite atingido! Você só pode fixar no máximo 3 coleções no topo.");
                     return;
                 }
-                pasta.fixada = true;
+                col.fixada = true;
             } else {
-                pasta.fixada = false;
+                col.fixada = false;
             }
 
-            salvarNoLocalStorage();
-            renderizarInterface();
+            salvar();
+            renderizar();
         }
 
-        function renderizarInterface() {
-            const containerFixados = document.getElementById('lista-fixados');
-            const containerComuns = document.getElementById('lista-comuns');
-            const containerLixeira = document.getElementById('lista-lixeira');
-            
-            containerFixados.innerHTML = '';
-            containerComuns.innerHTML = '';
-            containerLixeira.innerHTML = '';
+        function renderizar(termoBusca = "") {
+            const listFixados = document.getElementById('lista-fixados');
+            const listComuns = document.getElementById('lista-comuns');
+            const listLixeira = document.getElementById('lista-lixeira');
+
+            listFixados.innerHTML = '';
+            listComuns.innerHTML = '';
+            listLixeira.innerHTML = '';
 
             let qtdFixados = 0;
 
-            pastas.forEach(pasta => {
-                if (pasta.fixada) qtdFixados++;
+            colecoes.forEach(col => {
+                if (col.fixada) qtdFixados++;
 
-                const divPastaContainer = document.createElement('div');
-                divPastaContainer.className = 'container-pasta';
+                const subNotasValidas = col.subnotas.filter(s => !s.naLixeira && s.titulo.toLowerCase().includes(termoBusca.toLowerCase()));
 
-                const subNotasAtivas = pasta.subnotas.filter(sn => !sn.naLixeira);
+                const card = document.createElement('div');
+                card.className = 'card-pasta';
 
-                const divPasta = document.createElement('div');
-                divPasta.className = `item-pasta ${pasta.id === idPastaAtiva ? 'ativa' : ''}`;
-                divPasta.innerHTML = `
-                    <div class="info-pasta">
-                        <span>📁</span>
-                        <span title="${pasta.titulo}">${pasta.titulo}</span>
-                        <span class="contador-sub">${subNotasAtivas.length}</span>
-                    </div>
-                    <div>
-                        <button class="btn-action btn-pin ${pasta.fixada ? 'fixado' : ''}" title="${pasta.fixada ? 'Desafixar' : 'Fixar no topo (Máx 3)'}" onclick="toggleFixarPasta(event, '${pasta.id}')">📌</button>
-                        <button class="btn-action" title="Adicionar Sub-nota" onclick="criarSubNota(event, '${pasta.id}')">➕</button>
-                        <button class="btn-action btn-delete" title="Excluir Pasta Inteira" onclick="excluirPasta(event, '${pasta.id}')">🗑️</button>
+                card.innerHTML = `
+                    <div class="item-pasta-header">
+                        <div class="pasta-info">
+                            <span>📁</span>
+                            <span title="${col.titulo}">${col.titulo}</span>
+                            <span class="badge-sub">${subNotasValidas.length}</span>
+                        </div>
+                        <div>
+                            <button class="btn-icon btn-pin ${col.fixada ? 'fixado' : ''}" onclick="toggleFixar(event, '${col.id}')" title="${col.fixada ? 'Desafixar' : 'Fixar no topo (Máx 3)'}">📌</button>
+                            <button class="btn-icon" onclick="criarSubNota(event, '${col.id}')" title="Criar Sub-nota">➕</button>
+                            <button class="btn-icon btn-del" onclick="excluirColecao(event, '${col.id}')" title="Excluir Coleção">🗑️</button>
+                        </div>
                     </div>
                 `;
-                divPastaContainer.appendChild(divPasta);
 
-                if (subNotasAtivas.length > 0) {
-                    const divListaSub = document.createElement('div');
-                    divListaSub.className = 'lista-subnotas';
+                if (subNotasValidas.length > 0) {
+                    const subList = document.createElement('div');
+                    subList.className = 'lista-subnotas';
 
-                    subNotasAtivas.forEach(sub => {
-                        const divSub = document.createElement('div');
-                        divSub.className = `item-subnota ${sub.id === idSubNotaAtiva ? 'ativa' : ''}`;
-                        divSub.onclick = () => carregarSubNota(pasta.id, sub.id);
-                        divSub.innerHTML = `
-                            <span title="${sub.titulo}">📄 ${sub.titulo || 'Sem título'}</span>
-                            <button class="btn-action btn-delete" title="Mover para lixeira" onclick="moverSubParaLixeira(event, '${pasta.id}', '${sub.id}')">🗑️</button>
+                    subNotasValidas.forEach(sub => {
+                        const itemSub = document.createElement('div');
+                        itemSub.className = `item-subnota ${sub.id === idSubNotaAtiva ? 'ativa' : ''}`;
+                        itemSub.onclick = () => carregarSubNota(col.id, sub.id);
+                        itemSub.innerHTML = `
+                            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:80%;">📄 ${sub.titulo}</span>
+                            <button class="btn-icon btn-del" onclick="moverParaLixeira(event, '${col.id}', '${sub.id}')" title="Mover para Lixeira">🗑️</button>
                         `;
-                        divListaSub.appendChild(divSub);
+                        subList.appendChild(itemSub);
                     });
-                    divPastaContainer.appendChild(divListaSub);
+
+                    card.appendChild(subList);
                 }
 
-                if (pasta.fixada) {
-                    containerFixados.appendChild(divPastaContainer);
+                if (col.fixada) {
+                    listFixados.appendChild(card);
                 } else {
-                    containerComuns.appendChild(divPastaContainer);
+                    listComuns.appendChild(card);
                 }
 
-                pasta.subnotas.forEach(sub => {
-                    if (sub.naLixeira) {
-                        const itemLixo = document.createElement('div');
-                        itemLixo.className = 'item-subnota';
-                        itemLixo.style.justifyContent = 'space-between';
-                        itemLixo.innerHTML = `
-                            <span style="color: var(--text-muted); text-decoration: line-through; font-size:12px;">${sub.titulo} (${pasta.titulo})</span>
-                            <div style="display: flex; gap: 2px;">
-                                <button class="btn-action" title="Restaurar" onclick="restaurarSubNota('${pasta.id}', '${sub.id}')">↩️</button>
-                                <button class="btn-action btn-delete" title="Apagar Permanentemente" onclick="excluirSubPermanente('${pasta.id}', '${sub.id}')">❌</button>
-                            </div>
-                        `;
-                        containerLixeira.appendChild(itemLixo);
-                    }
+                // Sub-notas na Lixeira
+                col.subnotas.filter(s => s.naLixeira).forEach(sub => {
+                    const lixItem = document.createElement('div');
+                    lixItem.className = 'item-subnota';
+                    lixItem.innerHTML = `
+                        <span style="text-decoration:line-through; font-size:11px; overflow:hidden; text-overflow:ellipsis; max-width:70%;">${sub.titulo}</span>
+                        <div>
+                            <button class="btn-icon" onclick="restaurarSub('${col.id}', '${sub.id}')" title="Restaurar">↩️</button>
+                            <button class="btn-icon btn-del" onclick="excluirPermanente('${col.id}', '${sub.id}')" title="Apagar para sempre">❌</button>
+                        </div>
+                    `;
+                    listLixeira.appendChild(lixItem);
                 });
             });
 
-            document.getElementById('titulo-fixados').innerText = `Fixados (${qtdFixados}/3)`;
+            document.getElementById('title-fixados').innerText = `📌 Fixados (${qtdFixados}/3)`;
         }
 
-        function carregarSubNota(idPasta, idSub) {
-            const pasta = pastas.find(p => p.id === idPasta);
-            if (!pasta) return;
-            const sub = pasta.subnotas.find(sn => sn.id === idSub);
-            if (!sub || sub.naLixeira) {
-                fecharEditor();
-                return;
-            }
+        function carregarSubNota(idColecao, idSub) {
+            const col = colecoes.find(c => c.id === idColecao);
+            if (!col) return;
 
-            idPastaAtiva = idPasta;
+            const sub = col.subnotas.find(s => s.id === idSub);
+            if (!sub || sub.naLixeira) return;
+
+            idColecaoAtiva = idColecao;
             idSubNotaAtiva = idSub;
 
             document.getElementById('aviso-vazio').style.display = 'none';
-            document.getElementById('editor').style.display = 'flex';
+            document.getElementById('paper-editor').style.display = 'flex';
 
-            document.getElementById('nota-titulo').value = sub.titulo;
-            document.getElementById('nota-conteudo').value = sub.conteudo;
+            document.getElementById('doc-title').value = sub.titulo;
+            document.getElementById('doc-body').innerHTML = sub.conteudo;
+            document.getElementById('word-header-title').innerText = `${col.titulo} - ${sub.titulo}`;
 
-            renderizarInterface();
+            atualizarEstatisticas();
+            renderizar();
         }
 
-        function salvarSubNotaAtual() {
-            if (!idPastaAtiva || !idSubNotaAtiva) return;
+        function salvarNotaAtual() {
+            if (!idColecaoAtiva || !idSubNotaAtiva) return;
 
-            const pasta = pastas.find(p => p.id === idPastaAtiva);
-            if (pasta) {
-                const sub = pasta.subnotas.find(sn => sn.id === idSubNotaAtiva);
+            const col = colecoes.find(c => c.id === idColecaoAtiva);
+            if (col) {
+                const sub = col.subnotas.find(s => s.id === idSubNotaAtiva);
                 if (sub) {
-                    sub.titulo = document.getElementById('nota-titulo').value;
-                    sub.conteudo = document.getElementById('nota-conteudo').value;
-                    salvarNoLocalStorage();
+                    sub.titulo = document.getElementById('doc-title').value || "Sem título";
+                    sub.conteudo = document.getElementById('doc-body').innerHTML;
+                    salvar();
                     
-                    const elementoSub = document.querySelector(`.item-subnota.ativa span`);
-                    if (elementoSub) elementoSub.innerText = '📄 ' + (sub.titulo || 'Sem título');
+                    document.getElementById('word-header-title').innerText = `${col.titulo} - ${sub.titulo}`;
+                    
+                    const elementoAtivo = document.querySelector('.item-subnota.ativa span');
+                    if(elementoAtivo) elementoAtivo.innerText = '📄 ' + sub.titulo;
 
-                    const status = document.getElementById('status-salvamento');
-                    if (status) {
-                        status.innerText = 'Salvando...';
-                        setTimeout(() => { status.innerText = 'Salvo automaticamente'; }, 400);
-                    }
+                    atualizarEstatisticas();
                 }
             }
         }
 
-        function moverSubParaLixeira(event, idPasta, idSub) {
-            event.stopPropagation();
-            const pasta = pastas.find(p => p.id === idPasta);
-            if (pasta) {
-                const sub = pasta.subnotas.find(sn => sn.id === idSub);
+        function moverParaLixeira(e, idColecao, idSub) {
+            e.stopPropagation();
+            const col = colecoes.find(c => c.id === idColecao);
+            if (col) {
+                const sub = col.subnotas.find(s => s.id === idSub);
                 if (sub) {
                     sub.naLixeira = true;
                     if (idSubNotaAtiva === idSub) fecharEditor();
-                    salvarNoLocalStorage();
-                    renderizarInterface();
+                    salvar();
+                    renderizar();
                 }
             }
         }
 
-        function restaurarSubNota(idPasta, idSub) {
-            const pasta = pastas.find(p => p.id === idPasta);
-            if (pasta) {
-                const sub = pasta.subnotas.find(sn => sn.id === idSub);
+        function restaurarSub(idColecao, idSub) {
+            const col = colecoes.find(c => c.id === idColecao);
+            if (col) {
+                const sub = col.subnotas.find(s => s.id === idSub);
                 if (sub) {
                     sub.naLixeira = false;
-                    salvarNoLocalStorage();
-                    carregarSubNota(idPasta, idSub);
+                    salvar();
+                    carregarSubNota(idColecao, idSub);
                 }
             }
         }
 
-        function excluirSubPermanente(idPasta, idSub) {
-            if (confirm("Excluir permanentemente esta sub-nota?")) {
-                const pasta = pastas.find(p => p.id === idPasta);
-                if (pasta) {
-                    pasta.subnotas = pasta.subnotas.filter(sn => sn.id !== idSub);
-                    salvarNoLocalStorage();
-                    renderizarInterface();
+        function excluirPermanente(idColecao, idSub) {
+            if (confirm("Deseja apagar esta nota permanentemente?")) {
+                const col = colecoes.find(c => c.id === idColecao);
+                if (col) {
+                    col.subnotas = col.subnotas.filter(s => s.id !== idSub);
+                    salvar();
+                    renderizar();
                 }
             }
         }
 
-        function excluirPasta(event, idPasta) {
-            event.stopPropagation();
-            if (confirm("Deseja apagar esta pasta e todas as suas sub-notas?")) {
-                pastas = pastas.filter(p => p.id !== idPasta);
-                if (idPastaAtiva === idPasta) fecharEditor();
-                salvarNoLocalStorage();
-                renderizarInterface();
+        function excluirColecao(e, idColecao) {
+            e.stopPropagation();
+            if (confirm("Deseja apagar esta coleção inteira e todas as suas sub-notas?")) {
+                colecoes = colecoes.filter(c => c.id !== idColecao);
+                if (idColecaoAtiva === idColecao) fecharEditor();
+                salvar();
+                renderizar();
             }
         }
 
         function fecharEditor() {
             idSubNotaAtiva = null;
-            document.getElementById('editor').style.display = 'none';
+            idColecaoAtiva = null;
+            document.getElementById('paper-editor').style.display = 'none';
             document.getElementById('aviso-vazio').style.display = 'flex';
-            renderizarInterface();
+            document.getElementById('word-header-title').innerText = "Word Notes Pro - Documento";
+            atualizarEstatisticas(true);
+            renderizar();
         }
 
-        function salvarNoLocalStorage() {
-            localStorage.setItem('livro_pastas_sistema', JSON.stringify(pastas));
+        function atualizarEstatisticas(zerar = false) {
+            if (zerar) {
+                document.getElementById('stat-words').innerText = "0 palavras";
+                document.getElementById('stat-chars').innerText = "0 caracteres";
+                document.getElementById('stat-readtime').innerText = "0 min de leitura";
+                return;
+            }
+
+            const texto = document.getElementById('doc-body').innerText || "";
+            const caracteres = texto.length;
+            const palavras = texto.trim() ? texto.trim().split(/\s+/).length : 0;
+            const tempoLeitura = Math.ceil(palavras / 200);
+
+            document.getElementById('stat-words').innerText = `${palavras} palavra${palavras === 1 ? '' : 's'}`;
+            document.getElementById('stat-chars').innerText = `${caracteres} caractere${caracteres === 1 ? '' : 's'}`;
+            document.getElementById('stat-readtime').innerText = `~${tempoLeitura} min de leitura`;
+            document.getElementById('stat-save-status').innerText = "Salvo automaticamente";
         }
 
-        function mudarTamanhoFonte(valor) {
-            const caixaTexto = document.getElementById('nota-conteudo');
-            if (caixaTexto) caixaTexto.style.fontSize = valor + 'px';
-            document.getElementById('valor-fonte').innerText = valor + 'px';
-            document.getElementById('alterar-fonte').value = valor;
-            localStorage.setItem('preferencia_fonte', valor);
+        function filtrarSubNotas(termo) {
+            renderizar(termo);
         }
 
         function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('escondida');
-            document.body.classList.toggle('sidebar-recuada');
+            document.getElementById('sidebar').classList.toggle('escondida');
+        }
+
+        function salvar() {
+            localStorage.setItem('word_notes_colecoes', JSON.stringify(colecoes));
+        }
+
+        function exportarComoTxt() {
+            if (!idSubNotaAtiva) return alert("Abra uma nota para exportar em formato TXT.");
+            const titulo = document.getElementById('doc-title').value || "Nota";
+            const texto = document.getElementById('doc-body').innerText || "";
+            
+            const blob = new Blob([`${titulo}\n\n${texto}`], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${titulo.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.txt`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }
+
+        function imprimirDocumento() {
+            if (!idSubNotaAtiva) return alert("Abra uma nota para imprimir.");
+            window.print();
         }
 
         function exportarBackup() {
-            if (pastas.length === 0) {
-                alert("Nenhum dado para exportar.");
-                return;
-            }
-            const dadosStr = JSON.stringify(pastas, null, 2);
-            const blob = new Blob([dadosStr], { type: 'application/json' });
+            if (colecoes.length === 0) return alert("Nenhum dado para exportar.");
+            const blob = new Blob([JSON.stringify(colecoes, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `backup_colecoes_${new Date().toISOString().slice(0, 10)}.json`;
-            link.click();
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `backup_word_notes_${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
             URL.revokeObjectURL(url);
         }
 
-        function importarBackup(event) {
-            const arquivo = event.target.files[0];
-            if (!arquivo) return;
+        function importarBackup(e) {
+            const file = e.target.files[0];
+            if (!file) return;
 
-            const leitor = new FileReader();
-            leitor.onload = function(e) {
+            const reader = new FileReader();
+            reader.onload = function(evt) {
                 try {
-                    const dados = JSON.parse(e.target.result);
+                    const dados = JSON.parse(evt.target.result);
                     if (Array.isArray(dados)) {
-                        pastas = dados;
-                        salvarNoLocalStorage();
+                        if (confirm("Deseja mesclar o backup importado com as coleções existentes? (Clique em Cancelar para substituir tudo).")) {
+                            const idsExistentes = new Set(colecoes.map(c => c.id));
+                            const novasFiltradas = dados.filter(c => !idsExistentes.has(c.id));
+                            colecoes = [...novasFiltradas, ...colecoes];
+                        } else {
+                            colecoes = dados;
+                        }
+                        salvar();
                         fecharEditor();
-                        renderizarInterface();
-                        alert("Backup de coleções importado com sucesso!");
-                    } else {
-                        alert("Formato inválido.");
+                        renderizar();
+                        alert("Backup importado com sucesso!");
                     }
-                } catch (err) {
-                    alert("Erro ao ler arquivo.");
+                } catch(err) {
+                    alert("Arquivo de backup inválido.");
                 }
-                event.target.value = '';
+                e.target.value = '';
             };
-            leitor.readAsText(arquivo);
+            reader.readAsText(file);
         }
     </script>
 </body>
