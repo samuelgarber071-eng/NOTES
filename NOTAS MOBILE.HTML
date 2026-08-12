@@ -69,7 +69,7 @@
             color: #fff;
         }
 
-        .btn-criar-pasta {
+        .btn-nova-nota {
             width: 100%;
             min-height: 44px;
             background: var(--word-blue);
@@ -79,6 +79,14 @@
             font-weight: bold;
             font-size: 14px;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-nova-nota:active {
+            background: #1d3d6e;
         }
 
         .busca-container {
@@ -130,69 +138,28 @@
             text-transform: uppercase;
         }
 
-        .container-pastas {
+        .container-notas {
             flex: 1;
             overflow-y: auto;
             padding: 0 10px 10px 10px;
         }
 
-        .card-pasta {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 8px;
-            margin-bottom: 10px;
-            padding: 8px;
-        }
-
-        .item-pasta-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 6px;
-            font-weight: 600;
+        .item-nota {
+            min-height: 44px;
+            padding: 8px 12px;
             font-size: 14px;
-            color: #eee;
-        }
-
-        .pasta-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            max-width: 65%;
-        }
-
-        .badge-sub {
-            background: #333;
-            font-size: 11px;
-            padding: 2px 8px;
-            border-radius: 12px;
-            color: #aaa;
-        }
-
-        .lista-subnotas {
-            margin-left: 10px;
-            border-left: 2px solid #333;
-            padding-left: 8px;
-            margin-top: 6px;
-        }
-
-        .item-subnota {
-            min-height: 40px;
-            padding: 6px 10px;
-            font-size: 13px;
             border-radius: 6px;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
             color: #bbb;
-            margin: 3px 0;
+            margin: 4px 0;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
-        .item-subnota.ativa {
+        .item-nota.ativa {
             background: var(--sidebar-active);
             color: white;
             font-weight: bold;
@@ -329,7 +296,7 @@
             background: white;
         }
 
-        /* --- CONTAINER DE FOLHAS DE PAPEL (A4) --- */
+        /* --- CONTAINER DE FOLHAS DE PAPEL --- */
         .editor-container-wrapper {
             flex: 1;
             overflow-y: auto;
@@ -382,6 +349,7 @@
             font-size: 16px;
             line-height: 1.7;
             color: #333;
+            cursor: text;
         }
 
         .page-footer-tag {
@@ -439,11 +407,11 @@
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <h2>📘 Word Notes Tablet</h2>
-            <button class="btn-criar-pasta" onclick="criarColecao()">➕ Nova Coleção</button>
+            <button class="btn-nova-nota" onclick="criarNota()">➕ Nova Nota</button>
         </div>
 
         <div class="busca-container">
-            <input type="text" class="input-busca" placeholder="🔍 Pesquisar notas..." oninput="filtrarSubNotas(this.value)">
+            <input type="text" class="input-busca" placeholder="🔍 Pesquisar notas..." oninput="filtrarNotas(this.value)">
         </div>
 
         <div class="backup-section">
@@ -454,14 +422,14 @@
             </label>
         </div>
 
-        <div class="section-title" id="title-fixados">📌 Fixados (0/3)</div>
-        <div class="container-pastas" id="lista-fixados"></div>
+        <div class="section-title" id="title-fixados">📌 Fixadas (0/3)</div>
+        <div class="container-notas" id="lista-fixados"></div>
 
-        <div class="section-title">📁 Minhas Coleções</div>
-        <div class="container-pastas" id="lista-comuns"></div>
+        <div class="section-title">📄 Minhas Notas</div>
+        <div class="container-notas" id="lista-comuns"></div>
 
         <div class="section-title">🗑️ Lixeira</div>
-        <div class="container-pastas" id="lista-lixeira" style="max-height: 140px;"></div>
+        <div class="container-notas" id="lista-lixeira" style="max-height: 140px;"></div>
     </div>
 
     <div class="main-wrapper">
@@ -528,7 +496,7 @@
         <div class="editor-container-wrapper" id="editor-wrapper">
             <div id="document-wrapper" style="display: none; width: 100%; flex-direction: column; align-items: center; gap: 20px;">
                 <div class="doc-title-container">
-                    <input type="text" id="doc-title" class="input-document-title" placeholder="Título do Documento..." oninput="salvarNotaAtual()">
+                    <input type="text" id="doc-title" class="input-document-title" placeholder="Título da Nota..." oninput="salvarNotaAtual()">
                 </div>
                 
                 <div class="pages-container" id="pages-container"></div>
@@ -537,7 +505,7 @@
             <div class="aviso-vazio-main" id="aviso-vazio">
                 <span>📄</span>
                 <h2>Nenhuma nota selecionada</h2>
-                <p>Abra o menu lateral, crie uma coleção e adicione sub-notas para começar.</p>
+                <p>Crie uma nova nota na barra lateral para começar a escrever.</p>
             </div>
         </div>
 
@@ -554,9 +522,8 @@
     </div>
 
     <script>
-        let colecoes = JSON.parse(localStorage.getItem('word_notes_v3_tablet')) || [];
-        let idColecaoAtiva = null;
-        let idSubNotaAtiva = null;
+        let notas = JSON.parse(localStorage.getItem('word_notes_v4_direct')) || [];
+        let idNotaAtiva = null;
 
         renderizar();
 
@@ -565,53 +532,34 @@
             salvarNotaAtual();
         }
 
-        function criarColecao() {
-            const nome = prompt("Digite o nome da nova coleção:", "Nova Coleção");
-            if (!nome || !nome.trim()) return;
-
+        function criarNota() {
             const nova = {
                 id: Date.now().toString(),
-                titulo: nome.trim(),
+                titulo: "Nova Nota",
+                paginas: ["<p><br></p>"],
                 fixada: false,
-                subnotas: []
-            };
-
-            colecoes.unshift(nova);
-            salvar();
-            renderizar();
-        }
-
-        function criarSubNota(e, idColecao) {
-            e.stopPropagation();
-            const col = colecoes.find(c => c.id === idColecao);
-            if (!col) return;
-
-            const sub = {
-                id: Date.now().toString(),
-                titulo: "Nova Sub-nota",
-                paginas: ["<p>Digite seu texto aqui...</p>"],
                 naLixeira: false
             };
 
-            col.subnotas.unshift(sub);
+            notas.unshift(nova);
             salvar();
-            carregarSubNota(idColecao, sub.id);
+            carregarNota(nova.id);
         }
 
-        function toggleFixar(e, idColecao) {
+        function toggleFixar(e, idNota) {
             e.stopPropagation();
-            const col = colecoes.find(c => c.id === idColecao);
-            if (!col) return;
+            const nota = notas.find(n => n.id === idNota);
+            if (!nota) return;
 
-            if (!col.fixada) {
-                const fixadas = colecoes.filter(c => c.fixada).length;
+            if (!nota.fixada) {
+                const fixadas = notas.filter(n => n.fixada && !n.naLixeira).length;
                 if (fixadas >= 3) {
-                    alert("Você só pode fixar no máximo 3 coleções no topo.");
+                    alert("Você só pode fixar no máximo 3 notas no topo.");
                     return;
                 }
-                col.fixada = true;
+                nota.fixada = true;
             } else {
-                col.fixada = false;
+                nota.fixada = false;
             }
 
             salvar();
@@ -629,90 +577,63 @@
 
             let qtdFixados = 0;
 
-            colecoes.forEach(col => {
-                if (col.fixada) qtdFixados++;
-
-                const subNotasValidas = col.subnotas.filter(s => !s.naLixeira && s.titulo.toLowerCase().includes(termoBusca.toLowerCase()));
-
-                const card = document.createElement('div');
-                card.className = 'card-pasta';
-
-                card.innerHTML = `
-                    <div class="item-pasta-header">
-                        <div class="pasta-info">
-                            <span>📁</span>
-                            <span title="${col.titulo}">${col.titulo}</span>
-                            <span class="badge-sub">${subNotasValidas.length}</span>
-                        </div>
-                        <div>
-                            <button class="btn-icon btn-pin ${col.fixada ? 'fixado' : ''}" onclick="toggleFixar(event, '${col.id}')">📌</button>
-                            <button class="btn-icon" onclick="criarSubNota(event, '${col.id}')">➕</button>
-                            <button class="btn-icon" onclick="excluirColecao(event, '${col.id}')">🗑️</button>
-                        </div>
-                    </div>
-                `;
-
-                if (subNotasValidas.length > 0) {
-                    const subList = document.createElement('div');
-                    subList.className = 'lista-subnotas';
-
-                    subNotasValidas.forEach(sub => {
-                        const itemSub = document.createElement('div');
-                        itemSub.className = `item-subnota ${sub.id === idSubNotaAtiva ? 'ativa' : ''}`;
-                        itemSub.onclick = () => carregarSubNota(col.id, sub.id);
-                        itemSub.innerHTML = `
-                            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:80%;">📄 ${sub.titulo}</span>
-                            <button class="btn-icon" onclick="moverParaLixeira(event, '${col.id}', '${sub.id}')">🗑️</button>
-                        `;
-                        subList.appendChild(itemSub);
-                    });
-
-                    card.appendChild(subList);
-                }
-
-                if (col.fixada) {
-                    listFixados.appendChild(card);
-                } else {
-                    listComuns.appendChild(card);
-                }
-
-                col.subnotas.filter(s => s.naLixeira).forEach(sub => {
+            notas.forEach(nota => {
+                if (nota.naLixeira) {
                     const lixItem = document.createElement('div');
-                    lixItem.className = 'item-subnota';
+                    lixItem.className = 'item-nota';
                     lixItem.innerHTML = `
-                        <span style="text-decoration:line-through; font-size:11px;">${sub.titulo}</span>
+                        <span style="text-decoration:line-through; font-size:12px; overflow:hidden; text-overflow:ellipsis;">${nota.titulo || 'Sem título'}</span>
                         <div>
-                            <button class="btn-icon" onclick="restaurarSub('${col.id}', '${sub.id}')">↩️</button>
-                            <button class="btn-icon" onclick="excluirPermanente('${col.id}', '${sub.id}')">❌</button>
+                            <button class="btn-icon" onclick="restaurarNota('${nota.id}')" title="Restaurar">↩️</button>
+                            <button class="btn-icon" onclick="excluirPermanente('${nota.id}')" title="Excluir Definitivamente">❌</button>
                         </div>
                     `;
                     listLixeira.appendChild(lixItem);
-                });
+                    return;
+                }
+
+                if (termoBusca && !nota.titulo.toLowerCase().includes(termoBusca.toLowerCase())) return;
+
+                if (nota.fixada) qtdFixados++;
+
+                const item = document.createElement('div');
+                item.className = `item-nota ${nota.id === idNotaAtiva ? 'ativa' : ''}`;
+                item.onclick = () => carregarNota(nota.id);
+
+                item.innerHTML = `
+                    <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:68%;">📄 ${nota.titulo || 'Sem título'}</span>
+                    <div>
+                        <button class="btn-icon btn-pin ${nota.fixada ? 'fixado' : ''}" onclick="toggleFixar(event, '${nota.id}')" title="Fixar">📌</button>
+                        <button class="btn-icon" onclick="moverParaLixeira(event, '${nota.id}')" title="Enviar para Lixeira">🗑️</button>
+                    </div>
+                `;
+
+                if (nota.fixada) {
+                    listFixados.appendChild(item);
+                } else {
+                    listComuns.appendChild(item);
+                }
             });
 
-            document.getElementById('title-fixados').innerText = `📌 Fixados (${qtdFixados}/3)`;
+            document.getElementById('title-fixados').innerText = `📌 Fixadas (${qtdFixados}/3)`;
         }
 
-        function carregarSubNota(idColecao, idSub) {
-            const col = colecoes.find(c => c.id === idColecao);
-            if (!col) return;
+        function carregarNota(idNota) {
+            const nota = notas.find(n => n.id === idNota);
+            if (!nota || nota.naLixeira) return;
 
-            const sub = col.subnotas.find(s => s.id === idSub);
-            if (!sub || sub.naLixeira) return;
-
-            idColecaoAtiva = idColecao;
-            idSubNotaAtiva = idSub;
+            idNotaAtiva = idNota;
 
             document.getElementById('aviso-vazio').style.display = 'none';
             document.getElementById('document-wrapper').style.display = 'flex';
 
-            document.getElementById('doc-title').value = sub.titulo;
-            document.getElementById('word-header-title').innerText = `${col.titulo} - ${sub.titulo}`;
+            document.getElementById('doc-title').value = nota.titulo;
+            document.getElementById('word-header-title').innerText = nota.titulo || "Documento";
 
             const container = document.getElementById('pages-container');
             container.innerHTML = '';
 
-            const paginasHTML = sub.paginas && sub.paginas.length > 0 ? sub.paginas : ["<p>Digite seu texto...</p>"];
+            const paginasHTML = nota.paginas && nota.paginas.length > 0 ? nota.paginas : ["<p><br></p>"];
             paginasHTML.forEach((html, idx) => {
                 const pag = criarPaginaElemento(html, idx + 1);
                 container.appendChild(pag);
@@ -730,7 +651,9 @@
             const pageDiv = document.createElement('div');
             pageDiv.className = 'word-page-card';
             pageDiv.contentEditable = "true";
-            pageDiv.innerHTML = conteudoHTML;
+            
+            // Garante elemento editável se vier vazio
+            pageDiv.innerHTML = (conteudoHTML && conteudoHTML.trim()) ? conteudoHTML : "<p><br></p>";
 
             const tagNum = document.createElement('div');
             tagNum.className = 'page-footer-tag';
@@ -738,7 +661,22 @@
             tagNum.innerText = `Página ${numeroPagina}`;
             pageDiv.appendChild(tagNum);
 
+            // CORREÇÃO: Garante o foco para digitação em páginas zeradas ao clicar
+            pageDiv.onclick = (e) => {
+                if (pageDiv.innerText.replace(/Página \d+$/, '').trim() === '') {
+                    if (!pageDiv.querySelector('p')) {
+                        pageDiv.innerHTML = "<p><br></p>";
+                        const tag = document.createElement('div');
+                        tag.className = 'page-footer-tag';
+                        tag.contentEditable = "false";
+                        tag.innerText = `Página ${numeroPagina}`;
+                        pageDiv.appendChild(tag);
+                    }
+                }
+            };
+
             pageDiv.oninput = () => {
+                garantirEstruturaParagrafo(pageDiv);
                 gerenciarPaginasDinamicas(pageDiv);
                 salvarNotaAtual();
             };
@@ -746,12 +684,35 @@
             return pageDiv;
         }
 
+        // CORREÇÃO: Impede que a página fique sem tag <p> e trave a escrita
+        function garantirEstruturaParagrafo(pageDiv) {
+            const textoLimpo = pageDiv.innerText.replace(/Página \d+$/, '').trim();
+            if (textoLimpo === '' && pageDiv.children.length <= 1) {
+                pageDiv.innerHTML = "<p><br></p>";
+                const tag = document.createElement('div');
+                tag.className = 'page-footer-tag';
+                tag.contentEditable = "false";
+                pageDiv.appendChild(tag);
+                
+                // Coloca o cursor dentro do parágrafo
+                const p = pageDiv.querySelector('p');
+                if (p) {
+                    const sel = window.getSelection();
+                    const range = document.createRange();
+                    range.setStart(p, 0);
+                    range.collapse(true);
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                }
+            }
+        }
+
         /* --- LÓGICA DE GERENCIAMENTO DE PÁGINAS DINÂMICAS --- */
         function gerenciarPaginasDinamicas(paginaAtual) {
             const container = document.getElementById('pages-container');
             
             // 1. Adiciona nova página se esta ultrapassar o tamanho limite do papel
-            if (paginaAtual.scrollHeight > paginaAtual.clientHeight + 20) {
+            if (paginaAtual.scrollHeight > paginaAtual.clientHeight + 15) {
                 const paginas = Array.from(container.querySelectorAll('.word-page-card'));
                 const indiceAtual = paginas.indexOf(paginaAtual);
 
@@ -761,11 +722,12 @@
                 }
             }
 
-            // 2. Remove páginas vazias do final (mantém sempre a primeira)
+            // 2. Remove páginas vazias do final (mantém sempre pelo menos a 1ª página)
             const todasPaginas = Array.from(container.querySelectorAll('.word-page-card'));
             for (let i = todasPaginas.length - 1; i > 0; i--) {
                 const pag = todasPaginas[i];
                 const texto = pag.innerText.replace(/Página \d+$/, '').trim();
+                
                 if (texto === '' && !pag.querySelector('img, table')) {
                     pag.remove();
                 } else {
@@ -792,83 +754,60 @@
         }
 
         function salvarNotaAtual() {
-            if (!idColecaoAtiva || !idSubNotaAtiva) return;
+            if (!idNotaAtiva) return;
 
-            const col = colecoes.find(c => c.id === idColecaoAtiva);
-            if (col) {
-                const sub = col.subnotas.find(s => s.id === idSubNotaAtiva);
-                if (sub) {
-                    sub.titulo = document.getElementById('doc-title').value || "Sem título";
-                    
-                    const paginasElements = document.querySelectorAll('.word-page-card');
-                    sub.paginas = Array.from(paginasElements).map(pag => {
-                        const clone = pag.cloneNode(true);
-                        const tag = clone.querySelector('.page-footer-tag');
-                        if (tag) tag.remove();
-                        return clone.innerHTML;
-                    });
+            const nota = notas.find(n => n.id === idNotaAtiva);
+            if (nota) {
+                nota.titulo = document.getElementById('doc-title').value || "Sem título";
+                
+                const paginasElements = document.querySelectorAll('.word-page-card');
+                nota.paginas = Array.from(paginasElements).map(pag => {
+                    const clone = pag.cloneNode(true);
+                    const tag = clone.querySelector('.page-footer-tag');
+                    if (tag) tag.remove();
+                    return clone.innerHTML;
+                });
 
-                    salvar();
-                    document.getElementById('word-header-title').innerText = `${col.titulo} - ${sub.titulo}`;
-                    
-                    const elAtivo = document.querySelector('.item-subnota.ativa span');
-                    if (elAtivo) elAtivo.innerText = '📄 ' + sub.titulo;
+                salvar();
+                document.getElementById('word-header-title').innerText = nota.titulo;
+                
+                const elAtivo = document.querySelector('.item-nota.ativa span');
+                if (elAtivo) elAtivo.innerText = '📄 ' + nota.titulo;
 
-                    atualizarEstatisticas();
-                }
+                atualizarEstatisticas();
             }
         }
 
-        function moverParaLixeira(e, idColecao, idSub) {
+        function moverParaLixeira(e, idNota) {
             e.stopPropagation();
-            const col = colecoes.find(c => c.id === idColecao);
-            if (col) {
-                const sub = col.subnotas.find(s => s.id === idSub);
-                if (sub) {
-                    sub.naLixeira = true;
-                    if (idSubNotaAtiva === idSub) fecharEditor();
-                    salvar();
-                    renderizar();
-                }
+            const nota = notas.find(n => n.id === idNota);
+            if (nota) {
+                nota.naLixeira = true;
+                if (idNotaAtiva === idNota) fecharEditor();
+                salvar();
+                renderizar();
             }
         }
 
-        function restaurarSub(idColecao, idSub) {
-            const col = colecoes.find(c => c.id === idColecao);
-            if (col) {
-                const sub = col.subnotas.find(s => s.id === idSub);
-                if (sub) {
-                    sub.naLixeira = false;
-                    salvar();
-                    carregarSubNota(idColecao, idSub);
-                }
+        function restaurarNota(idNota) {
+            const nota = notas.find(n => n.id === idNota);
+            if (nota) {
+                nota.naLixeira = false;
+                salvar();
+                carregarNota(idNota);
             }
         }
 
-        function excluirPermanente(idColecao, idSub) {
+        function excluirPermanente(idNota) {
             if (confirm("Excluir esta nota permanentemente?")) {
-                const col = colecoes.find(c => c.id === idColecao);
-                if (col) {
-                    col.subnotas = col.subnotas.filter(s => s.id !== idSub);
-                    salvar();
-                    renderizar();
-                }
-            }
-        }
-
-        function excluirColecao(e, idColecao) {
-            e.stopPropagation();
-            if (confirm("Excluir esta coleção e todas as suas notas?")) {
-                colecoes = colecoes.filter(c => c.id !== idColecao);
-                if (idColecaoAtiva === idColecao) fecharEditor();
+                notas = notas.filter(n => n.id !== idNota);
                 salvar();
                 renderizar();
             }
         }
 
         function fecharEditor() {
-            idSubNotaAtiva = null;
-            idColecaoAtiva = null;
+            idNotaAtiva = null;
             document.getElementById('document-wrapper').style.display = 'none';
             document.getElementById('aviso-vazio').style.display = 'flex';
             document.getElementById('word-header-title').innerText = "Word Notes Pro";
@@ -902,7 +841,7 @@
             document.getElementById('stat-save-status').innerText = "Salvo (Offline)";
         }
 
-        function filtrarSubNotas(termo) {
+        function filtrarNotas(termo) {
             renderizar(termo);
         }
 
@@ -911,11 +850,11 @@
         }
 
         function salvar() {
-            localStorage.setItem('word_notes_v3_tablet', JSON.stringify(colecoes));
+            localStorage.setItem('word_notes_v4_direct', JSON.stringify(notas));
         }
 
         function exportarComoTxt() {
-            if (!idSubNotaAtiva) return alert("Selecione uma nota para exportar.");
+            if (!idNotaAtiva) return alert("Selecione uma nota para exportar.");
             const titulo = document.getElementById('doc-title').value || "Nota";
             
             const paginas = document.querySelectorAll('.word-page-card');
@@ -936,13 +875,13 @@
         }
 
         function imprimirDocumento() {
-            if (!idSubNotaAtiva) return alert("Selecione uma nota para imprimir.");
+            if (!idNotaAtiva) return alert("Selecione uma nota para imprimir.");
             window.print();
         }
 
         function exportarBackup() {
-            if (colecoes.length === 0) return alert("Sem dados para exportar.");
-            const blob = new Blob([JSON.stringify(colecoes, null, 2)], { type: 'application/json' });
+            if (notas.length === 0) return alert("Sem dados para exportar.");
+            const blob = new Blob([JSON.stringify(notas, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -960,7 +899,7 @@
                 try {
                     const dados = JSON.parse(evt.target.result);
                     if (Array.isArray(dados)) {
-                        colecoes = dados;
+                        notas = dados;
                         salvar();
                         fecharEditor();
                         renderizar();
