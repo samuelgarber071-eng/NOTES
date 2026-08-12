@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Word Notes Pro - Sistema de Folhas</title>
+    <title>Word Notes Tablet - Páginas Dinâmicas</title>
     <style>
         :root {
             --word-blue: #2b579a;
@@ -17,11 +17,8 @@
             --sidebar-active: #2b579a;
             --accent-yellow: #f1c40f;
             --accent-red: #e74c3c;
+            --accent-green: #2ecc71;
             --status-bg: #2b579a;
-            
-            /* Dimensões da Folha A4 */
-            --page-width: 750px;
-            --page-height: 960px;
         }
 
         * {
@@ -41,7 +38,7 @@
             color: #333;
         }
 
-        /* --- SIDEBAR LATERAL --- */
+        /* --- SIDEBAR BARRA LATERAL --- */
         .sidebar {
             width: 300px;
             background-color: var(--sidebar-bg);
@@ -93,7 +90,9 @@
             gap: 6px;
         }
 
-        .btn-criar-pasta:active { background: #1d3d6e; }
+        .btn-criar-pasta:active {
+            background: #1d3d6e;
+        }
 
         .busca-container {
             padding: 10px 14px;
@@ -136,7 +135,10 @@
             font-weight: 600;
         }
 
-        .btn-backup:active { background: #3e3e3e; color: white; }
+        .btn-backup:active {
+            background: #3e3e3e;
+            color: white;
+        }
 
         .section-title {
             font-size: 11px;
@@ -210,8 +212,15 @@
             margin: 3px 0;
         }
 
-        .item-subnota:active { background: var(--sidebar-hover); }
-        .item-subnota.ativa { background: var(--sidebar-active); color: white; font-weight: bold; }
+        .item-subnota:active {
+            background: var(--sidebar-hover);
+        }
+
+        .item-subnota.ativa {
+            background: var(--sidebar-active);
+            color: white;
+            font-weight: bold;
+        }
 
         .btn-icon {
             background: transparent;
@@ -266,7 +275,9 @@
             justify-content: center;
         }
 
-        .btn-toggle-side:active { background: rgba(255,255,255,0.2); }
+        .btn-toggle-side:active {
+            background: rgba(255,255,255,0.2);
+        }
 
         .word-title {
             font-size: 14px;
@@ -276,7 +287,7 @@
             text-overflow: ellipsis;
         }
 
-        /* --- FAIXA RIBBON DO WORD --- */
+        /* --- RIBBON WORD --- */
         .ribbon-tabs {
             background-color: var(--word-ribbon-bg);
             border-bottom: 1px solid var(--word-border);
@@ -354,73 +365,67 @@
             background: white;
         }
 
-        /* --- CONTAINER DE FOLHAS (PAGINAÇÃO A4 REAL) --- */
+        /* --- GERENCIADOR DE FOLHAS / PÁGINAS --- */
         .editor-container-wrapper {
             flex: 1;
             overflow-y: auto;
-            padding: 30px 15px;
+            padding: 20px 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
             background-color: var(--word-bg);
             -webkit-overflow-scrolling: touch;
+            gap: 25px;
         }
 
-        .document-header-area {
+        .doc-title-container {
             width: 100%;
-            max-width: var(--page-width);
-            margin-bottom: 15px;
+            max-width: 760px;
+            background: white;
+            padding: 20px 35px 5px 35px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-radius: 4px 4px 0 0;
         }
 
         .input-document-title {
             border: none;
-            border-bottom: 2px solid #ccc;
+            border-bottom: 2px solid #e0e0e0;
             outline: none;
             font-size: 24px;
             font-weight: bold;
             color: #2b2b2b;
             width: 100%;
-            padding: 8px 4px;
-            background: transparent;
+            padding-bottom: 8px;
         }
 
         .input-document-title:focus {
             border-bottom-color: var(--word-blue);
         }
 
-        /* ESTRUTURA DAS FOLHAS INDIVIDUAIS */
-        .pages-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 25px; /* Espaço entre cada folha */
-            width: 100%;
-        }
-
+        /* FOLHA A4 SIMULADA */
         .word-page {
             background: white;
             width: 100%;
-            max-width: var(--page-width);
-            height: var(--page-height); /* Altura fixa de uma folha A4 */
-            padding: 50px 50px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            max-width: 760px;
+            height: 920px; /* Altura fixa de uma folha */
+            padding: 40px 45px 50px 45px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
             border-radius: 2px;
+            position: relative;
             outline: none;
             font-size: 16px;
             line-height: 1.7;
             color: #333;
-            overflow: hidden; /* O conteúdo excedente é detetado e movido */
-            position: relative;
-            word-wrap: break-word;
+            overflow: hidden; /* Oculta estouro para criar nova folha */
+            flex-shrink: 0;
         }
 
-        .word-page::after {
-            content: "Folha " attr(data-page-number);
+        .page-number-footer {
             position: absolute;
-            bottom: 15px;
+            bottom: 12px;
             right: 25px;
             font-size: 11px;
-            color: #aaa;
+            color: #888;
             user-select: none;
             pointer-events: none;
         }
@@ -457,26 +462,7 @@
 
         .status-info {
             display: flex;
-            gap: 16px;
-        }
-
-        /* CONFIGURAÇÃO DE IMPRESSÃO / PDF */
-        @media print {
-            .sidebar, .word-header, .ribbon-tabs, .ribbon-toolbar, .status-bar, .document-header-area {
-                display: none !important;
-            }
-            body, .main-wrapper, .editor-container-wrapper {
-                background: white !important;
-                padding: 0 !important;
-                overflow: visible !important;
-            }
-            .word-page {
-                box-shadow: none !important;
-                margin: 0 !important;
-                page-break-after: always;
-                height: 100vh !important;
-            }
-            .word-page::after { display: none; }
+            gap: 14px;
         }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -488,7 +474,7 @@
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <h2>📘 Word Notes Pro</h2>
+            <h2>📘 Word Notes Tablet</h2>
             <button class="btn-criar-pasta" onclick="criarColecao()">➕ Nova Coleção</button>
         </div>
 
@@ -522,15 +508,14 @@
 
         <div class="ribbon-tabs">
             <div class="ribbon-tab active">Página Inicial</div>
-            <div class="ribbon-tab" onclick="adicionarFolhaManual()">+ Nova Folha</div>
             <div class="ribbon-tab" onclick="imprimirDocumento()">Imprimir / PDF</div>
             <div class="ribbon-tab" onclick="exportarComoTxt()">Baixar TXT</div>
         </div>
 
         <div class="ribbon-toolbar">
             <div class="tool-group">
-                <button class="tool-btn" onclick="execCmd('undo')" title="Desfazer">↩️</button>
-                <button class="tool-btn" onclick="execCmd('redo')" title="Refazer">↪️</button>
+                <button class="tool-btn" onclick="execCmd('undo')">↩️</button>
+                <button class="tool-btn" onclick="execCmd('redo')">↪️</button>
             </div>
 
             <div class="tool-group">
@@ -576,24 +561,25 @@
             </div>
         </div>
 
-        <div class="editor-container-wrapper" id="editor-wrapper">
-            <div class="document-header-area" id="doc-header-container" style="display: none;">
-                <input type="text" id="doc-title" class="input-document-title" placeholder="Título do Documento..." oninput="salvarNotaAtual()">
-            </div>
-
-            <div class="pages-container" id="pages-container" style="display: none;">
+        <div class="editor-container-wrapper" id="editor-container">
+            <div id="document-wrapper" style="display: none; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 20px;">
+                <div class="doc-title-container">
+                    <input type="text" id="doc-title" class="input-document-title" placeholder="Título do Documento..." oninput="salvarNotaAtual()">
                 </div>
+                
+                <div id="pages-container" style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 20px;"></div>
+            </div>
 
             <div class="aviso-vazio-main" id="aviso-vazio">
                 <span>📄</span>
                 <h2>Nenhuma nota selecionada</h2>
-                <p>Crie ou escolha uma sub-nota no menu lateral para começar a escrever.</p>
+                <p>Abra o menu lateral, crie uma coleção e adicione sub-notas para começar.</p>
             </div>
         </div>
 
         <div class="status-bar">
             <div class="status-info">
-                <span id="stat-page-count">Página 1 de 1</span>
+                <span id="stat-pages">Página 1 de 1</span>
                 <span id="stat-words">0 palavras</span>
                 <span id="stat-chars">0 caracteres</span>
             </div>
@@ -604,7 +590,7 @@
     </div>
 
     <script>
-        let colecoes = JSON.parse(localStorage.getItem('word_notes_colecoes_pages')) || [];
+        let colecoes = JSON.parse(localStorage.getItem('word_notes_colecoes_paginas')) || [];
         let idColecaoAtiva = null;
         let idSubNotaAtiva = null;
 
@@ -615,141 +601,6 @@
             verificarPaginacao();
             salvarNotaAtual();
         }
-
-        /* --- SISTEMA DE GESTÃO E CRIAÇÃO AUTOMÁTICA DE FOLHAS --- */
-
-        function criarElementoFolha(numeroPagina, conteudoHTML = "<p><br></p>") {
-            const folha = document.createElement('div');
-            folha.className = 'word-page';
-            folha.contentEditable = "true";
-            folha.setAttribute('data-page-number', numeroPagina);
-            folha.innerHTML = conteudoHTML;
-
-            // Eventos de escuta para monitorizar o transbordo de texto
-            folha.addEventListener('input', () => {
-                verificarPaginacao();
-                salvarNotaAtual();
-            });
-
-            folha.addEventListener('keyup', () => {
-                atualizarPaginaAtual();
-            });
-
-            folha.addEventListener('focus', () => {
-                atualizarPaginaAtual();
-            });
-
-            return folha;
-        }
-
-        function verificarPaginacao() {
-            const container = document.getElementById('pages-container');
-            const folhas = container.getElementsByClassName('word-page');
-
-            for (let i = 0; i < folhas.length; i++) {
-                const folhaAtual = folhas[i];
-
-                // Deteta se o conteúdo excede a altura máxima da folha A4
-                while (folhaAtual.scrollHeight > folhaAtual.clientHeight && folhaAtual.lastChild) {
-                    let proximaFolha = folhas[i + 1];
-
-                    // Se não existir uma folha seguinte, cria uma automaticamente
-                    if (!proximaFolha) {
-                        proximaFolha = criarElementoFolha(folhas.length + 1, "");
-                        container.appendChild(proximaFolha);
-                    }
-
-                    // Move o último elemento da folha cheia para o início da folha seguinte
-                    proximaFolha.insertBefore(folhaAtual.lastChild, proximaFolha.firstChild);
-                }
-            }
-
-            // Elimina folhas vazias no final do documento (mantendo pelo menos 1)
-            let ult = folhas.length - 1;
-            while (ult > 0) {
-                const f = folhas[ult];
-                const textoLimpo = f.innerText.replace(/\s/g, '');
-                if (textoLimpo === '') {
-                    f.remove();
-                    ult--;
-                } else {
-                    break;
-                }
-            }
-
-            // Atualiza os números das folhas
-            const folhasAtualizadas = container.getElementsByClassName('word-page');
-            for (let idx = 0; idx < folhasAtualizadas.length; idx++) {
-                folhasAtualizadas[idx].setAttribute('data-page-number', idx + 1);
-            }
-
-            atualizarEstatisticas();
-        }
-
-        function adicionarFolhaManual() {
-            if (!idSubNotaAtiva) return alert("Selecione uma nota primeiro.");
-            const container = document.getElementById('pages-container');
-            const numPaginas = container.getElementsByClassName('word-page').length;
-            const novaFolha = criarElementoFolha(numPaginas + 1, "<p><br></p>");
-            container.appendChild(novaFolha);
-            novaFolha.focus();
-            verificarPaginacao();
-        }
-
-        function obterConteudoTotalHTML() {
-            const container = document.getElementById('pages-container');
-            const folhas = container.getElementsByClassName('word-page');
-            let arrayPaginas = [];
-            for (let f of folhas) {
-                arrayPaginas.push(f.innerHTML);
-            }
-            return JSON.stringify(arrayPaginas);
-        }
-
-        function carregarConteudoNasFolhas(conteudoSalvo) {
-            const container = document.getElementById('pages-container');
-            container.innerHTML = '';
-
-            let paginas = [];
-            try {
-                paginas = JSON.parse(conteudoSalvo);
-            } catch(e) {
-                // Compatibilidade com conteúdos antigos em texto/HTML simples
-                paginas = [conteudoSalvo || "<p>Escreva o seu texto aqui...</p>"];
-            }
-
-            if (!Array.isArray(paginas) || paginas.length === 0) {
-                paginas = ["<p>Escreva o seu texto aqui...</p>"];
-            }
-
-            paginas.forEach((htmlPag, idx) => {
-                const folha = criarElementoFolha(idx + 1, htmlPag);
-                container.appendChild(folha);
-            });
-
-            verificarPaginacao();
-        }
-
-        function atualizarPaginaAtual() {
-            const folhas = document.getElementsByClassName('word-page');
-            const total = folhas.length;
-            let paginaAtual = 1;
-
-            const selecao = window.getSelection();
-            if (selecao.rangeCount > 0) {
-                let elemento = selecao.anchorNode;
-                while (elemento && !elemento.classList?.contains('word-page')) {
-                    elemento = elemento.parentNode;
-                }
-                if (elemento && elemento.getAttribute('data-page-number')) {
-                    paginaAtual = parseInt(elemento.getAttribute('data-page-number'));
-                }
-            }
-
-            document.getElementById('stat-page-count').innerText = `Página ${paginaAtual} de ${total}`;
-        }
-
-        /* --- OPERAÇÕES DA APLICAÇÃO --- */
 
         function criarColecao() {
             const nome = prompt("Digite o nome da nova coleção:", "Nova Coleção");
@@ -775,7 +626,7 @@
             const sub = {
                 id: Date.now().toString(),
                 titulo: "Nova Sub-nota",
-                conteudo: JSON.stringify(["<p>Escreva o seu texto aqui...</p>"]),
+                paginas: ["<p>Comece a escrever seu texto aqui...</p>"],
                 naLixeira: false
             };
 
@@ -792,273 +643,4 @@
             if (!col.fixada) {
                 const fixadas = colecoes.filter(c => c.fixada).length;
                 if (fixadas >= 3) {
-                    alert("Apenas pode fixar no máximo 3 coleções no topo.");
-                    return;
-                }
-                col.fixada = true;
-            } else {
-                col.fixada = false;
-            }
-
-            salvar();
-            renderizar();
-        }
-
-        function renderizar(termoBusca = "") {
-            const listFixados = document.getElementById('lista-fixados');
-            const listComuns = document.getElementById('lista-comuns');
-            const listLixeira = document.getElementById('lista-lixeira');
-
-            listFixados.innerHTML = '';
-            listComuns.innerHTML = '';
-            listLixeira.innerHTML = '';
-
-            let qtdFixados = 0;
-
-            colecoes.forEach(col => {
-                if (col.fixada) qtdFixados++;
-
-                const subNotasValidas = col.subnotas.filter(s => !s.naLixeira && s.titulo.toLowerCase().includes(termoBusca.toLowerCase()));
-
-                const card = document.createElement('div');
-                card.className = 'card-pasta';
-
-                card.innerHTML = `
-                    <div class="item-pasta-header">
-                        <div class="pasta-info">
-                            <span>📁</span>
-                            <span title="${col.titulo}">${col.titulo}</span>
-                            <span class="badge-sub">${subNotasValidas.length}</span>
-                        </div>
-                        <div>
-                            <button class="btn-icon btn-pin ${col.fixada ? 'fixado' : ''}" onclick="toggleFixar(event, '${col.id}')">📌</button>
-                            <button class="btn-icon" onclick="criarSubNota(event, '${col.id}')">➕</button>
-                            <button class="btn-icon btn-del" onclick="excluirColecao(event, '${col.id}')">🗑️</button>
-                        </div>
-                    </div>
-                `;
-
-                if (subNotasValidas.length > 0) {
-                    const subList = document.createElement('div');
-                    subList.className = 'lista-subnotas';
-
-                    subNotasValidas.forEach(sub => {
-                        const itemSub = document.createElement('div');
-                        itemSub.className = `item-subnota ${sub.id === idSubNotaAtiva ? 'ativa' : ''}`;
-                        itemSub.onclick = () => carregarSubNota(col.id, sub.id);
-                        itemSub.innerHTML = `
-                            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:80%;">📄 ${sub.titulo}</span>
-                            <button class="btn-icon btn-del" onclick="moverParaLixeira(event, '${col.id}', '${sub.id}')">🗑️</button>
-                        `;
-                        subList.appendChild(itemSub);
-                    });
-
-                    card.appendChild(subList);
-                }
-
-                if (col.fixada) {
-                    listFixados.appendChild(card);
-                } else {
-                    listComuns.appendChild(card);
-                }
-
-                col.subnotas.filter(s => s.naLixeira).forEach(sub => {
-                    const lixItem = document.createElement('div');
-                    lixItem.className = 'item-subnota';
-                    lixItem.innerHTML = `
-                        <span style="text-decoration:line-through; font-size:11px;">${sub.titulo}</span>
-                        <div>
-                            <button class="btn-icon" onclick="restaurarSub('${col.id}', '${sub.id}')">↩️</button>
-                            <button class="btn-icon btn-del" onclick="excluirPermanente('${col.id}', '${sub.id}')">❌</button>
-                        </div>
-                    `;
-                    listLixeira.appendChild(lixItem);
-                });
-            });
-
-            document.getElementById('title-fixados').innerText = `📌 Fixados (${qtdFixados}/3)`;
-        }
-
-        function carregarSubNota(idColecao, idSub) {
-            const col = colecoes.find(c => c.id === idColecao);
-            if (!col) return;
-
-            const sub = col.subnotas.find(s => s.id === idSub);
-            if (!sub || sub.naLixeira) return;
-
-            idColecaoAtiva = idColecao;
-            idSubNotaAtiva = idSub;
-
-            document.getElementById('aviso-vazio').style.display = 'none';
-            document.getElementById('doc-header-container').style.display = 'block';
-            document.getElementById('pages-container').style.display = 'flex';
-
-            document.getElementById('doc-title').value = sub.titulo;
-            document.getElementById('word-header-title').innerText = `${col.titulo} - ${sub.titulo}`;
-
-            carregarConteudoNasFolhas(sub.conteudo);
-
-            if (window.innerWidth < 900) {
-                document.getElementById('sidebar').classList.add('escondida');
-            }
-
-            renderizar();
-        }
-
-        function salvarNotaAtual() {
-            if (!idColecaoAtiva || !idSubNotaAtiva) return;
-
-            const col = colecoes.find(c => c.id === idColecaoAtiva);
-            if (col) {
-                const sub = col.subnotas.find(s => s.id === idSubNotaAtiva);
-                if (sub) {
-                    sub.titulo = document.getElementById('doc-title').value || "Sem título";
-                    sub.conteudo = obterConteudoTotalHTML();
-                    salvar();
-                    
-                    document.getElementById('word-header-title').innerText = `${col.titulo} - ${sub.titulo}`;
-                    
-                    const elementoAtivo = document.querySelector('.item-subnota.ativa span');
-                    if(elementoAtivo) elementoAtivo.innerText = '📄 ' + sub.titulo;
-
-                    atualizarEstatisticas();
-                }
-            }
-        }
-
-        function moverParaLixeira(e, idColecao, idSub) {
-            e.stopPropagation();
-            const col = colecoes.find(c => c.id === idColecao);
-            if (col) {
-                const sub = col.subnotas.find(s => s.id === idSub);
-                if (sub) {
-                    sub.naLixeira = true;
-                    if (idSubNotaAtiva === idSub) fecharEditor();
-                    salvar();
-                    renderizar();
-                }
-            }
-        }
-
-        function restaurarSub(idColecao, idSub) {
-            const col = colecoes.find(c => c.id === idColecao);
-            if (col) {
-                const sub = col.subnotas.find(s => s.id === idSub);
-                if (sub) {
-                    sub.naLixeira = false;
-                    salvar();
-                    carregarSubNota(idColecao, idSub);
-                }
-            }
-        }
-
-        function excluirPermanente(idColecao, idSub) {
-            if (confirm("Excluir esta nota permanentemente?")) {
-                const col = colecoes.find(c => c.id === idColecao);
-                if (col) {
-                    col.subnotas = col.subnotas.filter(s => s.id !== idSub);
-                    salvar();
-                    renderizar();
-                }
-            }
-        }
-
-        function excluirColecao(e, idColecao) {
-            e.stopPropagation();
-            if (confirm("Excluir esta coleção e todas as suas notas?")) {
-                colecoes = colecoes.filter(c => c.id !== idColecao);
-                if (idColecaoAtiva === idColecao) fecharEditor();
-                salvar();
-                renderizar();
-            }
-        }
-
-        function fecharEditor() {
-            idSubNotaAtiva = null;
-            idColecaoAtiva = null;
-            document.getElementById('doc-header-container').style.display = 'none';
-            document.getElementById('pages-container').style.display = 'none';
-            document.getElementById('aviso-vazio').style.display = 'flex';
-            document.getElementById('word-header-title').innerText = "Word Notes Pro";
-            atualizarEstatisticas(true);
-            renderizar();
-        }
-
-        function atualizarEstatisticas(zerar = false) {
-            if (zerar) {
-                document.getElementById('stat-page-count').innerText = "Página 0 de 0";
-                document.getElementById('stat-words').innerText = "0 palavras";
-                document.getElementById('stat-chars').innerText = "0 caracteres";
-                return;
-            }
-
-            const container = document.getElementById('pages-container');
-            const texto = container.innerText || "";
-            const caracteres = texto.length;
-            const palavras = texto.trim() ? texto.trim().split(/\s+/).length : 0;
-
-            document.getElementById('stat-words').innerText = `${palavras} palavras`;
-            document.getElementById('stat-chars').innerText = `${caracteres} caracteres`;
-            document.getElementById('stat-save-status').innerText = "Salvo (Offline)";
-
-            atualizarPaginaAtual();
-        }
-
-        function filtrarSubNotas(termo) { renderizar(termo); }
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('escondida'); }
-        function salvar() { localStorage.setItem('word_notes_colecoes_pages', JSON.stringify(colecoes)); }
-
-        function exportarComoTxt() {
-            if (!idSubNotaAtiva) return alert("Selecione uma nota para exportar.");
-            const titulo = document.getElementById('doc-title').value || "Nota";
-            const texto = document.getElementById('pages-container').innerText || "";
-            
-            const blob = new Blob([`${titulo}\n\n${texto}`], { type: 'text/plain;charset=utf-8' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `${titulo.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.txt`;
-            link.click();
-            URL.revokeObjectURL(link.href);
-        }
-
-        function imprimirDocumento() {
-            if (!idSubNotaAtiva) return alert("Selecione uma nota para imprimir.");
-            window.print();
-        }
-
-        function exportarBackup() {
-            if (colecoes.length === 0) return alert("Sem dados para exportar.");
-            const blob = new Blob([JSON.stringify(colecoes, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `backup_word_notes_${new Date().toISOString().slice(0,10)}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-
-        function importarBackup(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                try {
-                    const dados = JSON.parse(evt.target.result);
-                    if (Array.isArray(dados)) {
-                        colecoes = dados;
-                        salvar();
-                        fecharEditor();
-                        renderizar();
-                        alert("Backup carregado com sucesso!");
-                    }
-                } catch(err) {
-                    alert("Ficheiro de backup inválido.");
-                }
-                e.target.value = '';
-            };
-            reader.readAsText(file);
-        }
-    </script>
-</body>
-</html>
+      
