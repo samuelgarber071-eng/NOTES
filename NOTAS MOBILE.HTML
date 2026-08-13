@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Word Notes Tablet Pro</title>
+    <title>Word Notes Tablet Pro 9"</title>
     <style>
         :root {
             --word-blue: #2b579a;
@@ -36,9 +36,9 @@
             color: #333;
         }
 
-        /* --- SIDEBAR BARRA LATERAL --- */
+        /* --- SIDEBAR OTIMIZADA PARA TABLET 9" --- */
         .sidebar {
-            width: 300px;
+            width: 240px; /* Reduzido para poupar espaço no tablet */
             background-color: var(--sidebar-bg);
             color: var(--sidebar-text);
             display: flex;
@@ -53,31 +53,33 @@
         .sidebar.escondida {
             transform: translateX(-100%);
             position: absolute;
+            height: 100%;
+            box-shadow: 4px 0 12px rgba(0,0,0,0.3);
         }
 
         .sidebar-header {
-            padding: 16px;
+            padding: 12px;
             background: #141414;
             border-bottom: 1px solid #2a2a2a;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
         .sidebar-header h2 {
-            font-size: 16px;
+            font-size: 15px;
             color: #fff;
         }
 
         .btn-nova-nota {
             width: 100%;
-            min-height: 44px;
+            min-height: 42px;
             background: var(--word-blue);
             color: white;
             border: none;
             border-radius: 6px;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 13px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -90,39 +92,39 @@
         }
 
         .busca-container {
-            padding: 10px 14px;
+            padding: 8px 10px;
             background: #181818;
             border-bottom: 1px solid #2a2a2a;
         }
 
         .input-busca {
             width: 100%;
-            height: 40px;
-            padding: 8px 12px;
+            height: 36px;
+            padding: 6px 10px;
             border-radius: 6px;
             border: 1px solid #3a3a3a;
             background: #252526;
             color: white;
-            font-size: 13px;
+            font-size: 12px;
             outline: none;
         }
 
         .backup-section {
-            padding: 10px 14px;
+            padding: 8px 10px;
             display: flex;
-            gap: 8px;
+            gap: 6px;
             background: #181818;
             border-bottom: 1px solid #2a2a2a;
         }
 
         .btn-backup {
             flex: 1;
-            min-height: 38px;
+            min-height: 36px;
             background: #2d2d2d;
             color: #ccc;
             border: 1px solid #3a3a3a;
             border-radius: 6px;
-            font-size: 12px;
+            font-size: 11px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -131,23 +133,23 @@
         }
 
         .section-title {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: bold;
             color: #888;
-            padding: 12px 14px 6px 14px;
+            padding: 10px 10px 4px 10px;
             text-transform: uppercase;
         }
 
         .container-notas {
             flex: 1;
             overflow-y: auto;
-            padding: 0 10px 10px 10px;
+            padding: 0 8px 8px 8px;
         }
 
         .item-nota {
-            min-height: 44px;
-            padding: 8px 12px;
-            font-size: 14px;
+            min-height: 40px;
+            padding: 6px 10px;
+            font-size: 13px;
             border-radius: 6px;
             cursor: pointer;
             display: flex;
@@ -170,11 +172,11 @@
             border: none;
             color: #aaa;
             cursor: pointer;
-            padding: 6px;
-            font-size: 14px;
+            padding: 4px;
+            font-size: 13px;
             border-radius: 4px;
-            min-width: 32px;
-            min-height: 32px;
+            min-width: 28px;
+            min-height: 28px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -195,11 +197,11 @@
         .word-header {
             background-color: var(--word-blue);
             color: white;
-            height: 48px;
-            padding: 0 16px;
+            height: 44px;
+            padding: 0 12px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             user-select: none;
         }
 
@@ -209,8 +211,8 @@
             color: white;
             font-size: 20px;
             cursor: pointer;
-            width: 38px;
-            height: 38px;
+            width: 36px;
+            height: 36px;
             border-radius: 6px;
         }
 
@@ -222,18 +224,18 @@
             text-overflow: ellipsis;
         }
 
-        /* --- RIBBON WORD --- */
+        /* --- RIBBON WORD ADAPTADA PARA TOQUE --- */
         .ribbon-tabs {
             background-color: var(--word-ribbon-bg);
             border-bottom: 1px solid var(--word-border);
             display: flex;
-            padding: 0 8px;
+            padding: 0 4px;
             user-select: none;
         }
 
         .ribbon-tab {
-            padding: 10px 16px;
-            font-size: 13px;
+            padding: 8px 14px;
+            font-size: 12px;
             cursor: pointer;
             color: #444;
             border-bottom: 3px solid transparent;
@@ -250,10 +252,10 @@
         .ribbon-toolbar {
             background-color: #fff;
             border-bottom: 1px solid var(--word-border);
-            padding: 8px 12px;
+            padding: 6px 8px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
             box-shadow: 0 2px 4px rgba(0,0,0,0.04);
@@ -263,8 +265,8 @@
         .tool-group {
             display: flex;
             align-items: center;
-            gap: 4px;
-            padding-right: 8px;
+            gap: 2px;
+            padding-right: 6px;
             border-right: 1px solid #e0e0e0;
             flex-shrink: 0;
         }
@@ -272,14 +274,14 @@
         .tool-btn {
             background: transparent;
             border: 1px solid transparent;
-            padding: 6px 10px;
+            padding: 4px 8px;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             color: #333;
-            min-width: 36px;
-            height: 36px;
+            min-width: 34px;
+            height: 34px;
         }
 
         .tool-btn:active {
@@ -287,20 +289,20 @@
         }
 
         .tool-select {
-            height: 36px;
-            padding: 0 8px;
+            height: 34px;
+            padding: 0 6px;
             border: 1px solid var(--word-border);
             border-radius: 4px;
-            font-size: 13px;
+            font-size: 12px;
             outline: none;
             background: white;
         }
 
-        /* --- CONTAINER DE FOLHAS DE PAPEL --- */
+        /* --- REDIMENSIONAMENTO DO PAPEL PARA TABLET DE 9 INCHES --- */
         .editor-container-wrapper {
             flex: 1;
             overflow-y: auto;
-            padding: 20px 12px;
+            padding: 14px 8px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -310,9 +312,9 @@
 
         .doc-title-container {
             width: 100%;
-            max-width: 760px;
+            max-width: 680px; /* Ajustado proporcionalmente para telas de 9" */
             background: white;
-            padding: 20px 35px 10px 35px;
+            padding: 16px 24px 8px 24px;
             border-radius: 4px 4px 0 0;
             border-bottom: 1px solid #eee;
         }
@@ -321,11 +323,11 @@
             border: none;
             border-bottom: 2px solid #e0e0e0;
             outline: none;
-            font-size: 24px;
+            font-size: 20px;
             font-weight: bold;
             color: #2b2b2b;
             width: 100%;
-            padding-bottom: 8px;
+            padding-bottom: 6px;
         }
 
         .pages-container {
@@ -333,30 +335,30 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 25px;
+            gap: 16px;
         }
 
         .word-page-card {
             background: white;
             width: 100%;
-            max-width: 760px;
-            min-height: 900px;
-            padding: 40px 45px 50px 45px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            max-width: 680px; /* Largura ideal para tablet de 9 polegadas */
+            min-height: 800px;
+            padding: 28px 30px 40px 30px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
             border-radius: 2px;
             position: relative;
             outline: none;
-            font-size: 16px;
-            line-height: 1.7;
+            font-size: 15px;
+            line-height: 1.6;
             color: #333;
             cursor: text;
         }
 
         .page-footer-tag {
             position: absolute;
-            bottom: 12px;
-            right: 25px;
-            font-size: 11px;
+            bottom: 10px;
+            right: 20px;
+            font-size: 10px;
             color: #888;
             user-select: none;
             pointer-events: none;
@@ -374,17 +376,17 @@
         }
 
         .aviso-vazio-main span {
-            font-size: 50px;
-            margin-bottom: 12px;
+            font-size: 44px;
+            margin-bottom: 10px;
         }
 
         /* --- BARRA DE STATUS --- */
         .status-bar {
             background-color: var(--status-bg);
             color: white;
-            font-size: 12px;
-            height: 32px;
-            padding: 0 16px;
+            font-size: 11px;
+            height: 28px;
+            padding: 0 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -394,24 +396,31 @@
 
         .status-info {
             display: flex;
-            gap: 14px;
+            gap: 10px;
         }
 
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 2px; }
+
+        /* Ajustes específicos para Tablet / Orientação Retrato */
+        @media (max-width: 900px) {
+            .sidebar {
+                position: absolute;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <div class="sidebar" id="sidebar">
+    <div class="sidebar escondida" id="sidebar">
         <div class="sidebar-header">
-            <h2>📘 Word Notes Tablet</h2>
+            <h2>📘 Word Tablet 9"</h2>
             <button class="btn-nova-nota" onclick="criarNota()">➕ Nova Nota</button>
         </div>
 
         <div class="busca-container">
-            <input type="text" class="input-busca" placeholder="🔍 Pesquisar notas..." oninput="filtrarNotas(this.value)">
+            <input type="text" class="input-busca" placeholder="🔍 Pesquisar..." oninput="filtrarNotas(this.value)">
         </div>
 
         <div class="backup-section">
@@ -429,7 +438,7 @@
         <div class="container-notas" id="lista-comuns"></div>
 
         <div class="section-title">🗑️ Lixeira</div>
-        <div class="container-notas" id="lista-lixeira" style="max-height: 140px;"></div>
+        <div class="container-notas" id="lista-lixeira" style="max-height: 120px;"></div>
     </div>
 
     <div class="main-wrapper">
@@ -439,9 +448,9 @@
         </div>
 
         <div class="ribbon-tabs">
-            <div class="ribbon-tab active">Página Inicial</div>
+            <div class="ribbon-tab active">Início</div>
             <div class="ribbon-tab" onclick="imprimirDocumento()">Imprimir / PDF</div>
-            <div class="ribbon-tab" onclick="exportarComoTxt()">Baixar TXT</div>
+            <div class="ribbon-tab" onclick="exportarComoTxt()">TXT</div>
         </div>
 
         <div class="ribbon-toolbar">
@@ -487,14 +496,14 @@
             </div>
 
             <div class="tool-group">
-                <input type="color" title="Cor do Texto" onchange="execCmd('foreColor', this.value)" style="border:none; width:30px; height:30px; cursor:pointer; background:transparent;">
+                <input type="color" title="Cor do Texto" onchange="execCmd('foreColor', this.value)" style="border:none; width:28px; height:28px; cursor:pointer; background:transparent;">
                 <button class="tool-btn" onclick="execCmd('backColor', '#f1c40f')">🖍️</button>
                 <button class="tool-btn" onclick="execCmd('removeFormat')">🧹</button>
             </div>
         </div>
 
         <div class="editor-container-wrapper" id="editor-wrapper">
-            <div id="document-wrapper" style="display: none; width: 100%; flex-direction: column; align-items: center; gap: 20px;">
+            <div id="document-wrapper" style="display: none; width: 100%; flex-direction: column; align-items: center; gap: 16px;">
                 <div class="doc-title-container">
                     <input type="text" id="doc-title" class="input-document-title" placeholder="Título da Nota..." oninput="salvarNotaAtual()">
                 </div>
@@ -505,15 +514,15 @@
             <div class="aviso-vazio-main" id="aviso-vazio">
                 <span>📄</span>
                 <h2>Nenhuma nota selecionada</h2>
-                <p>Crie uma nova nota na barra lateral para começar a escrever.</p>
+                <p>Abra o menu lateral ☰ para criar ou selecionar uma nota.</p>
             </div>
         </div>
 
         <div class="status-bar">
             <div class="status-info">
-                <span id="stat-pages">Página 1 de 1</span>
-                <span id="stat-words">0 palavras</span>
-                <span id="stat-chars">0 caracteres</span>
+                <span id="stat-pages">Pág 1 de 1</span>
+                <span id="stat-words">0 pal.</span>
+                <span id="stat-chars">0 car.</span>
             </div>
             <div>
                 <span id="stat-save-status">100% Offline</span>
@@ -582,10 +591,10 @@
                     const lixItem = document.createElement('div');
                     lixItem.className = 'item-nota';
                     lixItem.innerHTML = `
-                        <span style="text-decoration:line-through; font-size:12px; overflow:hidden; text-overflow:ellipsis;">${nota.titulo || 'Sem título'}</span>
+                        <span style="text-decoration:line-through; font-size:11px; overflow:hidden; text-overflow:ellipsis;">${nota.titulo || 'Sem título'}</span>
                         <div>
                             <button class="btn-icon" onclick="restaurarNota('${nota.id}')" title="Restaurar">↩️</button>
-                            <button class="btn-icon" onclick="excluirPermanente('${nota.id}')" title="Excluir Definitivamente">❌</button>
+                            <button class="btn-icon" onclick="excluirPermanente('${nota.id}')" title="Excluir">❌</button>
                         </div>
                     `;
                     listLixeira.appendChild(lixItem);
@@ -601,10 +610,10 @@
                 item.onclick = () => carregarNota(nota.id);
 
                 item.innerHTML = `
-                    <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:68%;">📄 ${nota.titulo || 'Sem título'}</span>
+                    <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:65%;">📄 ${nota.titulo || 'Sem título'}</span>
                     <div>
                         <button class="btn-icon btn-pin ${nota.fixada ? 'fixado' : ''}" onclick="toggleFixar(event, '${nota.id}')" title="Fixar">📌</button>
-                        <button class="btn-icon" onclick="moverParaLixeira(event, '${nota.id}')" title="Enviar para Lixeira">🗑️</button>
+                        <button class="btn-icon" onclick="moverParaLixeira(event, '${nota.id}')" title="Lixeira">🗑️</button>
                     </div>
                 `;
 
@@ -639,9 +648,8 @@
                 container.appendChild(pag);
             });
 
-            if (window.innerWidth < 900) {
-                document.getElementById('sidebar').classList.add('escondida');
-            }
+            // Oculta sidebar no modo tablet para liberar espaço
+            document.getElementById('sidebar').classList.add('escondida');
 
             atualizarEstatisticas();
             renderizar();
@@ -651,8 +659,7 @@
             const pageDiv = document.createElement('div');
             pageDiv.className = 'word-page-card';
             pageDiv.contentEditable = "true";
-            
-            // Garante elemento editável se vier vazio
+
             pageDiv.innerHTML = (conteudoHTML && conteudoHTML.trim()) ? conteudoHTML : "<p><br></p>";
 
             const tagNum = document.createElement('div');
@@ -661,7 +668,6 @@
             tagNum.innerText = `Página ${numeroPagina}`;
             pageDiv.appendChild(tagNum);
 
-            // CORREÇÃO: Garante o foco para digitação em páginas zeradas ao clicar
             pageDiv.onclick = (e) => {
                 if (pageDiv.innerText.replace(/Página \d+$/, '').trim() === '') {
                     if (!pageDiv.querySelector('p')) {
@@ -684,7 +690,6 @@
             return pageDiv;
         }
 
-        // CORREÇÃO: Impede que a página fique sem tag <p> e trave a escrita
         function garantirEstruturaParagrafo(pageDiv) {
             const textoLimpo = pageDiv.innerText.replace(/Página \d+$/, '').trim();
             if (textoLimpo === '' && pageDiv.children.length <= 1) {
@@ -694,7 +699,6 @@
                 tag.contentEditable = "false";
                 pageDiv.appendChild(tag);
                 
-                // Coloca o cursor dentro do parágrafo
                 const p = pageDiv.querySelector('p');
                 if (p) {
                     const sel = window.getSelection();
@@ -707,11 +711,9 @@
             }
         }
 
-        /* --- LÓGICA DE GERENCIAMENTO DE PÁGINAS DINÂMICAS --- */
         function gerenciarPaginasDinamicas(paginaAtual) {
             const container = document.getElementById('pages-container');
             
-            // 1. Adiciona nova página se esta ultrapassar o tamanho limite do papel
             if (paginaAtual.scrollHeight > paginaAtual.clientHeight + 15) {
                 const paginas = Array.from(container.querySelectorAll('.word-page-card'));
                 const indiceAtual = paginas.indexOf(paginaAtual);
@@ -722,7 +724,6 @@
                 }
             }
 
-            // 2. Remove páginas vazias do final (mantém sempre pelo menos a 1ª página)
             const todasPaginas = Array.from(container.querySelectorAll('.word-page-card'));
             for (let i = todasPaginas.length - 1; i > 0; i--) {
                 const pag = todasPaginas[i];
@@ -817,9 +818,9 @@
 
         function atualizarEstatisticas(zerar = false) {
             if (zerar) {
-                document.getElementById('stat-pages').innerText = "Página 0 de 0";
-                document.getElementById('stat-words').innerText = "0 palavras";
-                document.getElementById('stat-chars').innerText = "0 caracteres";
+                document.getElementById('stat-pages').innerText = "Pág 0 de 0";
+                document.getElementById('stat-words').innerText = "0 pal.";
+                document.getElementById('stat-chars').innerText = "0 car.";
                 return;
             }
 
@@ -835,9 +836,9 @@
             const caracteres = textoCompleto.trim().length;
             const palavras = textoCompleto.trim() ? textoCompleto.trim().split(/\s+/).length : 0;
 
-            document.getElementById('stat-pages').innerText = `Páginas: ${paginas.length}`;
-            document.getElementById('stat-words').innerText = `${palavras} palavras`;
-            document.getElementById('stat-chars').innerText = `${caracteres} caracteres`;
+            document.getElementById('stat-pages').innerText = `Pág: ${paginas.length}`;
+            document.getElementById('stat-words').innerText = `${palavras} pal.`;
+            document.getElementById('stat-chars').innerText = `${caracteres} car.`;
             document.getElementById('stat-save-status').innerText = "Salvo (Offline)";
         }
 
